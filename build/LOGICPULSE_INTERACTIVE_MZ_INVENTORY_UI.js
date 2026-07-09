@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-09T01:18:00.409Z
+ * Build Date: 2026-07-09T08:07:39.710Z
  * ============================================================================
  */
 
@@ -225,6 +225,15 @@ LOGICPULSE.Layout = Object.freeze({
 
             }),
 
+            mask: Object.freeze({
+
+                x: 144,
+                y: 144,
+                width: 672,
+                height: 480
+
+            }),
+
             columns: 7,
 
             itemSize: 92,
@@ -235,10 +244,24 @@ LOGICPULSE.Layout = Object.freeze({
 
         Showcase: Object.freeze({
 
-            position: Object.freeze({
+            Overlay: Object.freeze({
 
-                x: 960,
+                x: 0,
+                y: 0
+
+            }),
+
+            Item: Object.freeze({
+
+                x: 914,
                 y: 192
+
+            }),
+
+            Description: Object.freeze({
+
+                x: 912,
+                y: 480
 
             })
 
@@ -266,6 +289,15 @@ LOGICPULSE.Layout = Object.freeze({
         Grid: Object.freeze({
 
             rect: Object.freeze({
+
+                x: 96,
+                y: 192,
+                width: 384,
+                height: 480
+
+            }),
+
+            mask: Object.freeze({
 
                 x: 96,
                 y: 192,
@@ -366,7 +398,37 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
 
         this._enabled = true;
 
+        this.create();
+
     }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+    }
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+    }
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+    }
+
+    //--------------------------------
+    // Visibility
+    //--------------------------------
 
     show() {
 
@@ -379,6 +441,37 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
         this.visible = false;
 
     }
+
+    move(x, y) {
+
+        this.position.set(x, y);
+
+    }
+
+    //--------------------------------
+    // Sprite Helpers
+    //--------------------------------
+
+    createSprite(folder, filename, x = 0, y = 0) {
+
+        const sprite = LOGICPULSE.Assets.createSprite(
+
+            folder,
+            filename
+
+        );
+
+        sprite.position.set(x, y);
+
+        this.addChild(sprite);
+
+        return sprite;
+
+    }
+
+    //--------------------------------
+    // State
+    //--------------------------------
 
     enable() {
 
@@ -398,9 +491,9 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
 
     }
 
-    refresh() {
-
-    }
+    //--------------------------------
+    // Destroy
+    //--------------------------------
 
     destroy(options) {
 
@@ -450,9 +543,97 @@ LOGICPULSE.UI.Cursor = class {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.UI = LOGICPULSE.UI || {};
 
-LOGICPULSE.UI.Grid = class {
+//=============================================================================
+// Grid
+//=============================================================================
 
-    constructor() {
+LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this.createMask();
+        this.createViewport();
+
+    }
+
+    //--------------------------------
+    // Mask
+    //--------------------------------
+
+    createMask() {
+
+        const rect =
+            LOGICPULSE.Layout.Inventory.Grid.mask;
+
+        this._maskGraphic = new PIXI.Graphics();
+
+        this._maskGraphic.beginFill(0xffffff);
+
+        this._maskGraphic.drawRect(
+
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height
+
+        );
+
+        this._maskGraphic.endFill();
+
+        this.addChild(this._maskGraphic);
+
+        this.mask = this._maskGraphic;
+
+    }
+
+    //--------------------------------
+    // Viewport
+    //--------------------------------
+
+    createViewport() {
+
+        this._viewport = new PIXI.Container();
+
+        this.addChild(this._viewport);
+
+        this.createLayers();
+
+    }
+
+    //--------------------------------
+    // Layers
+    //--------------------------------
+
+    createLayers() {
+
+        this._slotLayer = new PIXI.Container();
+        this._iconLayer = new PIXI.Container();
+        this._cursorLayer = new PIXI.Container();
+
+        this._viewport.addChild(this._slotLayer);
+        this._viewport.addChild(this._iconLayer);
+        this._viewport.addChild(this._cursorLayer);
+
+        const debug = new PIXI.Graphics();
+
+        debug.beginFill(0x00ffff, 0.35);
+
+        debug.drawRect(
+
+            144,
+            144,
+            672,
+            900
+
+        );
+
+        debug.endFill();
+
+        this._slotLayer.addChild(debug);
 
     }
 
@@ -488,19 +669,24 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
     }
 
+    //--------------------------------
+    // Background
+    //--------------------------------
+
     createBackground() {
 
-        this._background =
-            LOGICPULSE.Assets.createSprite(
+        this._background = this.createSprite(
 
-                LOGICPULSE.Assets.Folders.Sidebar,
-                "Sidebar box"
+            LOGICPULSE.Assets.Folders.Sidebar,
+            "Sidebar box"
 
-            );
-
-        this.addChild(this._background);
+        );
 
     }
+
+    //--------------------------------
+    // Tabs
+    //--------------------------------
 
     createTabs() {
 
@@ -517,17 +703,14 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
         for (const name of tabNames) {
 
-            const sprite =
-                LOGICPULSE.Assets.createSprite(
+            const sprite = this.createSprite(
 
-                    LOGICPULSE.Assets.Folders.Sidebar,
-                    `Sidebar ${name} Tab Idle`
+                LOGICPULSE.Assets.Folders.Sidebar,
+                `Sidebar ${name} Tab Idle`
 
-                );
+            );
 
             this._tabs.push(sprite);
-
-            this.addChild(sprite);
 
         }
 
@@ -543,9 +726,61 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.UI = LOGICPULSE.UI || {};
 
-LOGICPULSE.UI.Showcase = class {
+//=============================================================================
+// Showcase
+//=============================================================================
 
-    constructor() {
+LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this.createOverlay();
+        this.createItemSprite();
+        this.createDescription();
+
+    }
+
+    //--------------------------------
+    // Overlay
+    //--------------------------------
+
+    createOverlay() {
+
+        const pos =
+            LOGICPULSE.Layout.Inventory.Showcase.Overlay;
+
+        this._overlay = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Inventory,
+            "Item Showcase Box",
+            pos.x,
+            pos.y
+
+        );
+
+    }
+
+    //--------------------------------
+    // Item Sprite
+    //--------------------------------
+
+    createItemSprite() {
+
+        // Phase 0.7
+
+    }
+
+    //--------------------------------
+    // Description
+    //--------------------------------
+
+    createDescription() {
+
+        // Phase 0.8
 
     }
 
@@ -577,6 +812,8 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 
         this.createBackground();
         this.createSidebar();
+        this.createShowcase();
+        this.createGrid();
 
 
     }
@@ -602,6 +839,22 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         this._sidebar = new LOGICPULSE.UI.Sidebar();
 
         this.addChild(this._sidebar);
+
+    }
+
+    createShowcase() {
+
+        this._showcase = new LOGICPULSE.UI.Showcase();
+
+        this.addChild(this._showcase);
+
+    }
+
+    createGrid() {
+
+        this._grid = new LOGICPULSE.UI.Grid();
+
+        this.addChild(this._grid);
 
     }
 

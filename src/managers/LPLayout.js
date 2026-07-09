@@ -25,6 +25,15 @@ LOGICPULSE.Layout = Object.freeze({
 
             }),
 
+            mask: Object.freeze({
+
+                x: 144,
+                y: 144,
+                width: 672,
+                height: 480
+
+            }),
+
             columns: 7,
 
             itemSize: 92,
@@ -35,10 +44,24 @@ LOGICPULSE.Layout = Object.freeze({
 
         Showcase: Object.freeze({
 
-            position: Object.freeze({
+            Overlay: Object.freeze({
 
-                x: 960,
+                x: 0,
+                y: 0
+
+            }),
+
+            Item: Object.freeze({
+
+                x: 914,
                 y: 192
+
+            }),
+
+            Description: Object.freeze({
+
+                x: 912,
+                y: 480
 
             })
 
@@ -66,6 +89,15 @@ LOGICPULSE.Layout = Object.freeze({
         Grid: Object.freeze({
 
             rect: Object.freeze({
+
+                x: 96,
+                y: 192,
+                width: 384,
+                height: 480
+
+            }),
+
+            mask: Object.freeze({
 
                 x: 96,
                 y: 192,

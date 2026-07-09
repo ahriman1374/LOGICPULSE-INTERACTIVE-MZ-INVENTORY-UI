@@ -25,19 +25,24 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
     }
 
+    //--------------------------------
+    // Background
+    //--------------------------------
+
     createBackground() {
 
-        this._background =
-            LOGICPULSE.Assets.createSprite(
+        this._background = this.createSprite(
 
-                LOGICPULSE.Assets.Folders.Sidebar,
-                "Sidebar box"
+            LOGICPULSE.Assets.Folders.Sidebar,
+            "Sidebar box"
 
-            );
-
-        this.addChild(this._background);
+        );
 
     }
+
+    //--------------------------------
+    // Tabs
+    //--------------------------------
 
     createTabs() {
 
@@ -54,17 +59,14 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
         for (const name of tabNames) {
 
-            const sprite =
-                LOGICPULSE.Assets.createSprite(
+            const sprite = this.createSprite(
 
-                    LOGICPULSE.Assets.Folders.Sidebar,
-                    `Sidebar ${name} Tab Idle`
+                LOGICPULSE.Assets.Folders.Sidebar,
+                `Sidebar ${name} Tab Idle`
 
-                );
+            );
 
             this._tabs.push(sprite);
-
-            this.addChild(sprite);
 
         }
 

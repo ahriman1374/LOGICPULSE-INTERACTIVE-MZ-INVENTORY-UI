@@ -15,7 +15,37 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
 
         this._enabled = true;
 
+        this.create();
+
     }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+    }
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+    }
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+    }
+
+    //--------------------------------
+    // Visibility
+    //--------------------------------
 
     show() {
 
@@ -28,6 +58,37 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
         this.visible = false;
 
     }
+
+    move(x, y) {
+
+        this.position.set(x, y);
+
+    }
+
+    //--------------------------------
+    // Sprite Helpers
+    //--------------------------------
+
+    createSprite(folder, filename, x = 0, y = 0) {
+
+        const sprite = LOGICPULSE.Assets.createSprite(
+
+            folder,
+            filename
+
+        );
+
+        sprite.position.set(x, y);
+
+        this.addChild(sprite);
+
+        return sprite;
+
+    }
+
+    //--------------------------------
+    // State
+    //--------------------------------
 
     enable() {
 
@@ -47,9 +108,9 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
 
     }
 
-    refresh() {
-
-    }
+    //--------------------------------
+    // Destroy
+    //--------------------------------
 
     destroy(options) {
 
