@@ -2,6 +2,111 @@
 
 window.LOGICPULSE = window.LOGICPULSE || {};
 
+//=============================================================================
+// Asset Manager
+//=============================================================================
+
 LOGICPULSE.Assets = {
+
+    //==================================================
+    // Folder Definitions
+    //==================================================
+
+    Folders: Object.freeze({
+
+        Inventory: "img/LOGICPULSE_INTERACTIVE UI/INVENTORY_UI/",
+
+        Sidebar: "img/LOGICPULSE_INTERACTIVE UI/INVENTORY_UI/Sidebar/",
+
+        Items: "img/LOGICPULSE_INTERACTIVE UI/INVENTORY_UI/Items/",
+
+        Showcase: "img/LOGICPULSE_INTERACTIVE UI/INVENTORY_UI/Items_Show_Case/",
+
+        Synthesizer: "img/LOGICPULSE_INTERACTIVE UI/INVENTORY_UI/Synthesizer/"
+
+    }),
+
+    //==================================================
+    // Bitmap Cache
+    //==================================================
+
+    _cache: {},
+
+    //==================================================
+    // Load Bitmap
+    //==================================================
+
+    load(folder, filename) {
+
+        if (!Object.values(this.Folders).includes(folder)) {
+
+            throw new Error(
+                `[LOGICPULSE] Unknown asset folder:\n${folder}`
+            );
+
+        }
+
+        const key = `${folder}${filename}`;
+
+        if (!this._cache[key]) {
+
+            this._cache[key] = ImageManager.loadBitmap(
+                folder,
+                filename
+            );
+
+        }
+
+        return this._cache[key];
+
+    },
+
+    //==================================================
+    // Exists
+    //==================================================
+
+    exists(folder, filename) {
+
+        try {
+
+            const bitmap = this.load(folder, filename);
+
+            return !!bitmap;
+
+        }
+        catch (e) {
+
+            return false;
+
+        }
+
+    },
+
+    //==================================================
+    // Preload
+    //==================================================
+
+    preload(list) {
+
+        for (const asset of list) {
+
+            this.load(
+                asset.folder,
+                asset.file
+            );
+
+        }
+
+    },
+
+    //==================================================
+    // Clear Cache
+    //==================================================
+
+    clearCache() {
+
+        this._cache = {};
+
+    }
 
 };
