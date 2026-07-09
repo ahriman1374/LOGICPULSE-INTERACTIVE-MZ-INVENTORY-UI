@@ -99,6 +99,20 @@ LOGICPULSE.Assets = {
 
     },
 
+
+    //==================================================
+    // Create Sprite
+    //==================================================
+
+    createSprite(folder, filename) {
+
+        const sprite = new Sprite();
+
+        sprite.bitmap = this.load(folder, filename);
+
+        return sprite;
+
+    },
     //==================================================
     // Clear Cache
     //==================================================

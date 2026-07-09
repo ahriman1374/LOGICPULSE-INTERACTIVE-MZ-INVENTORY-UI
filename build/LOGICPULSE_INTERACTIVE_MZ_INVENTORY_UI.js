@@ -4,6 +4,11 @@
  * @author LOGICPULSE
  * @version 0.1.0
  *
+ * @command OpenInventory
+ * @text Open Inventory
+ * @desc Opens the LOGICPULSE Inventory Scene.
+ *
+ *
  * ============================================================================
  * THIS FILE IS AUTO-GENERATED.
  *
@@ -11,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-09T00:41:03.569Z
+ * Build Date: 2026-07-09T00:52:02.510Z
  * ============================================================================
  */
 
@@ -164,6 +169,20 @@ LOGICPULSE.Assets = {
 
     },
 
+
+    //==================================================
+    // Create Sprite
+    //==================================================
+
+    createSprite(folder, filename) {
+
+        const sprite = new Sprite();
+
+        sprite.bitmap = this.load(folder, filename);
+
+        return sprite;
+
+    },
     //==================================================
     // Clear Cache
     //==================================================
@@ -415,9 +434,39 @@ LOGICPULSE.UI.Showcase = class {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Scenes = LOGICPULSE.Scenes || {};
 
-LOGICPULSE.Scenes.Inventory = class {
+//=============================================================================
+// Inventory Scene
+//=============================================================================
 
-    constructor() {
+LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
+
+    initialize() {
+
+        super.initialize();
+
+    }
+
+    create() {
+
+        super.create();
+
+        this.createBackground();
+
+    }
+
+    createBackground() {
+
+        const background = LOGICPULSE.Assets.createSprite(
+
+            LOGICPULSE.Assets.Folders.Inventory,
+            "Background"
+
+        );
+
+        background.x = 0;
+        background.y = 0;
+
+        this.addChild(background);
 
     }
 
@@ -445,4 +494,22 @@ LOGICPULSE.Scenes.Synthesizer = class {
 //=============================================================================
 
 window.LOGICPULSE = window.LOGICPULSE || {};
+
+(() => {
+
+    const pluginName = LOGICPULSE.Version.plugin;
+
+    PluginManager.registerCommand(
+
+        pluginName,
+        "OpenInventory",
+        () => {
+
+            SceneManager.push(LOGICPULSE.Scenes.Inventory);
+
+        }
+
+    );
+
+})();
 

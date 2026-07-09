@@ -140,6 +140,11 @@ try {
  * @author ${config.author}
  * @version ${config.version}
  *
+ * @command OpenInventory
+ * @text Open Inventory
+ * @desc Opens the LOGICPULSE Inventory Scene.
+ *
+ *
  * ============================================================================
  * THIS FILE IS AUTO-GENERATED.
  *
