@@ -9,6 +9,16 @@ LOGICPULSE.UI = LOGICPULSE.UI || {};
 
 LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
+    constructor(layout) {
+
+        super();
+
+        this._layout = layout;
+
+        this.create();
+
+    }
+
     //--------------------------------
     // Create
     //--------------------------------
@@ -26,8 +36,7 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     createMask() {
 
-        const rect =
-            LOGICPULSE.Layout.Inventory.Grid.mask;
+        const mask = this._layout.mask;
 
         this._maskGraphic = new PIXI.Graphics();
 
@@ -35,10 +44,10 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         this._maskGraphic.drawRect(
 
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height
+            mask.x,
+            mask.y,
+            mask.width,
+            mask.height
 
         );
 
@@ -77,7 +86,49 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         this._viewport.addChild(this._slotLayer);
         this._viewport.addChild(this._iconLayer);
         this._viewport.addChild(this._cursorLayer);
-        
+
+        this.buildGrid();
+
+    }
+
+    //--------------------------------
+    // Grid
+    //--------------------------------
+
+    buildGrid() {
+
+        const layout = this._layout;
+
+        const startX = layout.rect.x;
+        const startY = layout.rect.y;
+
+        const columns = layout.columns;
+
+        const rows = Math.floor(
+
+            layout.rect.height / layout.spacingY
+
+        );
+
+        for (let row = 0; row < rows; row++) {
+
+            for (let column = 0; column < columns; column++) {
+
+                const slot = new LOGICPULSE.UI.GridSlot({
+
+                    x: startX + (column * layout.spacingX),
+
+                    y: startY + (row * layout.spacingY),
+
+                    rarity: 1
+
+                });
+
+                this._slotLayer.addChild(slot);
+
+            }
+
+        }
 
     }
 

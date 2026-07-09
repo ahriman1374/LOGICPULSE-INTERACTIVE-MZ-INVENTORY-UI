@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-09T08:07:39.710Z
+ * Build Date: 2026-07-09T09:41:15.471Z
  * ============================================================================
  */
 
@@ -95,6 +95,48 @@ LOGICPULSE.Assets = {
         Synthesizer: "img/LOGICPULSE_INTERACTIVE UI/INVENTORY_UI/Synthesizer/"
 
     }),
+
+
+    //--------------------------------
+    // Image Catalog
+    //--------------------------------
+
+    Images: Object.freeze({
+
+        Inventory: Object.freeze({
+
+            Background: "Background",
+
+            Showcase: "Item Showcase Box",
+
+            ItemBoxCommon: "Item Box Common",
+
+            ItemBoxRare: "Item Box Rare",
+
+            ItemBoxLegendary: "Item Box Legendary"
+
+        }),
+
+        Sidebar: Object.freeze({
+
+            Box: "Sidebar box",
+
+            ConsumableIdle: "Sidebar Consumable Tab Idle",
+            ConsumableHover: "Sidebar Consumable Tab Hover",
+
+            MaterialIdle: "Sidebar Material Tab Idle",
+            MaterialHover: "Sidebar Material Tab Hover",
+
+            KeyMaterialIdle: "Sidebar Key Materials Tab Idle",
+            KeyMaterialHover: "Sidebar Key Materials Tab Hover",
+
+            SynthesizerIdle: "Sidebar Synthesizer Tab Idle",
+            SynthesizerHover: "Sidebar Synthesizer Tab Hover"
+
+        })
+
+    }),
+
 
     //==================================================
     // Bitmap Cache
@@ -238,7 +280,9 @@ LOGICPULSE.Layout = Object.freeze({
 
             itemSize: 92,
 
-            spacing: 96
+            spacingX: 96,
+
+            spacingY: 96
 
         }),
 
@@ -310,7 +354,9 @@ LOGICPULSE.Layout = Object.freeze({
 
             itemSize: 92,
 
-            spacing: 96
+            spacingX: 96,
+
+            spacingY: 96
 
         }),
 
@@ -397,8 +443,6 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
         super();
 
         this._enabled = true;
-
-        this.create();
 
     }
 
@@ -495,7 +539,19 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
     // Destroy
     //--------------------------------
 
-    destroy(options) {
+    destroy(options = { children: true }) {
+
+        const children = this.removeChildren();
+
+        for (const child of children) {
+
+            if (child.destroy) {
+
+                child.destroy();
+
+            }
+
+        }
 
         super.destroy(options);
 
@@ -537,6 +593,99 @@ LOGICPULSE.UI.Cursor = class {
 
 
 //=============================================================================
+// LPGridSlot.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+//=============================================================================
+// Grid Slot
+//=============================================================================
+
+LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
+
+    constructor(options = {}) {
+
+        super();
+
+        this._rarity = options.rarity ?? 1;
+
+        this.move(
+
+            options.x ?? 0,
+            options.y ?? 0
+
+        );
+
+        this.create();
+
+    }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this.createBackground();
+
+    }
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+        this.removeChildren();
+
+        this.create();
+
+    }
+
+    //--------------------------------
+    // Background
+    //--------------------------------
+
+    createBackground() {
+
+        const image = this.getBackgroundImage();
+
+        this._background = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Inventory,
+            image
+
+        );
+
+    }
+
+    //--------------------------------
+    // Helpers
+    //--------------------------------
+
+    getBackgroundImage() {
+
+        switch (this._rarity) {
+
+            case 3:
+                return LOGICPULSE.Assets.Images.Inventory.ItemBoxLegendary;
+
+            case 2:
+                return LOGICPULSE.Assets.Images.Inventory.ItemBoxRare;
+
+            default:
+                return LOGICPULSE.Assets.Images.Inventory.ItemBoxCommon;
+
+        }
+
+    }
+
+};
+
+
+//=============================================================================
 // LPGrid.js
 //=============================================================================
 
@@ -548,6 +697,16 @@ LOGICPULSE.UI = LOGICPULSE.UI || {};
 //=============================================================================
 
 LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
+
+    constructor(layout) {
+
+        super();
+
+        this._layout = layout;
+
+        this.create();
+
+    }
 
     //--------------------------------
     // Create
@@ -566,8 +725,7 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     createMask() {
 
-        const rect =
-            LOGICPULSE.Layout.Inventory.Grid.mask;
+        const mask = this._layout.mask;
 
         this._maskGraphic = new PIXI.Graphics();
 
@@ -575,10 +733,10 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         this._maskGraphic.drawRect(
 
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height
+            mask.x,
+            mask.y,
+            mask.width,
+            mask.height
 
         );
 
@@ -618,22 +776,48 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         this._viewport.addChild(this._iconLayer);
         this._viewport.addChild(this._cursorLayer);
 
-        const debug = new PIXI.Graphics();
+        this.buildGrid();
 
-        debug.beginFill(0x00ffff, 0.35);
+    }
 
-        debug.drawRect(
+    //--------------------------------
+    // Grid
+    //--------------------------------
 
-            144,
-            144,
-            672,
-            900
+    buildGrid() {
+
+        const layout = this._layout;
+
+        const startX = layout.rect.x;
+        const startY = layout.rect.y;
+
+        const columns = layout.columns;
+
+        const rows = Math.floor(
+
+            layout.rect.height / layout.spacingY
 
         );
 
-        debug.endFill();
+        for (let row = 0; row < rows; row++) {
 
-        this._slotLayer.addChild(debug);
+            for (let column = 0; column < columns; column++) {
+
+                const slot = new LOGICPULSE.UI.GridSlot({
+
+                    x: startX + (column * layout.spacingX),
+
+                    y: startY + (row * layout.spacingY),
+
+                    rarity: 1
+
+                });
+
+                this._slotLayer.addChild(slot);
+
+            }
+
+        }
 
     }
 
@@ -852,7 +1036,11 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 
     createGrid() {
 
-        this._grid = new LOGICPULSE.UI.Grid();
+        this._grid = new LOGICPULSE.UI.Grid(
+
+            LOGICPULSE.Layout.Inventory.Grid
+
+        );
 
         this.addChild(this._grid);
 

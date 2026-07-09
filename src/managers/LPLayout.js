@@ -38,7 +38,9 @@ LOGICPULSE.Layout = Object.freeze({
 
             itemSize: 92,
 
-            spacing: 96
+            spacingX: 96,
+
+            spacingY: 96
 
         }),
 
@@ -110,7 +112,9 @@ LOGICPULSE.Layout = Object.freeze({
 
             itemSize: 92,
 
-            spacing: 96
+            spacingX: 96,
+
+            spacingY: 96
 
         }),
 

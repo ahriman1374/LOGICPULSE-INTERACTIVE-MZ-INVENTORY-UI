@@ -26,6 +26,48 @@ LOGICPULSE.Assets = {
 
     }),
 
+
+    //--------------------------------
+    // Image Catalog
+    //--------------------------------
+
+    Images: Object.freeze({
+
+        Inventory: Object.freeze({
+
+            Background: "Background",
+
+            Showcase: "Item Showcase Box",
+
+            ItemBoxCommon: "Item Box Common",
+
+            ItemBoxRare: "Item Box Rare",
+
+            ItemBoxLegendary: "Item Box Legendary"
+
+        }),
+
+        Sidebar: Object.freeze({
+
+            Box: "Sidebar box",
+
+            ConsumableIdle: "Sidebar Consumable Tab Idle",
+            ConsumableHover: "Sidebar Consumable Tab Hover",
+
+            MaterialIdle: "Sidebar Material Tab Idle",
+            MaterialHover: "Sidebar Material Tab Hover",
+
+            KeyMaterialIdle: "Sidebar Key Materials Tab Idle",
+            KeyMaterialHover: "Sidebar Key Materials Tab Hover",
+
+            SynthesizerIdle: "Sidebar Synthesizer Tab Idle",
+            SynthesizerHover: "Sidebar Synthesizer Tab Hover"
+
+        })
+
+    }),
+
+
     //==================================================
     // Bitmap Cache
     //==================================================

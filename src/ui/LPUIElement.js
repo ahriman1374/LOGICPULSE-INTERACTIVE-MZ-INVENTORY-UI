@@ -15,8 +15,6 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
 
         this._enabled = true;
 
-        this.create();
-
     }
 
     //--------------------------------
@@ -112,7 +110,19 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
     // Destroy
     //--------------------------------
 
-    destroy(options) {
+    destroy(options = { children: true }) {
+
+        const children = this.removeChildren();
+
+        for (const child of children) {
+
+            if (child.destroy) {
+
+                child.destroy();
+
+            }
+
+        }
 
         super.destroy(options);
 

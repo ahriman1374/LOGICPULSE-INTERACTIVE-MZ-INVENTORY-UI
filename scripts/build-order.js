@@ -22,6 +22,7 @@ module.exports = [
     "src/ui/LPUIElement.js",
     "src/ui/LPButton.js",
     "src/ui/LPCursor.js",
+    "src/ui/LPGridSlot.js",
     "src/ui/LPGrid.js",
     "src/ui/LPSidebar.js",
     "src/ui/LPShowcase.js",
