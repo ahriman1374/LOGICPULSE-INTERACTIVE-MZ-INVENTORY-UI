@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-09T09:41:15.471Z
+ * Build Date: 2026-07-10T00:50:28.817Z
  * ============================================================================
  */
 
@@ -404,7 +404,239 @@ LOGICPULSE.Input = {};
 
 window.LOGICPULSE = window.LOGICPULSE || {};
 
-LOGICPULSE.InventoryProvider = {};
+//=============================================================================
+// Inventory Provider
+//=============================================================================
+
+LOGICPULSE.InventoryProvider = {
+
+    _entries: {
+
+        consumable: [],
+
+        material: [],
+
+        key: [],
+
+        weapon: [],
+
+        armor: []
+
+    },
+
+    //--------------------------------
+    // Refresh Cache
+    //--------------------------------
+
+    //--------------------------------
+    // Refresh Cache
+    //--------------------------------
+
+    refresh() {
+
+        this._entries = {
+
+            consumable: [],
+
+            material: [],
+
+            key: [],
+
+            weapon: [],
+
+            armor: []
+
+        };
+
+        this.buildInventory();
+
+    },
+
+    //--------------------------------
+    // Build Inventory
+    //--------------------------------
+
+    buildInventory() {
+
+        this.buildItems();
+
+        this.buildWeapons();
+
+        this.buildArmors();
+
+    },
+
+    //--------------------------------
+    // Build Items
+    //--------------------------------
+
+    buildItems() {
+
+        const items = $gameParty.items();
+
+        for (const item of items) {
+
+            const entry = this.buildEntry(item);
+
+            this._entries[entry.category].push(entry);
+
+        }
+
+    },
+
+    //--------------------------------
+    // Build Weapons
+    //--------------------------------
+
+    buildWeapons() {
+
+        const weapons = $gameParty.weapons();
+
+        for (const weapon of weapons) {
+
+            this._entries.weapon.push({
+
+                id: weapon.id,
+
+                item: weapon,
+
+                amount: $gameParty.numItems(weapon),
+
+                rarity: this.getRarity(weapon),
+
+                category: "weapon"
+
+            });
+
+        }
+
+    },
+
+    //--------------------------------
+    // Build Armors
+    //--------------------------------
+
+    buildArmors() {
+
+        const armors = $gameParty.armors();
+
+        for (const armor of armors) {
+
+            this._entries.armor.push({
+
+                id: armor.id,
+
+                item: armor,
+
+                amount: $gameParty.numItems(armor),
+
+                rarity: this.getRarity(armor),
+
+                category: "armor"
+
+            });
+
+        }
+
+    },
+
+    //--------------------------------
+    // Build Entry
+    //--------------------------------
+
+
+    buildEntry(item, category = null) {
+
+        return {
+
+            id: item.id,
+
+            item: item,
+
+            amount: $gameParty.numItems(item),
+
+            rarity: this.getRarity(item),
+
+            category: category || this.getCategory(item)
+
+        };
+
+    },
+
+    //--------------------------------
+    // Get Items
+    //--------------------------------
+
+    getItems(category) {
+
+        return this._entries[category] || [];
+
+    },
+
+
+
+
+    //--------------------------------
+    // Get All
+    //--------------------------------
+
+    getAll() {
+
+        return [
+
+            ...this._entries.consumable,
+
+            ...this._entries.material,
+
+            ...this._entries.key,
+
+            ...this._entries.weapon,
+
+            ...this._entries.armor
+
+        ];
+
+    },
+
+    //--------------------------------
+    // Rarity
+    //--------------------------------
+
+    getRarity(item) {
+
+        if (!item.meta.rarity) {
+
+            return 1;
+
+        }
+
+        return Number(item.meta.rarity);
+
+    },
+
+    //--------------------------------
+    // Category
+    //--------------------------------
+
+    getCategory(item) {
+
+        if (item.itypeId === 1) {
+
+            return "consumable";
+
+        }
+
+        if (item.itypeId === 2) {
+
+            return "key";
+
+        }
+
+        return "material";
+
+    }
+
+};
 
 
 //=============================================================================
@@ -998,6 +1230,7 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         this.createSidebar();
         this.createShowcase();
         this.createGrid();
+
 
 
     }

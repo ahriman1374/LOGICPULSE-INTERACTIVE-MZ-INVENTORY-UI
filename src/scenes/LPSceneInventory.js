@@ -25,6 +25,7 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         this.createGrid();
 
 
+
     }
 
     createBackground() {

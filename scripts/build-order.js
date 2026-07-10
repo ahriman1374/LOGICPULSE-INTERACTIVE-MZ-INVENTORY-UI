@@ -15,8 +15,10 @@ module.exports = [
     "src/managers/LPLayout.js",
     "src/managers/LPInput.js",
     "src/managers/LPInventoryProvider.js",
+    "src/managers/LPGamePartyHooks.js",
     "src/managers/LPRecipeManager.js",
     "src/managers/LPCraftManager.js",
+
 
     // UI
     "src/ui/LPUIElement.js",
