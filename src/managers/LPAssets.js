@@ -9,6 +9,12 @@ window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Assets = {
 
     //==================================================
+    // System Assets
+    //==================================================
+
+    IconSet: null,
+
+    //==================================================
     // Folder Definitions
     //==================================================
 
@@ -26,10 +32,9 @@ LOGICPULSE.Assets = {
 
     }),
 
-
-    //--------------------------------
+    //==================================================
     // Image Catalog
-    //--------------------------------
+    //==================================================
 
     Images: Object.freeze({
 
@@ -67,12 +72,35 @@ LOGICPULSE.Assets = {
 
     }),
 
-
     //==================================================
     // Bitmap Cache
     //==================================================
 
     _cache: {},
+
+    //==================================================
+    // Initialize
+    //==================================================
+
+    initialize() {
+
+        this.loadSystemAssets();
+
+    },
+
+    //==================================================
+    // Load System Assets
+    //==================================================
+
+    loadSystemAssets() {
+
+        this.IconSet = ImageManager.loadSystem(
+
+            "IconSet"
+
+        );
+
+    },
 
     //==================================================
     // Load Bitmap
@@ -83,7 +111,9 @@ LOGICPULSE.Assets = {
         if (!Object.values(this.Folders).includes(folder)) {
 
             throw new Error(
+
                 `[LOGICPULSE] Unknown asset folder:\n${folder}`
+
             );
 
         }
@@ -93,8 +123,10 @@ LOGICPULSE.Assets = {
         if (!this._cache[key]) {
 
             this._cache[key] = ImageManager.loadBitmap(
+
                 folder,
                 filename
+
             );
 
         }
@@ -111,9 +143,12 @@ LOGICPULSE.Assets = {
 
         try {
 
-            const bitmap = this.load(folder, filename);
+            return !!this.load(
 
-            return !!bitmap;
+                folder,
+                filename
+
+            );
 
         }
         catch (e) {
@@ -133,14 +168,15 @@ LOGICPULSE.Assets = {
         for (const asset of list) {
 
             this.load(
+
                 asset.folder,
                 asset.file
+
             );
 
         }
 
     },
-
 
     //==================================================
     // Create Sprite
@@ -150,11 +186,94 @@ LOGICPULSE.Assets = {
 
         const sprite = new Sprite();
 
-        sprite.bitmap = this.load(folder, filename);
+        sprite.bitmap = this.load(
+
+            folder,
+            filename
+
+        );
 
         return sprite;
 
     },
+
+    //==================================================
+    // Create Inventory Item Sprite (HD)
+    //==================================================
+
+    createItemSprite(item) {
+
+        if (!item) {
+
+            return new Sprite();
+
+        }
+
+        return this.createSprite(
+
+            this.Folders.Items,
+
+            `Item_${item.iconIndex}`
+
+        );
+
+    },
+
+    //==================================================
+    // Create RPG Maker Icon
+    //==================================================
+
+    createIcon(iconIndex) {
+
+        const sprite = new Sprite(
+
+            this.IconSet
+
+        );
+
+        const rect = this.iconRect(
+
+            iconIndex
+
+        );
+
+        sprite.setFrame(
+
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height
+
+        );
+
+        return sprite;
+
+    },
+
+    //==================================================
+    // Icon Rectangle
+    //==================================================
+
+    iconRect(iconIndex) {
+
+        const width = ImageManager.iconWidth;
+
+        const height = ImageManager.iconHeight;
+
+        return {
+
+            x: (iconIndex % 16) * width,
+
+            y: Math.floor(iconIndex / 16) * height,
+
+            width: width,
+
+            height: height
+
+        };
+
+    },
+
     //==================================================
     // Clear Cache
     //==================================================

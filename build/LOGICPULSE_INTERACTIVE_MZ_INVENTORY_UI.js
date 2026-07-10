@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-10T00:50:28.817Z
+ * Build Date: 2026-07-10T14:28:02.272Z
  * ============================================================================
  */
 
@@ -41,7 +41,35 @@ LOGICPULSE.Version = {
 
 window.LOGICPULSE = window.LOGICPULSE || {};
 
-LOGICPULSE.Constants = {};
+//=============================================================================
+// Constants
+//=============================================================================
+
+LOGICPULSE.Constants = Object.freeze({
+
+    //--------------------------------
+    // Item Categories
+    //--------------------------------
+
+    Category: Object.freeze({
+
+        Consumable : "consumable",
+
+        Material   : "material",
+
+        Key        : "key",
+
+        HiddenB    : "hiddenB",
+
+        Weapon     : "weapon",
+
+        Armor      : "armor",
+
+        Unknown    : "unknown"
+
+    })
+
+});
 
 
 //=============================================================================
@@ -79,6 +107,12 @@ window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Assets = {
 
     //==================================================
+    // System Assets
+    //==================================================
+
+    IconSet: null,
+
+    //==================================================
     // Folder Definitions
     //==================================================
 
@@ -96,10 +130,9 @@ LOGICPULSE.Assets = {
 
     }),
 
-
-    //--------------------------------
+    //==================================================
     // Image Catalog
-    //--------------------------------
+    //==================================================
 
     Images: Object.freeze({
 
@@ -137,12 +170,35 @@ LOGICPULSE.Assets = {
 
     }),
 
-
     //==================================================
     // Bitmap Cache
     //==================================================
 
     _cache: {},
+
+    //==================================================
+    // Initialize
+    //==================================================
+
+    initialize() {
+
+        this.loadSystemAssets();
+
+    },
+
+    //==================================================
+    // Load System Assets
+    //==================================================
+
+    loadSystemAssets() {
+
+        this.IconSet = ImageManager.loadSystem(
+
+            "IconSet"
+
+        );
+
+    },
 
     //==================================================
     // Load Bitmap
@@ -153,7 +209,9 @@ LOGICPULSE.Assets = {
         if (!Object.values(this.Folders).includes(folder)) {
 
             throw new Error(
+
                 `[LOGICPULSE] Unknown asset folder:\n${folder}`
+
             );
 
         }
@@ -163,8 +221,10 @@ LOGICPULSE.Assets = {
         if (!this._cache[key]) {
 
             this._cache[key] = ImageManager.loadBitmap(
+
                 folder,
                 filename
+
             );
 
         }
@@ -181,9 +241,12 @@ LOGICPULSE.Assets = {
 
         try {
 
-            const bitmap = this.load(folder, filename);
+            return !!this.load(
 
-            return !!bitmap;
+                folder,
+                filename
+
+            );
 
         }
         catch (e) {
@@ -203,14 +266,15 @@ LOGICPULSE.Assets = {
         for (const asset of list) {
 
             this.load(
+
                 asset.folder,
                 asset.file
+
             );
 
         }
 
     },
-
 
     //==================================================
     // Create Sprite
@@ -220,11 +284,94 @@ LOGICPULSE.Assets = {
 
         const sprite = new Sprite();
 
-        sprite.bitmap = this.load(folder, filename);
+        sprite.bitmap = this.load(
+
+            folder,
+            filename
+
+        );
 
         return sprite;
 
     },
+
+    //==================================================
+    // Create Inventory Item Sprite (HD)
+    //==================================================
+
+    createItemSprite(item) {
+
+        if (!item) {
+
+            return new Sprite();
+
+        }
+
+        return this.createSprite(
+
+            this.Folders.Items,
+
+            `Item_${item.iconIndex}`
+
+        );
+
+    },
+
+    //==================================================
+    // Create RPG Maker Icon
+    //==================================================
+
+    createIcon(iconIndex) {
+
+        const sprite = new Sprite(
+
+            this.IconSet
+
+        );
+
+        const rect = this.iconRect(
+
+            iconIndex
+
+        );
+
+        sprite.setFrame(
+
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height
+
+        );
+
+        return sprite;
+
+    },
+
+    //==================================================
+    // Icon Rectangle
+    //==================================================
+
+    iconRect(iconIndex) {
+
+        const width = ImageManager.iconWidth;
+
+        const height = ImageManager.iconHeight;
+
+        return {
+
+            x: (iconIndex % 16) * width,
+
+            y: Math.floor(iconIndex / 16) * height,
+
+            width: width,
+
+            height: height
+
+        };
+
+    },
+
     //==================================================
     // Clear Cache
     //==================================================
@@ -273,6 +420,18 @@ LOGICPULSE.Layout = Object.freeze({
                 y: 144,
                 width: 672,
                 height: 480
+
+            }),
+
+            Icon: Object.freeze({
+
+                offset: Object.freeze({
+
+                    x: 0,
+
+                    y: 0
+
+                })
 
             }),
 
@@ -410,23 +569,9 @@ window.LOGICPULSE = window.LOGICPULSE || {};
 
 LOGICPULSE.InventoryProvider = {
 
-    _entries: {
+    _entries: {},
 
-        consumable: [],
-
-        material: [],
-
-        key: [],
-
-        weapon: [],
-
-        armor: []
-
-    },
-
-    //--------------------------------
-    // Refresh Cache
-    //--------------------------------
+    _dirty: true,
 
     //--------------------------------
     // Refresh Cache
@@ -434,21 +579,43 @@ LOGICPULSE.InventoryProvider = {
 
     refresh() {
 
-        this._entries = {
+        const Category = LOGICPULSE.Constants.Category;
 
-            consumable: [],
+        this._entries = {};
 
-            material: [],
+        for (const category of Object.values(Category)) {
 
-            key: [],
+            this._entries[category] = [];
 
-            weapon: [],
-
-            armor: []
-
-        };
+        }
 
         this.buildInventory();
+
+        this._dirty = false;
+
+    },
+
+    //--------------------------------
+    // Mark Dirty
+    //--------------------------------
+
+    markDirty() {
+
+        this._dirty = true;
+
+    },
+
+    //--------------------------------
+    // Ensure Ready
+    //--------------------------------
+
+    ensureReady() {
+
+        if (this._dirty) {
+
+            this.refresh();
+
+        }
 
     },
 
@@ -459,9 +626,7 @@ LOGICPULSE.InventoryProvider = {
     buildInventory() {
 
         this.buildItems();
-
         this.buildWeapons();
-
         this.buildArmors();
 
     },
@@ -492,21 +657,18 @@ LOGICPULSE.InventoryProvider = {
 
         const weapons = $gameParty.weapons();
 
+        const Category = LOGICPULSE.Constants.Category;
+
         for (const weapon of weapons) {
 
-            this._entries.weapon.push({
+            const entry = this.buildEntry(
 
-                id: weapon.id,
+                weapon,
+                Category.Weapon
 
-                item: weapon,
+            );
 
-                amount: $gameParty.numItems(weapon),
-
-                rarity: this.getRarity(weapon),
-
-                category: "weapon"
-
-            });
+            this._entries[Category.Weapon].push(entry);
 
         }
 
@@ -520,21 +682,18 @@ LOGICPULSE.InventoryProvider = {
 
         const armors = $gameParty.armors();
 
+        const Category = LOGICPULSE.Constants.Category;
+
         for (const armor of armors) {
 
-            this._entries.armor.push({
+            const entry = this.buildEntry(
 
-                id: armor.id,
+                armor,
+                Category.Armor
 
-                item: armor,
+            );
 
-                amount: $gameParty.numItems(armor),
-
-                rarity: this.getRarity(armor),
-
-                category: "armor"
-
-            });
+            this._entries[Category.Armor].push(entry);
 
         }
 
@@ -543,7 +702,6 @@ LOGICPULSE.InventoryProvider = {
     //--------------------------------
     // Build Entry
     //--------------------------------
-
 
     buildEntry(item, category = null) {
 
@@ -569,12 +727,117 @@ LOGICPULSE.InventoryProvider = {
 
     getItems(category) {
 
+        this.ensureReady();
+
         return this._entries[category] || [];
+
+    },
+
+    //--------------------------------
+    // Consumables
+    //--------------------------------
+
+    getConsumables() {
+
+        return this.getItems(
+
+            LOGICPULSE.Constants.Category.Consumable
+
+        );
+
+    },
+
+    //--------------------------------
+    // Materials
+    //--------------------------------
+
+    getMaterials() {
+
+        return this.getItems(
+
+            LOGICPULSE.Constants.Category.Material
+
+        );
+
+    },
+
+    //--------------------------------
+    // Key Items
+    //--------------------------------
+
+    getKeyItems() {
+
+        return this.getItems(
+
+            LOGICPULSE.Constants.Category.Key
+
+        );
+
+    },
+
+    //--------------------------------
+    // Hidden B
+    //--------------------------------
+
+    getHiddenItemsB() {
+
+        return this.getItems(
+
+            LOGICPULSE.Constants.Category.HiddenB
+
+        );
+
+    },
+
+    //--------------------------------
+    // Weapons
+    //--------------------------------
+
+    getWeapons() {
+
+        return this.getItems(
+
+            LOGICPULSE.Constants.Category.Weapon
+
+        );
+
+    },
+
+    //--------------------------------
+    // Armors
+    //--------------------------------
+
+    getArmors() {
+
+        return this.getItems(
+
+            LOGICPULSE.Constants.Category.Armor
+
+        );
+
+    },
+
+    //--------------------------------
+    // Has Items
+    //--------------------------------
+
+    hasItems(category) {
+
+        return this.getItems(category).length > 0;
 
     },
 
 
 
+    //--------------------------------
+    // Count
+    //--------------------------------
+
+    count(category) {
+
+        return this.getItems(category).length;
+
+    },
 
     //--------------------------------
     // Get All
@@ -582,37 +845,12 @@ LOGICPULSE.InventoryProvider = {
 
     getAll() {
 
-        return [
+        this.ensureReady();
 
-            ...this._entries.consumable,
-
-            ...this._entries.material,
-
-            ...this._entries.key,
-
-            ...this._entries.weapon,
-
-            ...this._entries.armor
-
-        ];
+        return Object.values(this._entries).flat();
 
     },
 
-    //--------------------------------
-    // Rarity
-    //--------------------------------
-
-    getRarity(item) {
-
-        if (!item.meta.rarity) {
-
-            return 1;
-
-        }
-
-        return Number(item.meta.rarity);
-
-    },
 
     //--------------------------------
     // Category
@@ -620,23 +858,76 @@ LOGICPULSE.InventoryProvider = {
 
     getCategory(item) {
 
-        if (item.itypeId === 1) {
+        const Category = LOGICPULSE.Constants.Category;
 
-            return "consumable";
+        switch (item.itypeId) {
+
+            case 1:
+                return Category.Consumable;
+
+            case 2:
+                return Category.Key;
+
+            case 3:
+                return Category.Material;
+
+            case 4:
+                return Category.HiddenB;
+
+            default:
+                return Category.Unknown;
 
         }
 
-        if (item.itypeId === 2) {
+    },
 
-            return "key";
 
-        }
+    //--------------------------------
+    // Rarity
+    //--------------------------------
 
-        return "material";
+    getRarity(item) {
 
-    }
+        return Number(item.meta.rarity || 1);
+
+    },
+
 
 };
+
+
+//=============================================================================
+// LPGamePartyHooks.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+
+//=============================================================================
+// Game Party Hooks
+//=============================================================================
+
+(() => {
+
+    const aliasGainItem = Game_Party.prototype.gainItem;
+
+    Game_Party.prototype.gainItem = function(item, amount, includeEquip) {
+
+        aliasGainItem.call(
+
+            this,
+            item,
+            amount,
+            includeEquip
+
+        );
+
+        LOGICPULSE.InventoryProvider.markDirty();
+
+
+
+    };
+
+})();
 
 
 //=============================================================================
@@ -841,7 +1132,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
         super();
 
-        this._rarity = options.rarity ?? 1;
+        this._entry = options.entry || null;
 
         this.move(
 
@@ -861,6 +1152,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     create() {
 
         this.createBackground();
+
+        this.createIcon();
 
     }
 
@@ -894,23 +1187,133 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     }
 
     //--------------------------------
-    // Helpers
+    // Icon
+    //--------------------------------
+
+    createIcon() {
+
+        const item = this.item();
+
+        if (!item) {
+
+            return;
+
+        }
+
+        this._icon = LOGICPULSE.Assets.createItemSprite(
+
+            item
+
+        );
+
+        const offset =
+
+            LOGICPULSE.Layout.Inventory.Grid.Icon.offset;
+
+        this._icon.x = offset.x;
+        this._icon.y = offset.y;
+
+        this.addChild(this._icon);
+
+    }
+
+    //--------------------------------
+    // Center Icon
+    //--------------------------------
+
+    centerIcon() {
+
+        const slotSize = 92;
+
+        const iconWidth = ImageManager.iconWidth;
+
+        const iconHeight = ImageManager.iconHeight;
+
+        this._icon.x = Math.floor(
+
+            (slotSize - iconWidth) / 2
+
+        );
+
+        this._icon.y = Math.floor(
+
+            (slotSize - iconHeight) / 2
+
+        );
+
+    }
+
+    //--------------------------------
+    // Background Image
     //--------------------------------
 
     getBackgroundImage() {
 
-        switch (this._rarity) {
+        switch (this.rarity()) {
 
             case 3:
+
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxLegendary;
 
             case 2:
+
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxRare;
 
             default:
+
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxCommon;
 
         }
+
+    }
+
+    //--------------------------------
+    // Entry
+    //--------------------------------
+
+    entry() {
+
+        return this._entry;
+
+    }
+
+    //--------------------------------
+    // Item
+    //--------------------------------
+
+    item() {
+
+        return this._entry?.item ?? null;
+
+    }
+
+    //--------------------------------
+    // Amount
+    //--------------------------------
+
+    amount() {
+
+        return this._entry?.amount ?? 0;
+
+    }
+
+    //--------------------------------
+    // Rarity
+    //--------------------------------
+
+    rarity() {
+
+        return this._entry?.rarity ?? 1;
+
+    }
+
+    //--------------------------------
+    // Category
+    //--------------------------------
+
+    category() {
+
+        return this._entry?.category ?? null;
 
     }
 
@@ -935,6 +1338,10 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         super();
 
         this._layout = layout;
+
+        this._category =
+
+            LOGICPULSE.Constants.Category.Consumable;
 
         this.create();
 
@@ -1018,38 +1425,114 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     buildGrid() {
 
-        const layout = this._layout;
+        this.clearSlots();
+        this.buildSlots();
 
-        const startX = layout.rect.x;
-        const startY = layout.rect.y;
+    }
 
-        const columns = layout.columns;
+    //--------------------------------
+    // Clear Slots
+    //--------------------------------
 
-        const rows = Math.floor(
+    clearSlots() {
 
-            layout.rect.height / layout.spacingY
+        this._slotLayer.removeChildren();
 
-        );
+    }
 
-        for (let row = 0; row < rows; row++) {
+    //--------------------------------
+    // Build Slots
+    //--------------------------------
 
-            for (let column = 0; column < columns; column++) {
+    buildSlots() {
 
-                const slot = new LOGICPULSE.UI.GridSlot({
+        const items = this.items();
 
-                    x: startX + (column * layout.spacingX),
+        for (let index = 0; index < items.length; index++) {
 
-                    y: startY + (row * layout.spacingY),
+            const position = this.slotPosition(index);
 
-                    rarity: 1
+            const entry = items[index];
 
-                });
+            const slot = new LOGICPULSE.UI.GridSlot({
 
-                this._slotLayer.addChild(slot);
+                x: position.x,
 
-            }
+                y: position.y,
+
+                entry: entry
+
+            });
+
+            this._slotLayer.addChild(slot);
 
         }
+
+    }
+
+    //--------------------------------
+    // Slot Position
+    //--------------------------------
+
+    slotPosition(index) {
+
+        const layout = this._layout;
+
+        return {
+
+            x:
+
+                layout.rect.x +
+                ((index % layout.columns) * layout.spacingX),
+
+            y:
+
+                layout.rect.y +
+                (Math.floor(index / layout.columns) * layout.spacingY)
+
+        };
+
+    }
+
+    //--------------------------------
+    // Set Category
+    //--------------------------------
+
+    setCategory(category) {
+
+        if (this._category === category) {
+
+            return;
+
+        }
+
+        this._category = category;
+
+        this.buildGrid();
+
+    }
+
+    //--------------------------------
+    // Category
+    //--------------------------------
+
+    category() {
+
+        return this._category;
+
+    }
+
+    //--------------------------------
+    // Items
+    //--------------------------------
+
+    items() {
+
+        return LOGICPULSE.InventoryProvider.getItems(
+
+            this._category
+
+        );
 
     }
 
@@ -1303,6 +1786,9 @@ LOGICPULSE.Scenes.Synthesizer = class {
 //=============================================================================
 
 window.LOGICPULSE = window.LOGICPULSE || {};
+
+LOGICPULSE.Assets.initialize();
+
 
 (() => {
 

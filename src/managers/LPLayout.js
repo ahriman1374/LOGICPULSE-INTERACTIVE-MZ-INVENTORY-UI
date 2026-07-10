@@ -34,6 +34,18 @@ LOGICPULSE.Layout = Object.freeze({
 
             }),
 
+            Icon: Object.freeze({
+
+                offset: Object.freeze({
+
+                    x: 0,
+
+                    y: 0
+
+                })
+
+            }),
+
             columns: 7,
 
             itemSize: 92,

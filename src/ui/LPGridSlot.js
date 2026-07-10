@@ -13,7 +13,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
         super();
 
-        this._rarity = options.rarity ?? 1;
+        this._entry = options.entry || null;
 
         this.move(
 
@@ -33,6 +33,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     create() {
 
         this.createBackground();
+
+        this.createIcon();
 
     }
 
@@ -66,23 +68,133 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     }
 
     //--------------------------------
-    // Helpers
+    // Icon
+    //--------------------------------
+
+    createIcon() {
+
+        const item = this.item();
+
+        if (!item) {
+
+            return;
+
+        }
+
+        this._icon = LOGICPULSE.Assets.createItemSprite(
+
+            item
+
+        );
+
+        const offset =
+
+            LOGICPULSE.Layout.Inventory.Grid.Icon.offset;
+
+        this._icon.x = offset.x;
+        this._icon.y = offset.y;
+
+        this.addChild(this._icon);
+
+    }
+
+    //--------------------------------
+    // Center Icon
+    //--------------------------------
+
+    centerIcon() {
+
+        const slotSize = 92;
+
+        const iconWidth = ImageManager.iconWidth;
+
+        const iconHeight = ImageManager.iconHeight;
+
+        this._icon.x = Math.floor(
+
+            (slotSize - iconWidth) / 2
+
+        );
+
+        this._icon.y = Math.floor(
+
+            (slotSize - iconHeight) / 2
+
+        );
+
+    }
+
+    //--------------------------------
+    // Background Image
     //--------------------------------
 
     getBackgroundImage() {
 
-        switch (this._rarity) {
+        switch (this.rarity()) {
 
             case 3:
+
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxLegendary;
 
             case 2:
+
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxRare;
 
             default:
+
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxCommon;
 
         }
+
+    }
+
+    //--------------------------------
+    // Entry
+    //--------------------------------
+
+    entry() {
+
+        return this._entry;
+
+    }
+
+    //--------------------------------
+    // Item
+    //--------------------------------
+
+    item() {
+
+        return this._entry?.item ?? null;
+
+    }
+
+    //--------------------------------
+    // Amount
+    //--------------------------------
+
+    amount() {
+
+        return this._entry?.amount ?? 0;
+
+    }
+
+    //--------------------------------
+    // Rarity
+    //--------------------------------
+
+    rarity() {
+
+        return this._entry?.rarity ?? 1;
+
+    }
+
+    //--------------------------------
+    // Category
+    //--------------------------------
+
+    category() {
+
+        return this._entry?.category ?? null;
 
     }
 

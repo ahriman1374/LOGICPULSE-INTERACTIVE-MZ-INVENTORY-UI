@@ -15,6 +15,10 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         this._layout = layout;
 
+        this._category =
+
+            LOGICPULSE.Constants.Category.Consumable;
+
         this.create();
 
     }
@@ -97,38 +101,114 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     buildGrid() {
 
-        const layout = this._layout;
+        this.clearSlots();
+        this.buildSlots();
 
-        const startX = layout.rect.x;
-        const startY = layout.rect.y;
+    }
 
-        const columns = layout.columns;
+    //--------------------------------
+    // Clear Slots
+    //--------------------------------
 
-        const rows = Math.floor(
+    clearSlots() {
 
-            layout.rect.height / layout.spacingY
+        this._slotLayer.removeChildren();
 
-        );
+    }
 
-        for (let row = 0; row < rows; row++) {
+    //--------------------------------
+    // Build Slots
+    //--------------------------------
 
-            for (let column = 0; column < columns; column++) {
+    buildSlots() {
 
-                const slot = new LOGICPULSE.UI.GridSlot({
+        const items = this.items();
 
-                    x: startX + (column * layout.spacingX),
+        for (let index = 0; index < items.length; index++) {
 
-                    y: startY + (row * layout.spacingY),
+            const position = this.slotPosition(index);
 
-                    rarity: 1
+            const entry = items[index];
 
-                });
+            const slot = new LOGICPULSE.UI.GridSlot({
 
-                this._slotLayer.addChild(slot);
+                x: position.x,
 
-            }
+                y: position.y,
+
+                entry: entry
+
+            });
+
+            this._slotLayer.addChild(slot);
 
         }
+
+    }
+
+    //--------------------------------
+    // Slot Position
+    //--------------------------------
+
+    slotPosition(index) {
+
+        const layout = this._layout;
+
+        return {
+
+            x:
+
+                layout.rect.x +
+                ((index % layout.columns) * layout.spacingX),
+
+            y:
+
+                layout.rect.y +
+                (Math.floor(index / layout.columns) * layout.spacingY)
+
+        };
+
+    }
+
+    //--------------------------------
+    // Set Category
+    //--------------------------------
+
+    setCategory(category) {
+
+        if (this._category === category) {
+
+            return;
+
+        }
+
+        this._category = category;
+
+        this.buildGrid();
+
+    }
+
+    //--------------------------------
+    // Category
+    //--------------------------------
+
+    category() {
+
+        return this._category;
+
+    }
+
+    //--------------------------------
+    // Items
+    //--------------------------------
+
+    items() {
+
+        return LOGICPULSE.InventoryProvider.getItems(
+
+            this._category
+
+        );
 
     }
 
