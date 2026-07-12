@@ -142,16 +142,6 @@ LOGICPULSE.Layout = Object.freeze({
 
         }),
 
-        Description: Object.freeze({
-
-            position: Object.freeze({
-
-                x: 912,
-                y: 480
-
-            })
-
-        })
 
     }),
 

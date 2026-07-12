@@ -20,6 +20,18 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         this._selectedIndex = 0;
 
+        this._scrollRow = 0;
+
+        this._visibleRows = Math.floor(
+
+            this._layout.rect.height /
+
+            this._layout.spacingY
+
+        );
+
+        this._scrollTargetY = 0;
+
         this._slots = [];
 
         this.create();
@@ -107,6 +119,8 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         this.clearSlots();
 
         this.buildSlots();
+
+        this.updateViewport();
 
         this.setSelectedIndex(
 
@@ -197,6 +211,16 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         this._category = category;
 
         this._selectedIndex = 0;
+
+        this._scrollRow = 0;
+
+        this._scrollTargetY = 0;
+
+        if (this._viewport) {
+
+            this._viewport.y = 0;
+
+        }
 
         this.buildGrid();
 
@@ -361,6 +385,142 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
                 i === this._selectedIndex
 
             );
+
+        }
+
+        this.updateViewport();
+
+    }
+
+    //--------------------------------
+    // Update Viewport
+    //--------------------------------
+
+    updateViewport() {
+
+        if (this._selectedIndex < 0) {
+
+            return;
+
+        }
+
+        const row = Math.floor(
+
+            this._selectedIndex /
+
+            this._layout.columns
+
+        );
+
+        const totalRows = Math.max(
+
+            1,
+
+            Math.ceil(
+
+                this.items().length /
+
+                this._layout.columns
+
+            )
+
+        );
+
+        const maxScrollRow = Math.max(
+
+            0,
+
+            totalRows -
+
+            this._visibleRows
+
+        );
+
+        if (row < this._scrollRow) {
+
+            this._scrollRow = row;
+
+        }
+
+        else if (
+
+            row >=
+
+            this._scrollRow +
+
+            this._visibleRows
+
+        ) {
+
+            this._scrollRow =
+
+                row -
+
+                this._visibleRows +
+
+                1;
+
+        }
+
+        this._scrollRow = Math.max(
+
+            0,
+
+            Math.min(
+
+                this._scrollRow,
+
+                maxScrollRow
+
+            )
+
+        );
+
+        this._scrollTargetY =
+
+            -(this._scrollRow *
+
+                this._layout.spacingY);
+
+    }
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+        const speed = 0.18;
+
+        if (
+
+            Math.abs(
+
+                this._viewport.y -
+
+                this._scrollTargetY
+
+            ) < 0.5
+
+        ) {
+
+            this._viewport.y =
+
+                this._scrollTargetY;
+
+        }
+
+        else {
+
+            this._viewport.y +=
+
+                (
+
+                    this._scrollTargetY -
+
+                    this._viewport.y
+
+                ) * speed;
 
         }
 

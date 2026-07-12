@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-12T05:02:35.444Z
+ * Build Date: 2026-07-12T05:54:56.658Z
  * ============================================================================
  */
 
@@ -560,16 +560,6 @@ LOGICPULSE.Layout = Object.freeze({
 
         }),
 
-        Description: Object.freeze({
-
-            position: Object.freeze({
-
-                x: 912,
-                y: 480
-
-            })
-
-        })
 
     }),
 
@@ -2305,6 +2295,12 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
         this._fontSize =
             options.fontSize ?? 20;
 
+        this._scroll = 0;
+
+        this._maxScroll = 0;
+
+        this._contentHeight = 0;
+
         this.move(
 
             options.x ?? 0,
@@ -2348,7 +2344,11 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
         this._maskGraphic.endFill();
 
-        this.addChild(this._maskGraphic);
+        this.addChild(
+
+            this._maskGraphic
+
+        );
 
     }
 
@@ -2399,9 +2399,9 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
         this._textSprite.bitmap.clear();
 
-        this._textSprite.y = 0;
-
         this.drawWrappedText(text);
+
+        this.resetScroll();
 
     }
 
@@ -2491,7 +2491,19 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
             );
 
+            y += this._lineHeight;
+
         }
+
+        this._contentHeight = y;
+
+        this._maxScroll = Math.max(
+
+            0,
+
+            this._contentHeight - this._height
+
+        );
 
     }
 
@@ -2501,7 +2513,49 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
     scroll(amount) {
 
-        this._textSprite.y += amount;
+        if (this._maxScroll <= 0) {
+
+            return;
+
+        }
+
+        this._scroll += amount;
+
+        if (this._scroll < 0) {
+
+            this._scroll = 0;
+
+        }
+
+        if (this._scroll > this._maxScroll) {
+
+            this._scroll = this._maxScroll;
+
+        }
+
+        this._textSprite.y = -this._scroll;
+
+    }
+
+    //--------------------------------
+    // Can Scroll
+    //--------------------------------
+
+    canScroll() {
+
+        return this._maxScroll > 0;
+
+    }
+
+    //--------------------------------
+    // Reset Scroll
+    //--------------------------------
+
+    resetScroll() {
+
+        this._scroll = 0;
+
+        this._textSprite.y = 0;
 
     }
 
@@ -2880,6 +2934,18 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         this._selectedIndex = 0;
 
+        this._scrollRow = 0;
+
+        this._visibleRows = Math.floor(
+
+            this._layout.rect.height /
+
+            this._layout.spacingY
+
+        );
+
+        this._scrollTargetY = 0;
+
         this._slots = [];
 
         this.create();
@@ -2967,6 +3033,8 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         this.clearSlots();
 
         this.buildSlots();
+
+        this.updateViewport();
 
         this.setSelectedIndex(
 
@@ -3057,6 +3125,16 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         this._category = category;
 
         this._selectedIndex = 0;
+
+        this._scrollRow = 0;
+
+        this._scrollTargetY = 0;
+
+        if (this._viewport) {
+
+            this._viewport.y = 0;
+
+        }
 
         this.buildGrid();
 
@@ -3221,6 +3299,142 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
                 i === this._selectedIndex
 
             );
+
+        }
+
+        this.updateViewport();
+
+    }
+
+    //--------------------------------
+    // Update Viewport
+    //--------------------------------
+
+    updateViewport() {
+
+        if (this._selectedIndex < 0) {
+
+            return;
+
+        }
+
+        const row = Math.floor(
+
+            this._selectedIndex /
+
+            this._layout.columns
+
+        );
+
+        const totalRows = Math.max(
+
+            1,
+
+            Math.ceil(
+
+                this.items().length /
+
+                this._layout.columns
+
+            )
+
+        );
+
+        const maxScrollRow = Math.max(
+
+            0,
+
+            totalRows -
+
+            this._visibleRows
+
+        );
+
+        if (row < this._scrollRow) {
+
+            this._scrollRow = row;
+
+        }
+
+        else if (
+
+            row >=
+
+            this._scrollRow +
+
+            this._visibleRows
+
+        ) {
+
+            this._scrollRow =
+
+                row -
+
+                this._visibleRows +
+
+                1;
+
+        }
+
+        this._scrollRow = Math.max(
+
+            0,
+
+            Math.min(
+
+                this._scrollRow,
+
+                maxScrollRow
+
+            )
+
+        );
+
+        this._scrollTargetY =
+
+            -(this._scrollRow *
+
+                this._layout.spacingY);
+
+    }
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+        const speed = 0.18;
+
+        if (
+
+            Math.abs(
+
+                this._viewport.y -
+
+                this._scrollTargetY
+
+            ) < 0.5
+
+        ) {
+
+            this._viewport.y =
+
+                this._scrollTargetY;
+
+        }
+
+        else {
+
+            this._viewport.y +=
+
+                (
+
+                    this._scrollTargetY -
+
+                    this._viewport.y
+
+                ) * speed;
 
         }
 
@@ -3729,6 +3943,12 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         if (this._controller) {
 
             this._controller.update();
+
+        }
+
+        if (this._grid) {
+
+            this._grid.update();
 
         }
 

@@ -122,6 +122,12 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 
         }
 
+        if (this._grid) {
+
+            this._grid.update();
+
+        }
+
     }
 
     //--------------------------------

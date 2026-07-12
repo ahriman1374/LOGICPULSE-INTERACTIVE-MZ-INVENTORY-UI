@@ -28,6 +28,12 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
         this._fontSize =
             options.fontSize ?? 20;
 
+        this._scroll = 0;
+
+        this._maxScroll = 0;
+
+        this._contentHeight = 0;
+
         this.move(
 
             options.x ?? 0,
@@ -71,7 +77,11 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
         this._maskGraphic.endFill();
 
-        this.addChild(this._maskGraphic);
+        this.addChild(
+
+            this._maskGraphic
+
+        );
 
     }
 
@@ -122,9 +132,9 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
         this._textSprite.bitmap.clear();
 
-        this._textSprite.y = 0;
-
         this.drawWrappedText(text);
+
+        this.resetScroll();
 
     }
 
@@ -214,7 +224,19 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
             );
 
+            y += this._lineHeight;
+
         }
+
+        this._contentHeight = y;
+
+        this._maxScroll = Math.max(
+
+            0,
+
+            this._contentHeight - this._height
+
+        );
 
     }
 
@@ -224,7 +246,49 @@ LOGICPULSE.UI.ScrollText = class extends LOGICPULSE.UI.Element {
 
     scroll(amount) {
 
-        this._textSprite.y += amount;
+        if (this._maxScroll <= 0) {
+
+            return;
+
+        }
+
+        this._scroll += amount;
+
+        if (this._scroll < 0) {
+
+            this._scroll = 0;
+
+        }
+
+        if (this._scroll > this._maxScroll) {
+
+            this._scroll = this._maxScroll;
+
+        }
+
+        this._textSprite.y = -this._scroll;
+
+    }
+
+    //--------------------------------
+    // Can Scroll
+    //--------------------------------
+
+    canScroll() {
+
+        return this._maxScroll > 0;
+
+    }
+
+    //--------------------------------
+    // Reset Scroll
+    //--------------------------------
+
+    resetScroll() {
+
+        this._scroll = 0;
+
+        this._textSprite.y = 0;
 
     }
 
