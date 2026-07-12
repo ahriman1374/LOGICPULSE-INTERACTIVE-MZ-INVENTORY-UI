@@ -32,7 +32,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.ConsumableIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableHeader
 
             },
 
@@ -45,7 +48,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.MaterialIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.MaterialHover
+                LOGICPULSE.Assets.Images.Sidebar.MaterialHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.MaterialHeader
 
             },
 
@@ -58,7 +64,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.KeyMaterialIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHeader
 
             },
 
@@ -70,7 +79,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.SynthesizerIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHeader
 
             }
 
@@ -87,6 +99,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
     create() {
 
         this.createBackground();
+
+        this.createHeaderFrame();
+
+        this.createKeyboardHint();
 
         this.createTabs();
 
@@ -105,6 +121,64 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
             LOGICPULSE.Assets.Folders.Sidebar,
 
             LOGICPULSE.Assets.Images.Sidebar.Box
+
+        );
+
+    }
+
+    //--------------------------------
+    // Header Frame
+    //--------------------------------
+
+    createHeaderFrame() {
+
+        this._headerFrame = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            this._definitions[0].header
+
+        );
+
+        this.addChild(this._headerFrame);
+
+    }
+
+    //--------------------------------
+    // Keyboard Hint
+    //--------------------------------
+
+    createKeyboardHint() {
+
+        this._keyboardHint = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyIdle
+
+        );
+
+        this.addChild(this._keyboardHint);
+
+        LOGICPULSE.Animator.bitmapSwap(
+
+            this._keyboardHint,
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            [
+
+                LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyIdle,
+
+                LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyHover
+
+            ],
+
+            {
+
+                interval: 40
+
+            }
 
         );
 
@@ -203,7 +277,24 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
         }
 
+        this._headerFrame.bitmap =
+
+            LOGICPULSE.Assets.load(
+
+                LOGICPULSE.Assets.Folders.Sidebar,
+
+                this._definitions[
+
+                    this._selectedIndex
+
+                    ].header
+
+            );
+
     }
+
+
+
 
     //--------------------------------
     // Select Index

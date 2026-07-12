@@ -112,6 +112,10 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
     // Update
     //--------------------------------
 
+    //--------------------------------
+    // Update
+    //--------------------------------
+
     update() {
 
         super.update();
@@ -125,6 +129,12 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         if (this._grid) {
 
             this._grid.update();
+
+        }
+
+        if (this._sidebar) {
+
+            this._sidebar.update();
 
         }
 

@@ -16,9 +16,13 @@ LOGICPULSE.Animator = {
 
     update() {
 
-        for (const animation of this._animations) {
+        for (let i = this._animations.length - 1; i >= 0; i--) {
+
+            const animation = this._animations[i];
 
             if (!animation.target || animation.target.destroyed) {
+
+                this._animations.splice(i, 1);
 
                 continue;
 
@@ -29,6 +33,12 @@ LOGICPULSE.Animator = {
                 case "pulse":
 
                     this.updatePulse(animation);
+
+                    break;
+
+                case "bitmapSwap":
+
+                    this.updateBitmapSwap(animation);
 
                     break;
 
@@ -86,6 +96,67 @@ LOGICPULSE.Animator = {
     },
 
     //--------------------------------
+    // Bitmap Swap
+    //--------------------------------
+
+    bitmapSwap(target, folder, frames, options = {}) {
+
+        if (!target) {
+
+            return;
+
+        }
+
+        if (!frames || frames.length < 2) {
+
+            return;
+
+        }
+
+        const existing = this._animations.find(
+
+            animation =>
+
+                animation.target === target &&
+                animation.type === "bitmapSwap"
+
+        );
+
+        if (existing) {
+
+            return;
+
+        }
+
+        target.bitmap = LOGICPULSE.Assets.load(
+
+            folder,
+
+            frames[0]
+
+        );
+
+        this._animations.push({
+
+            type: "bitmapSwap",
+
+            target: target,
+
+            folder: folder,
+
+            frames: frames,
+
+            frameIndex: 0,
+
+            timer: 0,
+
+            interval: options.interval ?? 30
+
+        });
+
+    },
+
+    //--------------------------------
     // Stop
     //--------------------------------
 
@@ -97,11 +168,13 @@ LOGICPULSE.Animator = {
 
         );
 
-        if (target) {
+        if (!target) {
 
-            target.alpha = 1.0;
+            return;
 
         }
+
+        target.alpha = 1.0;
 
     },
 
@@ -151,7 +224,41 @@ LOGICPULSE.Animator = {
 
         }
 
-    }
+    },
+
+    //--------------------------------
+    // Bitmap Swap Update
+    //--------------------------------
+
+    updateBitmapSwap(animation) {
+
+        animation.timer++;
+
+        if (animation.timer < animation.interval) {
+
+            return;
+
+        }
+
+        animation.timer = 0;
+
+        animation.frameIndex++;
+
+        if (animation.frameIndex >= animation.frames.length) {
+
+            animation.frameIndex = 0;
+
+        }
+
+        animation.target.bitmap = LOGICPULSE.Assets.load(
+
+            animation.folder,
+
+            animation.frames[animation.frameIndex]
+
+        );
+
+    },
 
 };
 

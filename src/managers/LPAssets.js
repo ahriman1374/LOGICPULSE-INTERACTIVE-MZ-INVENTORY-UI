@@ -61,15 +61,29 @@ LOGICPULSE.Assets = {
 
             ConsumableIdle: "Sidebar Consumable Tab Idle",
             ConsumableHover: "Sidebar Consumable Tab Hover",
+            ConsumableHeader: "Frame Consumables",
 
             MaterialIdle: "Sidebar Material Tab Idle",
             MaterialHover: "Sidebar Material Tab Hover",
+            MaterialHeader: "Frame Materials",
 
             KeyMaterialIdle: "Sidebar Key Materials Tab Idle",
             KeyMaterialHover: "Sidebar Key Materials Tab Hover",
+            KeyMaterialHeader: "Frame Key Materials",
 
             SynthesizerIdle: "Sidebar Synthesizer Tab Idle",
-            SynthesizerHover: "Sidebar Synthesizer Tab Hover"
+            SynthesizerHover: "Sidebar Synthesizer Tab Hover",
+            SynthesizerHeader:"Frame Synthesizer",
+
+            KeyboardTABKeyIdle:"Sidebar Tab keyboard Key Idle",
+            KeyboardTABKeyHover: "Sidebar Tab keyboard Key Hover",
+
+
+
+
+
+
+
 
         })
 

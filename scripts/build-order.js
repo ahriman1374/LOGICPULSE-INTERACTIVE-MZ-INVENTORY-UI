@@ -18,6 +18,7 @@ module.exports = [
     "src/managers/LPInventoryProvider.js",
     "src/managers/LPInventoryState.js",
     "src/managers/LPInventoryController.js",
+    "src/managers/LPSidebarController.js",
     "src/managers/LPGamePartyHooks.js",
     "src/managers/LPRecipeManager.js",
     "src/managers/LPCraftManager.js",

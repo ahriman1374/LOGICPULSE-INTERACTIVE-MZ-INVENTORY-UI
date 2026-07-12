@@ -440,6 +440,55 @@ LOGICPULSE.InventoryProvider = {
     },
 
     //--------------------------------
+    // Show Use Button
+    //--------------------------------
+
+    showUseButton(item) {
+
+        if (!item) {
+
+            return false;
+
+        }
+
+        // Weapons / Armors
+        if (DataManager.isWeapon(item)) {
+
+            return false;
+
+        }
+
+        if (DataManager.isArmor(item)) {
+
+            return false;
+
+        }
+
+        // Only normal items
+        if (!DataManager.isItem(item)) {
+
+            return false;
+
+        }
+
+        // Only regular consumable items
+        if (item.itypeId !== 1) {
+
+            return false;
+
+        }
+
+        // Database:
+        // 0 = Always
+        // 1 = Battle
+        // 2 = Menu
+        // 3 = Never
+
+        return item.occasion !== 3;
+
+    },
+
+    //--------------------------------
     // Use Item
     //--------------------------------
 

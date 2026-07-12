@@ -217,6 +217,12 @@ LOGICPULSE.InventoryController = class {
 
                 );
 
+                if (sidebar.refreshVisuals) {
+
+                    sidebar.refreshVisuals();
+
+                }
+
                 this.onSelectionChanged();
 
                 return;

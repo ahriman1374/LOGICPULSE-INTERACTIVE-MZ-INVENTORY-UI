@@ -185,7 +185,15 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
 
             item.description
 
-        );
+    );
+
+        this._useButton.visible =
+
+            LOGICPULSE.InventoryProvider.showUseButton(
+
+                item
+
+            );
 
     }
 
@@ -288,6 +296,8 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
         this._nameText.setText("");
 
         this._descriptionText.setText("");
+
+        this._useButton.visible = false;
 
     }
 

@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-12T16:02:44.480Z
+ * Build Date: 2026-07-12T22:28:49.957Z
  * ============================================================================
  */
 
@@ -159,15 +159,29 @@ LOGICPULSE.Assets = {
 
             ConsumableIdle: "Sidebar Consumable Tab Idle",
             ConsumableHover: "Sidebar Consumable Tab Hover",
+            ConsumableHeader: "Frame Consumables",
 
             MaterialIdle: "Sidebar Material Tab Idle",
             MaterialHover: "Sidebar Material Tab Hover",
+            MaterialHeader: "Frame Materials",
 
             KeyMaterialIdle: "Sidebar Key Materials Tab Idle",
             KeyMaterialHover: "Sidebar Key Materials Tab Hover",
+            KeyMaterialHeader: "Frame Key Materials",
 
             SynthesizerIdle: "Sidebar Synthesizer Tab Idle",
-            SynthesizerHover: "Sidebar Synthesizer Tab Hover"
+            SynthesizerHover: "Sidebar Synthesizer Tab Hover",
+            SynthesizerHeader:"Frame Synthesizer",
+
+            KeyboardTABKeyIdle:"Sidebar Tab keyboard Key Idle",
+            KeyboardTABKeyHover: "Sidebar Tab keyboard Key Hover",
+
+
+
+
+
+
+
 
         })
 
@@ -1300,6 +1314,55 @@ LOGICPULSE.InventoryProvider = {
     },
 
     //--------------------------------
+    // Show Use Button
+    //--------------------------------
+
+    showUseButton(item) {
+
+        if (!item) {
+
+            return false;
+
+        }
+
+        // Weapons / Armors
+        if (DataManager.isWeapon(item)) {
+
+            return false;
+
+        }
+
+        if (DataManager.isArmor(item)) {
+
+            return false;
+
+        }
+
+        // Only normal items
+        if (!DataManager.isItem(item)) {
+
+            return false;
+
+        }
+
+        // Only regular consumable items
+        if (item.itypeId !== 1) {
+
+            return false;
+
+        }
+
+        // Database:
+        // 0 = Always
+        // 1 = Battle
+        // 2 = Menu
+        // 3 = Never
+
+        return item.occasion !== 3;
+
+    },
+
+    //--------------------------------
     // Use Item
     //--------------------------------
 
@@ -1680,6 +1743,12 @@ LOGICPULSE.InventoryController = class {
 
                 );
 
+                if (sidebar.refreshVisuals) {
+
+                    sidebar.refreshVisuals();
+
+                }
+
                 this.onSelectionChanged();
 
                 return;
@@ -1790,6 +1859,72 @@ LOGICPULSE.InventoryController = class {
 
 
 //=============================================================================
+// LPSidebarController.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+
+//=============================================================================
+// Sidebar Controller
+//=============================================================================
+
+LOGICPULSE.SidebarController = class {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor(sidebar) {
+
+        this._sidebar = sidebar;
+
+        this._frameTimer = 0;
+        this._keyboardTimer = 0;
+
+    }
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+        this.updateKeyboardHint();
+
+    }
+
+    //--------------------------------
+    // Keyboard Hint Animation
+    //--------------------------------
+
+    updateKeyboardHint() {
+
+        this._keyboardTimer++;
+
+        if (this._keyboardTimer >= 30) {
+
+            this._keyboardTimer = 0;
+
+            this._sidebar.toggleKeyboardHint();
+
+        }
+
+    }
+
+    //--------------------------------
+    // Refresh Active Tab
+    //--------------------------------
+
+    refresh() {
+
+        this._sidebar.refresh();
+
+    }
+
+};
+
+
+//=============================================================================
 // LPGamePartyHooks.js
 //=============================================================================
 
@@ -1861,9 +1996,13 @@ LOGICPULSE.Animator = {
 
     update() {
 
-        for (const animation of this._animations) {
+        for (let i = this._animations.length - 1; i >= 0; i--) {
+
+            const animation = this._animations[i];
 
             if (!animation.target || animation.target.destroyed) {
+
+                this._animations.splice(i, 1);
 
                 continue;
 
@@ -1874,6 +2013,12 @@ LOGICPULSE.Animator = {
                 case "pulse":
 
                     this.updatePulse(animation);
+
+                    break;
+
+                case "bitmapSwap":
+
+                    this.updateBitmapSwap(animation);
 
                     break;
 
@@ -1931,6 +2076,67 @@ LOGICPULSE.Animator = {
     },
 
     //--------------------------------
+    // Bitmap Swap
+    //--------------------------------
+
+    bitmapSwap(target, folder, frames, options = {}) {
+
+        if (!target) {
+
+            return;
+
+        }
+
+        if (!frames || frames.length < 2) {
+
+            return;
+
+        }
+
+        const existing = this._animations.find(
+
+            animation =>
+
+                animation.target === target &&
+                animation.type === "bitmapSwap"
+
+        );
+
+        if (existing) {
+
+            return;
+
+        }
+
+        target.bitmap = LOGICPULSE.Assets.load(
+
+            folder,
+
+            frames[0]
+
+        );
+
+        this._animations.push({
+
+            type: "bitmapSwap",
+
+            target: target,
+
+            folder: folder,
+
+            frames: frames,
+
+            frameIndex: 0,
+
+            timer: 0,
+
+            interval: options.interval ?? 30
+
+        });
+
+    },
+
+    //--------------------------------
     // Stop
     //--------------------------------
 
@@ -1942,11 +2148,13 @@ LOGICPULSE.Animator = {
 
         );
 
-        if (target) {
+        if (!target) {
 
-            target.alpha = 1.0;
+            return;
 
         }
+
+        target.alpha = 1.0;
 
     },
 
@@ -1996,7 +2204,41 @@ LOGICPULSE.Animator = {
 
         }
 
-    }
+    },
+
+    //--------------------------------
+    // Bitmap Swap Update
+    //--------------------------------
+
+    updateBitmapSwap(animation) {
+
+        animation.timer++;
+
+        if (animation.timer < animation.interval) {
+
+            return;
+
+        }
+
+        animation.timer = 0;
+
+        animation.frameIndex++;
+
+        if (animation.frameIndex >= animation.frames.length) {
+
+            animation.frameIndex = 0;
+
+        }
+
+        animation.target.bitmap = LOGICPULSE.Assets.load(
+
+            animation.folder,
+
+            animation.frames[animation.frameIndex]
+
+        );
+
+    },
 
 };
 
@@ -3607,7 +3849,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.ConsumableIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableHeader
 
             },
 
@@ -3620,7 +3865,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.MaterialIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.MaterialHover
+                LOGICPULSE.Assets.Images.Sidebar.MaterialHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.MaterialHeader
 
             },
 
@@ -3633,7 +3881,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.KeyMaterialIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHeader
 
             },
 
@@ -3645,7 +3896,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
                 LOGICPULSE.Assets.Images.Sidebar.SynthesizerIdle,
 
                 hover:
-                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover,
+
+                header:
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHeader
 
             }
 
@@ -3662,6 +3916,10 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
     create() {
 
         this.createBackground();
+
+        this.createHeaderFrame();
+
+        this.createKeyboardHint();
 
         this.createTabs();
 
@@ -3680,6 +3938,64 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
             LOGICPULSE.Assets.Folders.Sidebar,
 
             LOGICPULSE.Assets.Images.Sidebar.Box
+
+        );
+
+    }
+
+    //--------------------------------
+    // Header Frame
+    //--------------------------------
+
+    createHeaderFrame() {
+
+        this._headerFrame = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            this._definitions[0].header
+
+        );
+
+        this.addChild(this._headerFrame);
+
+    }
+
+    //--------------------------------
+    // Keyboard Hint
+    //--------------------------------
+
+    createKeyboardHint() {
+
+        this._keyboardHint = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyIdle
+
+        );
+
+        this.addChild(this._keyboardHint);
+
+        LOGICPULSE.Animator.bitmapSwap(
+
+            this._keyboardHint,
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            [
+
+                LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyIdle,
+
+                LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyHover
+
+            ],
+
+            {
+
+                interval: 40
+
+            }
 
         );
 
@@ -3778,7 +4094,24 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
         }
 
+        this._headerFrame.bitmap =
+
+            LOGICPULSE.Assets.load(
+
+                LOGICPULSE.Assets.Folders.Sidebar,
+
+                this._definitions[
+
+                    this._selectedIndex
+
+                    ].header
+
+            );
+
     }
+
+
+
 
     //--------------------------------
     // Select Index
@@ -4263,7 +4596,15 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
 
             item.description
 
-        );
+    );
+
+        this._useButton.visible =
+
+            LOGICPULSE.InventoryProvider.showUseButton(
+
+                item
+
+            );
 
     }
 
@@ -4366,6 +4707,8 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
         this._nameText.setText("");
 
         this._descriptionText.setText("");
+
+        this._useButton.visible = false;
 
     }
 
@@ -4488,6 +4831,10 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
     // Update
     //--------------------------------
 
+    //--------------------------------
+    // Update
+    //--------------------------------
+
     update() {
 
         super.update();
@@ -4501,6 +4848,12 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         if (this._grid) {
 
             this._grid.update();
+
+        }
+
+        if (this._sidebar) {
+
+            this._sidebar.update();
 
         }
 
