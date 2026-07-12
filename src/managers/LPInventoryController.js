@@ -152,6 +152,96 @@ LOGICPULSE.InventoryController = class {
     }
 
     //--------------------------------
+    // Next Category
+    //--------------------------------
+
+    nextCategory() {
+
+        this.changeCategory(1);
+
+    }
+
+    //--------------------------------
+    // Previous Category
+    //--------------------------------
+
+    previousCategory() {
+
+        this.changeCategory(-1);
+
+    }
+
+    //--------------------------------
+    // Change Category
+    //--------------------------------
+
+    changeCategory(direction) {
+
+        const sidebar = this.sidebar();
+
+        if (!sidebar) {
+
+            return;
+
+        }
+
+        const count = sidebar.categoryCount();
+
+        let index = sidebar.selectedIndex();
+
+        for (let i = 0; i < count; i++) {
+
+            index += direction;
+
+            if (index < 0) {
+
+                index = count - 1;
+
+            }
+
+            else if (index >= count) {
+
+                index = 0;
+
+            }
+
+            const definition = sidebar.definition(index);
+
+            if (this.isCategoryAvailable(definition.category)) {
+
+                sidebar.select(index);
+
+                this.grid().setCategory(
+
+                    definition.category
+
+                );
+
+                this.onSelectionChanged();
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    //--------------------------------
+    // Category Available
+    //--------------------------------
+
+    isCategoryAvailable(category) {
+
+        return LOGICPULSE.InventoryProvider.hasCategoryContent(
+
+            category
+
+        );
+
+    }
+
+    //--------------------------------
     // Selection Changed
     //--------------------------------
 
@@ -190,26 +280,6 @@ LOGICPULSE.InventoryController = class {
             this._scene.onCancel();
 
         }
-
-    }
-
-    //--------------------------------
-    // Next Category
-    //--------------------------------
-
-    nextCategory() {
-
-        // Will be implemented when Sidebar is finished.
-
-    }
-
-    //--------------------------------
-    // Previous Category
-    //--------------------------------
-
-    previousCategory() {
-
-        // Will be implemented when Sidebar is finished.
 
     }
 

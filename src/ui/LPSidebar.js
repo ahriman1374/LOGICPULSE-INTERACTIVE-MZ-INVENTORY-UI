@@ -9,19 +9,88 @@ LOGICPULSE.UI = LOGICPULSE.UI || {};
 
 LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
     constructor() {
 
         super();
 
+        this._selectedIndex = 0;
+
+        this._tabs = [];
+
+        this._definitions = [
+
+            {
+
+                category:
+                LOGICPULSE.Constants.Category.Consumable,
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover
+
+            },
+
+            {
+
+                category:
+                LOGICPULSE.Constants.Category.Material,
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.MaterialIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.MaterialHover
+
+            },
+
+            {
+
+                category:
+                LOGICPULSE.Constants.Category.Key,
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover
+
+            },
+
+            {
+
+                category: "synthesizer",
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover
+
+            }
+
+        ];
+
         this.create();
 
     }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
 
     create() {
 
         this.createBackground();
 
         this.createTabs();
+
+        this.refresh();
 
     }
 
@@ -34,7 +103,8 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
         this._background = this.createSprite(
 
             LOGICPULSE.Assets.Folders.Sidebar,
-            "Sidebar box"
+
+            LOGICPULSE.Assets.Images.Sidebar.Box
 
         );
 
@@ -46,29 +116,216 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
     createTabs() {
 
-        this._tabs = [];
+        const layout =
 
-        const tabNames = [
+            LOGICPULSE.Layout.Inventory.Sidebar;
 
-            "Consumable",
-            "Material",
-            "Key Materials",
-            "Synthesizer"
+        for (
 
-        ];
+            let i = 0;
 
-        for (const name of tabNames) {
+            i < this._definitions.length;
+
+            i++
+
+        ) {
+
+            const def =
+
+                this._definitions[i];
 
             const sprite = this.createSprite(
 
                 LOGICPULSE.Assets.Folders.Sidebar,
-                `Sidebar ${name} Tab Idle`
+
+                def.idle
 
             );
+
+            sprite.x =
+
+                layout.tabs.x;
+
+            sprite.y =
+
+                layout.tabs.y +
+
+                i * layout.tabs.spacing;
+
+            this.addChild(sprite);
 
             this._tabs.push(sprite);
 
         }
+
+    }
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+        for (
+
+            let i = 0;
+
+            i < this._tabs.length;
+
+            i++
+
+        ) {
+
+            const sprite =
+
+                this._tabs[i];
+
+            const def =
+
+                this._definitions[i];
+
+            const image =
+
+                i === this._selectedIndex
+
+                    ? def.hover
+                    : def.idle;
+
+            sprite.bitmap =
+
+                LOGICPULSE.Assets.load(
+
+                    LOGICPULSE.Assets.Folders.Sidebar,
+
+                    image
+
+                );
+
+        }
+
+    }
+
+    //--------------------------------
+    // Select Index
+    //--------------------------------
+
+    select(index) {
+
+        index = Math.max(
+
+            0,
+
+            Math.min(
+
+                index,
+
+                this._definitions.length - 1
+
+            )
+
+        );
+
+        if (
+
+            index === this._selectedIndex
+
+        ) {
+
+            return;
+
+        }
+
+        this._selectedIndex = index;
+
+        this.refresh();
+
+    }
+
+    //--------------------------------
+    // Next
+    //--------------------------------
+
+    next() {
+
+        this.select(
+
+            (this._selectedIndex + 1)
+
+            %
+
+            this._definitions.length
+
+        );
+
+    }
+
+    //--------------------------------
+    // Previous
+    //--------------------------------
+
+    previous() {
+
+        this.select(
+
+            (
+
+                this._selectedIndex -
+
+                1 +
+
+                this._definitions.length
+
+            )
+
+            %
+
+            this._definitions.length
+
+        );
+
+    }
+
+    //--------------------------------
+    // Selected Index
+    //--------------------------------
+
+    selectedIndex() {
+
+        return this._selectedIndex;
+
+    }
+
+    //--------------------------------
+    // Selected Category
+    //--------------------------------
+
+    selectedCategory() {
+
+        return this._definitions[
+
+            this._selectedIndex
+
+            ].category;
+
+    }
+
+    //--------------------------------
+    // Category Count
+    //--------------------------------
+
+    categoryCount() {
+
+        return this._definitions.length;
+
+    }
+
+    //--------------------------------
+    // Definition
+    //--------------------------------
+
+    definition(index) {
+
+        return this._definitions[index];
 
     }
 

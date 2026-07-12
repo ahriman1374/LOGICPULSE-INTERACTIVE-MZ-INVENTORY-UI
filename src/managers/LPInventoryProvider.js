@@ -268,6 +268,48 @@ LOGICPULSE.InventoryProvider = {
 
     },
 
+    //--------------------------------
+    // Has Recipes
+    //--------------------------------
+
+    hasRecipes() {
+
+        // Placeholder until the Synthesizer
+        // system is implemented.
+
+        return false;
+
+    },
+
+    //--------------------------------
+    // Has Category Content
+    //--------------------------------
+
+    hasCategoryContent(category) {
+
+        switch (category) {
+
+            case LOGICPULSE.Constants.Category.Consumable:
+            case LOGICPULSE.Constants.Category.Material:
+            case LOGICPULSE.Constants.Category.Key:
+            case LOGICPULSE.Constants.Category.HiddenB:
+            case LOGICPULSE.Constants.Category.Weapon:
+            case LOGICPULSE.Constants.Category.Armor:
+
+                return this.hasItems(category);
+
+            case "synthesizer":
+
+                return this.hasRecipes();
+
+            default:
+
+                return false;
+
+        }
+
+    },
+
 
 
     //--------------------------------

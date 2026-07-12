@@ -35,6 +35,7 @@ module.exports = [
     "src/ui/LPGridSlot.js",
     "src/ui/LPGrid.js",
     "src/ui/LPSidebar.js",
+    "src/ui/LPSidebarTab.js",
     "src/ui/LPShowcase.js",
 
     // Scenes

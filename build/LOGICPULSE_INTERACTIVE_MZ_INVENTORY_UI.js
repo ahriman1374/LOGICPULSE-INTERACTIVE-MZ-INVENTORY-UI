@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-12T05:54:56.658Z
+ * Build Date: 2026-07-12T16:02:44.480Z
  * ============================================================================
  */
 
@@ -487,6 +487,22 @@ LOGICPULSE.Layout = Object.freeze({
             align: "right",
 
             fontSize: 18
+
+        }),
+
+        Sidebar: Object.freeze({
+
+            x: 0,
+            y: 0,
+
+            tabs: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+                spacing: 0
+
+            })
 
         }),
 
@@ -1112,6 +1128,48 @@ LOGICPULSE.InventoryProvider = {
 
     },
 
+    //--------------------------------
+    // Has Recipes
+    //--------------------------------
+
+    hasRecipes() {
+
+        // Placeholder until the Synthesizer
+        // system is implemented.
+
+        return false;
+
+    },
+
+    //--------------------------------
+    // Has Category Content
+    //--------------------------------
+
+    hasCategoryContent(category) {
+
+        switch (category) {
+
+            case LOGICPULSE.Constants.Category.Consumable:
+            case LOGICPULSE.Constants.Category.Material:
+            case LOGICPULSE.Constants.Category.Key:
+            case LOGICPULSE.Constants.Category.HiddenB:
+            case LOGICPULSE.Constants.Category.Weapon:
+            case LOGICPULSE.Constants.Category.Armor:
+
+                return this.hasItems(category);
+
+            case "synthesizer":
+
+                return this.hasRecipes();
+
+            default:
+
+                return false;
+
+        }
+
+    },
+
 
 
     //--------------------------------
@@ -1557,6 +1615,96 @@ LOGICPULSE.InventoryController = class {
     }
 
     //--------------------------------
+    // Next Category
+    //--------------------------------
+
+    nextCategory() {
+
+        this.changeCategory(1);
+
+    }
+
+    //--------------------------------
+    // Previous Category
+    //--------------------------------
+
+    previousCategory() {
+
+        this.changeCategory(-1);
+
+    }
+
+    //--------------------------------
+    // Change Category
+    //--------------------------------
+
+    changeCategory(direction) {
+
+        const sidebar = this.sidebar();
+
+        if (!sidebar) {
+
+            return;
+
+        }
+
+        const count = sidebar.categoryCount();
+
+        let index = sidebar.selectedIndex();
+
+        for (let i = 0; i < count; i++) {
+
+            index += direction;
+
+            if (index < 0) {
+
+                index = count - 1;
+
+            }
+
+            else if (index >= count) {
+
+                index = 0;
+
+            }
+
+            const definition = sidebar.definition(index);
+
+            if (this.isCategoryAvailable(definition.category)) {
+
+                sidebar.select(index);
+
+                this.grid().setCategory(
+
+                    definition.category
+
+                );
+
+                this.onSelectionChanged();
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    //--------------------------------
+    // Category Available
+    //--------------------------------
+
+    isCategoryAvailable(category) {
+
+        return LOGICPULSE.InventoryProvider.hasCategoryContent(
+
+            category
+
+        );
+
+    }
+
+    //--------------------------------
     // Selection Changed
     //--------------------------------
 
@@ -1595,26 +1743,6 @@ LOGICPULSE.InventoryController = class {
             this._scene.onCancel();
 
         }
-
-    }
-
-    //--------------------------------
-    // Next Category
-    //--------------------------------
-
-    nextCategory() {
-
-        // Will be implemented when Sidebar is finished.
-
-    }
-
-    //--------------------------------
-    // Previous Category
-    //--------------------------------
-
-    previousCategory() {
-
-        // Will be implemented when Sidebar is finished.
 
     }
 
@@ -3456,19 +3584,88 @@ LOGICPULSE.UI = LOGICPULSE.UI || {};
 
 LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
     constructor() {
 
         super();
 
+        this._selectedIndex = 0;
+
+        this._tabs = [];
+
+        this._definitions = [
+
+            {
+
+                category:
+                LOGICPULSE.Constants.Category.Consumable,
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover
+
+            },
+
+            {
+
+                category:
+                LOGICPULSE.Constants.Category.Material,
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.MaterialIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.MaterialHover
+
+            },
+
+            {
+
+                category:
+                LOGICPULSE.Constants.Category.Key,
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover
+
+            },
+
+            {
+
+                category: "synthesizer",
+
+                idle:
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerIdle,
+
+                hover:
+                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover
+
+            }
+
+        ];
+
         this.create();
 
     }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
 
     create() {
 
         this.createBackground();
 
         this.createTabs();
+
+        this.refresh();
 
     }
 
@@ -3481,7 +3678,8 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
         this._background = this.createSprite(
 
             LOGICPULSE.Assets.Folders.Sidebar,
-            "Sidebar box"
+
+            LOGICPULSE.Assets.Images.Sidebar.Box
 
         );
 
@@ -3493,29 +3691,383 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
     createTabs() {
 
-        this._tabs = [];
+        const layout =
 
-        const tabNames = [
+            LOGICPULSE.Layout.Inventory.Sidebar;
 
-            "Consumable",
-            "Material",
-            "Key Materials",
-            "Synthesizer"
+        for (
 
-        ];
+            let i = 0;
 
-        for (const name of tabNames) {
+            i < this._definitions.length;
+
+            i++
+
+        ) {
+
+            const def =
+
+                this._definitions[i];
 
             const sprite = this.createSprite(
 
                 LOGICPULSE.Assets.Folders.Sidebar,
-                `Sidebar ${name} Tab Idle`
+
+                def.idle
 
             );
+
+            sprite.x =
+
+                layout.tabs.x;
+
+            sprite.y =
+
+                layout.tabs.y +
+
+                i * layout.tabs.spacing;
+
+            this.addChild(sprite);
 
             this._tabs.push(sprite);
 
         }
+
+    }
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+        for (
+
+            let i = 0;
+
+            i < this._tabs.length;
+
+            i++
+
+        ) {
+
+            const sprite =
+
+                this._tabs[i];
+
+            const def =
+
+                this._definitions[i];
+
+            const image =
+
+                i === this._selectedIndex
+
+                    ? def.hover
+                    : def.idle;
+
+            sprite.bitmap =
+
+                LOGICPULSE.Assets.load(
+
+                    LOGICPULSE.Assets.Folders.Sidebar,
+
+                    image
+
+                );
+
+        }
+
+    }
+
+    //--------------------------------
+    // Select Index
+    //--------------------------------
+
+    select(index) {
+
+        index = Math.max(
+
+            0,
+
+            Math.min(
+
+                index,
+
+                this._definitions.length - 1
+
+            )
+
+        );
+
+        if (
+
+            index === this._selectedIndex
+
+        ) {
+
+            return;
+
+        }
+
+        this._selectedIndex = index;
+
+        this.refresh();
+
+    }
+
+    //--------------------------------
+    // Next
+    //--------------------------------
+
+    next() {
+
+        this.select(
+
+            (this._selectedIndex + 1)
+
+            %
+
+            this._definitions.length
+
+        );
+
+    }
+
+    //--------------------------------
+    // Previous
+    //--------------------------------
+
+    previous() {
+
+        this.select(
+
+            (
+
+                this._selectedIndex -
+
+                1 +
+
+                this._definitions.length
+
+            )
+
+            %
+
+            this._definitions.length
+
+        );
+
+    }
+
+    //--------------------------------
+    // Selected Index
+    //--------------------------------
+
+    selectedIndex() {
+
+        return this._selectedIndex;
+
+    }
+
+    //--------------------------------
+    // Selected Category
+    //--------------------------------
+
+    selectedCategory() {
+
+        return this._definitions[
+
+            this._selectedIndex
+
+            ].category;
+
+    }
+
+    //--------------------------------
+    // Category Count
+    //--------------------------------
+
+    categoryCount() {
+
+        return this._definitions.length;
+
+    }
+
+    //--------------------------------
+    // Definition
+    //--------------------------------
+
+    definition(index) {
+
+        return this._definitions[index];
+
+    }
+
+};
+
+
+//=============================================================================
+// LPSidebarTab.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+//=============================================================================
+// Sidebar Tab
+//=============================================================================
+
+LOGICPULSE.UI.SidebarTab = class extends LOGICPULSE.UI.Element {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor(options = {}) {
+
+        super();
+
+        this._category = options.category;
+
+        this._idleImage =
+            options.idleImage;
+
+        this._hoverImage =
+            options.hoverImage;
+
+        this._enabled = true;
+
+        this._selected = false;
+
+        this.move(
+
+            options.x ?? 0,
+            options.y ?? 0
+
+        );
+
+        this.create();
+
+    }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this._sprite = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Sidebar,
+
+            this._idleImage
+
+        );
+
+    }
+
+    //--------------------------------
+    // Category
+    //--------------------------------
+
+    category() {
+
+        return this._category;
+
+    }
+
+    //--------------------------------
+    // Enabled
+    //--------------------------------
+
+    enabled() {
+
+        return this._enabled;
+
+    }
+
+    //--------------------------------
+    // Selected
+    //--------------------------------
+
+    selected() {
+
+        return this._selected;
+
+    }
+
+    //--------------------------------
+    // Set Enabled
+    //--------------------------------
+
+    setEnabled(value) {
+
+        if (this._enabled === value) {
+
+            return;
+
+        }
+
+        this._enabled = value;
+
+        this.refresh();
+
+    }
+
+    //--------------------------------
+    // Set Selected
+    //--------------------------------
+
+    setSelected(value) {
+
+        if (this._selected === value) {
+
+            return;
+
+        }
+
+        this._selected = value;
+
+        this.refresh();
+
+    }
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+        if (this._selected) {
+
+            this._sprite.bitmap =
+
+                LOGICPULSE.Assets.load(
+
+                    LOGICPULSE.Assets.Folders.Sidebar,
+
+                    this._hoverImage
+
+                );
+
+        }
+
+        else {
+
+            this._sprite.bitmap =
+
+                LOGICPULSE.Assets.load(
+
+                    LOGICPULSE.Assets.Folders.Sidebar,
+
+                    this._idleImage
+
+                );
+
+        }
+
+        this.alpha = this._enabled ? 1.0 : 0.35;
 
     }
 

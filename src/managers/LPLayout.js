@@ -72,6 +72,22 @@ LOGICPULSE.Layout = Object.freeze({
 
         }),
 
+        Sidebar: Object.freeze({
+
+            x: 0,
+            y: 0,
+
+            tabs: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+                spacing: 0
+
+            })
+
+        }),
+
         Showcase: Object.freeze({
 
             Overlay: Object.freeze({
