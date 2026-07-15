@@ -74,10 +74,9 @@ If you want to modify the plugin, the source code is organised in the `src/` fol
 ### File Structure
 src/
 
-├── Version.js – Plugin name and version.
-├── Constants.js – Item categories.
-
-├── managers/
+Version.js – Plugin name and version.
+Constants.js – Item categories.
+managers/
 
 │ ├── LPAssets.js – Image loading and caching.
 
