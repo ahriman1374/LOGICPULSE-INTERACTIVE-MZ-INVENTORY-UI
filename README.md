@@ -91,12 +91,11 @@ This means the item requires **2 of item ID 10** and **1 of item ID 15** to craf
 If you want to modify the plugin, the source code is organised in the `src/` folder.
 
 ### File Structure
+```text
 src/
-
 ├── Version.js – Plugin name and version.
-
 ├── Constants.js – Item categories.
-
+```
 ├── managers/
 
 │ ├── LPAssets.js – Image loading and caching.
