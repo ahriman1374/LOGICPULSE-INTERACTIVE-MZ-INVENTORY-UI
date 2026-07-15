@@ -143,7 +143,7 @@ try {
  * @command OpenInventory
  * @text Open Inventory
  * @desc Opens the LOGICPULSE Inventory Scene.
- *
+ *lik
  *
  * ============================================================================
  * THIS FILE IS AUTO-GENERATED.

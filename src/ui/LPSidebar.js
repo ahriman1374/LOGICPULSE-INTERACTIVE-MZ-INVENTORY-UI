@@ -386,6 +386,30 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
     }
 
+
+    //--------------------------------
+    // Select Category
+    //--------------------------------
+
+    selectCategory(category) {
+
+        const index = this._definitions.findIndex(
+
+            definition =>
+
+                definition.category === category
+
+        );
+
+        if (index >= 0) {
+
+            this.select(index);
+
+        }
+
+    }
+
+
     //--------------------------------
     // Selected Category
     //--------------------------------

@@ -211,17 +211,35 @@ LOGICPULSE.InventoryController = class {
 
                 sidebar.select(index);
 
+
+                //--------------------------------
+                // Open Synthesizer Scene
+                //--------------------------------
+
+                if (definition.category === "synthesizer") {
+                    // Directly switch without pushing/poping
+                    SceneManager.goto(LOGICPULSE.Scenes.Synthesizer);
+                    return;
+                }
+
+
+                //--------------------------------
+                // Normal Inventory Categories
+                //--------------------------------
+
                 this.grid().setCategory(
 
                     definition.category
 
                 );
 
+
                 if (sidebar.refreshVisuals) {
 
                     sidebar.refreshVisuals();
 
                 }
+
 
                 this.onSelectionChanged();
 

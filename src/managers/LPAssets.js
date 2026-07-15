@@ -78,12 +78,26 @@ LOGICPULSE.Assets = {
             KeyboardTABKeyIdle:"Sidebar Tab keyboard Key Idle",
             KeyboardTABKeyHover: "Sidebar Tab keyboard Key Hover",
 
+        }),
 
+        Synthesizer: Object.freeze({
 
+            Background: "Background",
 
+            Showcase: "Item Showcase Box",
+            SynthesizeTip: "Tip",
 
+            RecipeItemBoxes: "Empty Item boxes",
 
+            ItemNumberController: "Item Number Controller",
+            ItemDecrease: "Item Decrease Arrow Active",
+            ItemIncrease: "Item Increase Arrow Active",
 
+            SynthesizeHover: "Synthesize Button Hover",
+            SynthesizeIdle: "Synthesize Button Idle",
+
+            SelectedFrame: "Selected Frame",
+            SelectionFrame: "Selection Frame",
 
         })
 

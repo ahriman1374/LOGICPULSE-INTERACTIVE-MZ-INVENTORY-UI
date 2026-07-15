@@ -86,7 +86,19 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 
         this._grid = new LOGICPULSE.UI.Grid(
 
-            LOGICPULSE.Layout.Inventory.Grid
+            LOGICPULSE.Layout.Inventory.Grid,
+
+            {
+
+                provider: grid =>
+
+                    LOGICPULSE.InventoryProvider.getItems(
+
+                        grid.category()
+
+                    )
+
+            }
 
         );
 

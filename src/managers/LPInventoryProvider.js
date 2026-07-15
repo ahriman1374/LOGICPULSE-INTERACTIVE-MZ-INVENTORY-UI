@@ -268,18 +268,6 @@ LOGICPULSE.InventoryProvider = {
 
     },
 
-    //--------------------------------
-    // Has Recipes
-    //--------------------------------
-
-    hasRecipes() {
-
-        // Placeholder until the Synthesizer
-        // system is implemented.
-
-        return false;
-
-    },
 
     //--------------------------------
     // Has Category Content
@@ -300,7 +288,7 @@ LOGICPULSE.InventoryProvider = {
 
             case "synthesizer":
 
-                return this.hasRecipes();
+                return this.getSynthesizerItems().length > 0;
 
             default:
 
@@ -331,6 +319,107 @@ LOGICPULSE.InventoryProvider = {
         this.ensureReady();
 
         return Object.values(this._entries).flat();
+
+    },
+
+    //--------------------------------
+    // Synthesizer Items
+    //--------------------------------
+
+    getSynthesizerItems() {
+
+        const entries = [];
+
+        for (const item of $dataItems) {
+
+            if (!item) {
+
+                continue;
+
+            }
+
+            if (
+
+                !LOGICPULSE.RecipeManager.hasRecipe(
+
+                    item
+
+                )
+
+            ) {
+
+                continue;
+
+            }
+
+            entries.push(
+
+                this.buildEntry(item)
+
+            );
+
+        }
+
+        entries.sort((a, b) => {
+
+            const aCraftable = LOGICPULSE.RecipeManager.canCraft(a.item);
+            const bCraftable = LOGICPULSE.RecipeManager.canCraft(b.item);
+
+            // Craftable items first
+            if (aCraftable !== bCraftable) {
+
+                return bCraftable - aCraftable;
+
+            }
+
+            // Higher rarity first
+            if (a.rarity !== b.rarity) {
+
+                return b.rarity - a.rarity;
+
+            }
+
+            // Alphabetical
+            return a.item.name.localeCompare(
+
+                b.item.name
+
+            );
+
+        });
+
+        return entries;
+
+    },
+
+
+    //--------------------------------
+    // Craftable Items
+    //--------------------------------
+
+    getCraftableItems() {
+
+        return this.getSynthesizerItems();
+
+    },
+
+    //--------------------------------
+    // Can Craft Entry
+    //--------------------------------
+
+    canCraftEntry(entry) {
+
+        if (!entry) {
+
+            return false;
+
+        }
+
+        return LOGICPULSE.RecipeManager.canCraft(
+
+            entry.item
+
+        );
 
     },
 
@@ -522,6 +611,56 @@ LOGICPULSE.InventoryProvider = {
 
     },
 
+    //--------------------------------
+    // Gain Item
+    //--------------------------------
 
+    gainItem(item, amount) {
+
+        if (!item || amount <= 0) {
+
+            return;
+
+        }
+
+        $gameParty.gainItem(
+
+            item,
+
+            amount,
+
+            false
+
+        );
+
+        this.markDirty();
+
+    },
+
+    //--------------------------------
+    // Lose Item
+    //--------------------------------
+
+    loseItem(item, amount) {
+
+        if (!item || amount <= 0) {
+
+            return;
+
+        }
+
+        $gameParty.loseItem(
+
+            item,
+
+            amount,
+
+            false
+
+        );
+
+        this.markDirty();
+
+    },
 
 };

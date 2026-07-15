@@ -9,11 +9,25 @@ LOGICPULSE.UI = LOGICPULSE.UI || {};
 
 LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
-    constructor(layout) {
+    constructor(layout, options = {}) {
 
         super();
 
         this._layout = layout;
+
+        this._provider =
+
+            options.provider ||
+
+            (grid =>
+
+                    LOGICPULSE.InventoryProvider.getItems(
+
+                        grid.category()
+
+                    )
+
+            );
 
         this._category =
             LOGICPULSE.Constants.Category.Consumable;
@@ -136,7 +150,13 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     clearSlots() {
 
-        this._slotLayer.removeChildren();
+        const children = this._slotLayer.removeChildren();
+
+        for (const child of children) {
+
+            child.destroy();
+
+        }
 
         this._slots = [];
 
@@ -242,11 +262,7 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     items() {
 
-        return LOGICPULSE.InventoryProvider.getItems(
-
-            this._category
-
-        );
+        return this._provider(this);
 
     }
 

@@ -18,6 +18,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         this._focused = false;
         this._locked = false;
 
+        this._craftSelected = false;
+
         this.move(
 
             options.x ?? 0,
@@ -62,12 +64,18 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
     createBackground() {
 
-        const image = this.getBackgroundImage();
+        const background = this.background();
+
+        if (!background) {
+
+            return;
+
+        }
 
         this._background = this.createSprite(
 
-            LOGICPULSE.Assets.Folders.Inventory,
-            image
+            background.folder,
+            background.image
 
         );
 
@@ -87,11 +95,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
         }
 
-        this._icon = LOGICPULSE.Assets.createItemSprite(
-
-            item
-
-        );
+        this._icon = this.createItemSprite(item);
 
         const offset =
 
@@ -105,13 +109,26 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     }
 
     //--------------------------------
+    // Item Sprite
+    //--------------------------------
+    createItemSprite(item) {
+
+        return LOGICPULSE.Assets.createItemSprite(
+
+            item
+
+        );
+
+    }
+
+    //--------------------------------
     // Amount
     //--------------------------------
 
 
     createAmount() {
 
-        if (this.amount() <= 1) {
+        if (this.amount() <= 0) {
 
             return;
 
@@ -147,15 +164,57 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
     createSelectionFrame() {
 
+        const frame = this.selectionFrameAsset();
+
         this._selectionFrame = this.createSprite(
 
-            LOGICPULSE.Assets.Folders.Inventory,
+            frame.folder,
 
-            LOGICPULSE.Assets.Images.Inventory.SelectionFrame
+            frame.image
 
         );
 
         this._selectionFrame.visible = false;
+
+    }
+
+    //--------------------------------
+    // Selection Frame Asset
+    //--------------------------------
+
+    selectionFrameAsset() {
+
+        return {
+
+            folder:
+
+            LOGICPULSE.Assets.Folders.Inventory,
+
+            image:
+
+            LOGICPULSE.Assets.Images.Inventory.SelectionFrame
+
+        };
+
+    }
+
+    //--------------------------------
+    // Background Image
+    //--------------------------------
+
+    background() {
+
+        return {
+
+            folder:
+
+            LOGICPULSE.Assets.Folders.Inventory,
+
+            image:
+
+                this.getBackgroundImage()
+
+        };
 
     }
 
@@ -251,25 +310,11 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
         }
 
-        if (this._locked) {
+        if (this._focused) {
 
             this._selectionFrame.visible = true;
 
             this._selectionFrame.alpha = 1.0;
-
-            LOGICPULSE.Animator.stop(
-
-                this._selectionFrame
-
-            );
-
-            return;
-
-        }
-
-        if (this._focused) {
-
-            this._selectionFrame.visible = true;
 
             LOGICPULSE.Animator.pulse(
 
@@ -277,7 +322,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
             );
 
-        } else {
+        }
+        else {
 
             this._selectionFrame.visible = false;
 
@@ -290,6 +336,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         }
 
     }
+
+    
 
     //--------------------------------
     // Entry

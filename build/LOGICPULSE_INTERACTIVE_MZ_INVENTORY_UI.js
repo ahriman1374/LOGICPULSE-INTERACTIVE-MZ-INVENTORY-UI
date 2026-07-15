@@ -7,7 +7,7 @@
  * @command OpenInventory
  * @text Open Inventory
  * @desc Opens the LOGICPULSE Inventory Scene.
- *
+ *lik
  *
  * ============================================================================
  * THIS FILE IS AUTO-GENERATED.
@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-12T22:28:49.957Z
+ * Build Date: 2026-07-15T01:11:44.227Z
  * ============================================================================
  */
 
@@ -176,12 +176,26 @@ LOGICPULSE.Assets = {
             KeyboardTABKeyIdle:"Sidebar Tab keyboard Key Idle",
             KeyboardTABKeyHover: "Sidebar Tab keyboard Key Hover",
 
+        }),
 
+        Synthesizer: Object.freeze({
 
+            Background: "Background",
 
+            Showcase: "Item Showcase Box",
+            SynthesizeTip: "Tip",
 
+            RecipeItemBoxes: "Empty Item boxes",
 
+            ItemNumberController: "Item Number Controller",
+            ItemDecrease: "Item Decrease Arrow Active",
+            ItemIncrease: "Item Increase Arrow Active",
 
+            SynthesizeHover: "Synthesize Button Hover",
+            SynthesizeIdle: "Synthesize Button Idle",
+
+            SelectedFrame: "Selected Frame",
+            SelectionFrame: "Selection Frame",
 
         })
 
@@ -450,19 +464,19 @@ LOGICPULSE.Layout = Object.freeze({
 
             rect: Object.freeze({
 
-                x: 144,
-                y: 144,
-                width: 672,
-                height: 480
+                x: 82,
+                y: 118,
+                width: 768,
+                height: 576
 
             }),
 
             mask: Object.freeze({
 
-                x: 144,
-                y: 144,
-                width: 672,
-                height: 480
+                x: 82,
+                y: 118,
+                width: 768,
+                height: 576
 
             }),
 
@@ -478,7 +492,7 @@ LOGICPULSE.Layout = Object.freeze({
 
             }),
 
-            columns: 7,
+            columns: 8,
 
             itemSize: 92,
 
@@ -564,10 +578,10 @@ LOGICPULSE.Layout = Object.freeze({
             Description: Object.freeze({
 
                 x: 912,
-                y: 480,
+                y: 460,
 
                 width: 288,
-                height: 144,
+                height: 160,
 
                 padding: 8,
 
@@ -619,7 +633,19 @@ LOGICPULSE.Layout = Object.freeze({
 
             }),
 
-            columns: 5,
+            Icon: Object.freeze({
+
+                offset: Object.freeze({
+
+                    x: 0,
+
+                    y: 0
+
+                })
+
+            }),
+
+            columns: 4,
 
             itemSize: 92,
 
@@ -629,18 +655,163 @@ LOGICPULSE.Layout = Object.freeze({
 
         }),
 
-        Showcase: Object.freeze({
+        Amount: Object.freeze({
 
-            position: Object.freeze({
+            x: 52,
 
-                x: 720,
-                y: 192
+            y: 4,
+
+            width: 36,
+
+            height: 20,
+
+            align: "right",
+
+            fontSize: 18
+
+        }),
+
+        Sidebar: Object.freeze({
+
+            x: 0,
+            y: 0,
+
+            tabs: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+                spacing: 0
 
             })
 
         }),
 
-        Recipe: Object.freeze({
+        Showcase: Object.freeze({
+
+            Overlay: Object.freeze({
+
+                x: 0,
+                y: 0
+
+            }),
+
+            Frame: Object.freeze({
+
+                x: 720,
+                y: 168,
+                width: 288,
+                height: 288
+
+            }),
+
+            Item: Object.freeze({
+
+                width: 184,
+                height: 184,
+
+                maxWidth: 184,
+                maxHeight: 184
+
+            }),
+
+            Name: Object.freeze({
+
+                x: 720,
+                y: 170,
+                width: 288,
+                height: 32,
+
+                align: "center",
+
+                fontSize: 24
+
+            }),
+
+            Description: Object.freeze({
+
+                x: 528,
+                y: 168,
+
+                width: 180,
+                height: 300,
+
+                align: "center",
+
+                padding: 8,
+
+
+                fontSize: 16,
+
+                lineHeight: 26
+
+            }),
+
+            Tip: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+            }),
+
+            NumberControls: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+                Arrows: Object.freeze({
+
+                    x: 0,
+                    y: 0,
+
+                    spacing: 0
+
+                }),
+
+                CurrentNumber: Object.freeze({
+
+                    x: 822,
+                    y: 598,
+
+                    width: 80,
+                    height: 32,
+
+                    align: "center",
+
+                    fontSize: 28
+
+                }),
+
+                MaxNumber: Object.freeze({
+
+                    x: 686,
+                    y: 194,
+
+                    width: 80,
+                    height: 32,
+
+                    align: "center",
+
+                    fontSize: 20
+                }),
+
+            }),
+
+
+            Button: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+                scale: 1.0,
+
+                hoverScale: 1.05
+
+            })
+
+        }),
+
+        RecipeItemBoxes: Object.freeze({
 
             firstSlot: Object.freeze({
 
@@ -649,13 +820,42 @@ LOGICPULSE.Layout = Object.freeze({
 
             }),
 
-            spacing: 96
+            spacing: 96,
+
+
+            Amount: Object.freeze({
+
+                x: 52,
+                y: 58,
+
+                width: 36,
+                height: 20,
+
+                align: "right",
+
+                fontSize: 18
+
+            }),
+
+            ItemName: Object.freeze({
+
+                x: 0,
+                y: 0,
+
+                width: 92,
+                height: 92,
+
+                align: "center",
+
+                fontSize: 12
+
+            })
+
+        }),
 
         })
 
-    })
-
-});
+    });
 
 
 //=============================================================================
@@ -868,6 +1068,19 @@ LOGICPULSE.Bindings = Object.freeze({
 
 
 });
+
+
+//=============================================================================
+// LPUIState.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+
+LOGICPULSE.UIState = {
+
+    startCategory: LOGICPULSE.Constants.Category.Consumable
+
+};
 
 
 //=============================================================================
@@ -1142,18 +1355,6 @@ LOGICPULSE.InventoryProvider = {
 
     },
 
-    //--------------------------------
-    // Has Recipes
-    //--------------------------------
-
-    hasRecipes() {
-
-        // Placeholder until the Synthesizer
-        // system is implemented.
-
-        return false;
-
-    },
 
     //--------------------------------
     // Has Category Content
@@ -1174,7 +1375,7 @@ LOGICPULSE.InventoryProvider = {
 
             case "synthesizer":
 
-                return this.hasRecipes();
+                return this.getSynthesizerItems().length > 0;
 
             default:
 
@@ -1205,6 +1406,107 @@ LOGICPULSE.InventoryProvider = {
         this.ensureReady();
 
         return Object.values(this._entries).flat();
+
+    },
+
+    //--------------------------------
+    // Synthesizer Items
+    //--------------------------------
+
+    getSynthesizerItems() {
+
+        const entries = [];
+
+        for (const item of $dataItems) {
+
+            if (!item) {
+
+                continue;
+
+            }
+
+            if (
+
+                !LOGICPULSE.RecipeManager.hasRecipe(
+
+                    item
+
+                )
+
+            ) {
+
+                continue;
+
+            }
+
+            entries.push(
+
+                this.buildEntry(item)
+
+            );
+
+        }
+
+        entries.sort((a, b) => {
+
+            const aCraftable = LOGICPULSE.RecipeManager.canCraft(a.item);
+            const bCraftable = LOGICPULSE.RecipeManager.canCraft(b.item);
+
+            // Craftable items first
+            if (aCraftable !== bCraftable) {
+
+                return bCraftable - aCraftable;
+
+            }
+
+            // Higher rarity first
+            if (a.rarity !== b.rarity) {
+
+                return b.rarity - a.rarity;
+
+            }
+
+            // Alphabetical
+            return a.item.name.localeCompare(
+
+                b.item.name
+
+            );
+
+        });
+
+        return entries;
+
+    },
+
+
+    //--------------------------------
+    // Craftable Items
+    //--------------------------------
+
+    getCraftableItems() {
+
+        return this.getSynthesizerItems();
+
+    },
+
+    //--------------------------------
+    // Can Craft Entry
+    //--------------------------------
+
+    canCraftEntry(entry) {
+
+        if (!entry) {
+
+            return false;
+
+        }
+
+        return LOGICPULSE.RecipeManager.canCraft(
+
+            entry.item
+
+        );
 
     },
 
@@ -1396,7 +1698,57 @@ LOGICPULSE.InventoryProvider = {
 
     },
 
+    //--------------------------------
+    // Gain Item
+    //--------------------------------
 
+    gainItem(item, amount) {
+
+        if (!item || amount <= 0) {
+
+            return;
+
+        }
+
+        $gameParty.gainItem(
+
+            item,
+
+            amount,
+
+            false
+
+        );
+
+        this.markDirty();
+
+    },
+
+    //--------------------------------
+    // Lose Item
+    //--------------------------------
+
+    loseItem(item, amount) {
+
+        if (!item || amount <= 0) {
+
+            return;
+
+        }
+
+        $gameParty.loseItem(
+
+            item,
+
+            amount,
+
+            false
+
+        );
+
+        this.markDirty();
+
+    },
 
 };
 
@@ -1737,17 +2089,35 @@ LOGICPULSE.InventoryController = class {
 
                 sidebar.select(index);
 
+
+                //--------------------------------
+                // Open Synthesizer Scene
+                //--------------------------------
+
+                if (definition.category === "synthesizer") {
+                    // Directly switch without pushing/poping
+                    SceneManager.goto(LOGICPULSE.Scenes.Synthesizer);
+                    return;
+                }
+
+
+                //--------------------------------
+                // Normal Inventory Categories
+                //--------------------------------
+
                 this.grid().setCategory(
 
                     definition.category
 
                 );
 
+
                 if (sidebar.refreshVisuals) {
 
                     sidebar.refreshVisuals();
 
                 }
+
 
                 this.onSelectionChanged();
 
@@ -1852,6 +2222,443 @@ LOGICPULSE.InventoryController = class {
     showcase() {
 
         return this.scene()._showcase;
+
+    }
+
+};
+
+
+//=============================================================================
+// LPSynthesizerController.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+
+//=============================================================================
+// Synthesizer Controller
+//=============================================================================
+
+LOGICPULSE.SynthesizerController = class {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor(scene) {
+
+        this._scene = scene;
+
+        this._state = "select";
+
+    }
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+        if (this._state === "select") {
+
+            this.updateGridInput();
+
+        }
+
+        else {
+
+            this.updateQuantityInput();
+
+        }
+
+
+        this.updateConfirmInput();
+
+        this.updateCancelInput();
+
+        this.updateCategoryInput();
+
+    }
+
+    //--------------------------------
+    // Grid Input
+    //--------------------------------
+
+    updateGridInput() {
+
+        const grid = this.grid();
+
+        if (!grid) {
+
+            return;
+
+        }
+
+        const B = LOGICPULSE.Bindings;
+
+        let moved = false;
+
+        if (LOGICPULSE.Input.isRepeated(B.MoveLeft)) {
+
+            grid.moveLeft();
+
+            moved = true;
+
+        }
+
+        else if (LOGICPULSE.Input.isRepeated(B.MoveRight)) {
+
+            grid.moveRight();
+
+            moved = true;
+
+        }
+
+        else if (LOGICPULSE.Input.isRepeated(B.MoveUp)) {
+
+            grid.moveUp();
+
+            moved = true;
+
+        }
+
+        else if (LOGICPULSE.Input.isRepeated(B.MoveDown)) {
+
+            grid.moveDown();
+
+            moved = true;
+
+        }
+
+        if (moved) {
+
+            this.onSelectionChanged();
+
+        }
+
+    }
+
+    //--------------------------------
+    // Quantity Input
+    //--------------------------------
+
+    updateQuantityInput() {
+
+        const controller = this.quantityController();
+
+        if (!controller) {
+
+            return;
+
+        }
+
+        let step = 1;
+
+
+        if (Input.isPressed("skip")) {
+
+            step = 10;
+
+        }
+
+        if (Input.isPressed("shift")) {
+
+            step = controller.max();
+
+        }
+
+
+        const B = LOGICPULSE.Bindings;
+
+
+        if (LOGICPULSE.Input.isRepeated(B.MoveLeft)) {
+
+            controller.decrease(step);
+
+        }
+
+        else if (LOGICPULSE.Input.isRepeated(B.MoveRight)) {
+
+            controller.increase(step);
+
+        }
+
+    }
+
+    //--------------------------------
+    // Category Input
+    //--------------------------------
+
+    updateCategoryInput() {
+
+        const B = LOGICPULSE.Bindings;
+
+        if (
+            LOGICPULSE.Input.isTriggered(B.NextCategory) ||
+            LOGICPULSE.Input.isTriggered(B.PreviousCategory)
+        ) {
+
+            SceneManager.goto(
+
+                LOGICPULSE.Scenes.Inventory
+
+            );
+
+        }
+
+    }
+
+    //--------------------------------
+    // Confirm
+    //--------------------------------
+
+    updateConfirmInput() {
+
+        if (
+
+            LOGICPULSE.Input.isTriggered(
+
+                LOGICPULSE.Bindings.Confirm
+
+            )
+
+        ) {
+
+            if (this._state === "select") {
+
+                this.enterCraftMode();
+
+            }
+
+            else {
+
+                this.craft();
+
+            }
+
+        }
+
+    }
+
+    //--------------------------------
+    // Cancel
+    //--------------------------------
+
+    updateCancelInput() {
+
+        if (
+
+            LOGICPULSE.Input.isTriggered(
+
+                LOGICPULSE.Bindings.Cancel
+
+            )
+
+        ) {
+
+            if (this._state === "craft") {
+
+                this.leaveCraftMode();
+
+            }
+
+            else {
+
+                this.onCancel();
+
+            }
+
+        }
+
+    }
+
+    //--------------------------------
+    // Enter Craft Mode
+    //--------------------------------
+
+    enterCraftMode() {
+
+        const entry = this.grid().selectedEntry();
+
+        if (!entry) {
+
+            return;
+
+        }
+
+
+        if (
+
+            !LOGICPULSE.RecipeManager.canCraft(
+
+                entry.item
+
+            )
+
+        ) {
+
+            return;
+
+        }
+
+        this._state = "craft";
+
+        this.scene()._quantityController?.setItem(
+
+            entry.item
+
+        );
+
+        this.scene().enterCraftMode?.(
+
+            entry.item
+
+        );
+
+    }
+
+    //--------------------------------
+    // Leave Craft Mode
+    //--------------------------------
+
+    leaveCraftMode() {
+
+        this._state = "select";
+
+        this.scene().leaveCraftMode?.();
+
+    }
+
+    //--------------------------------
+    // Craft
+    //--------------------------------
+
+    craft() {
+
+        this.scene().craftCurrentItem?.();
+
+    }
+
+    //--------------------------------
+    // Change Category
+    //--------------------------------
+
+    changeCategory(direction) {
+
+        SceneManager.goto(
+
+            LOGICPULSE.Scenes.Inventory
+
+        );
+
+    }
+
+    //--------------------------------
+    // Selection Changed
+    //--------------------------------
+
+    onSelectionChanged() {
+
+        const entry = this.grid().selectedEntry();
+
+        if (!entry) {
+
+            this.scene()._recipePanel?.clear();
+
+            this.scene()._showcase?.setItem?.(null);
+
+            this.scene()._quantityController?.setItem?.(null);
+
+            this.scene()._craftButton?.setItem?.(null);
+
+            this.scene().onSelectionChanged?.();
+
+            return;
+
+        }
+
+        const recipe =
+
+            LOGICPULSE.RecipeManager.recipe(
+
+                entry.item
+
+            );
+
+        this.scene()._recipePanel?.setRecipe(
+
+            recipe
+
+        );
+
+        this.scene()._showcase?.setItem?.(
+
+            entry.item
+
+        );
+
+        this.scene()._quantityController?.setItem?.(
+
+            entry.item
+
+        );
+
+        this.scene()._craftButton?.setItem?.(
+
+            entry.item
+
+        );
+
+        this.scene().onSelectionChanged?.();
+
+    }
+
+    //--------------------------------
+    // Cancel
+    //--------------------------------
+
+    onCancel() {
+
+        this.scene().onCancel?.();
+
+    }
+
+    //--------------------------------
+    // Scene
+    //--------------------------------
+
+    scene() {
+
+        return this._scene;
+
+    }
+
+    //--------------------------------
+    // Grid
+    //--------------------------------
+
+    grid() {
+
+        return this.scene()._craftGrid;
+
+    }
+
+    //--------------------------------
+    // Sidebar
+    //--------------------------------
+
+    sidebar() {
+
+        return this.scene()._sidebar;
+
+    }
+
+    //--------------------------------
+    // Quantity Controller
+    //--------------------------------
+
+    quantityController() {
+
+        return this.scene()._quantityController;
 
     }
 
@@ -1964,7 +2771,348 @@ window.LOGICPULSE = window.LOGICPULSE || {};
 
 window.LOGICPULSE = window.LOGICPULSE || {};
 
-LOGICPULSE.RecipeManager = {};
+//=============================================================================
+// Recipe Manager
+//=============================================================================
+
+LOGICPULSE.RecipeManager = {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    initialize() {
+
+        this._recipes = {};
+
+        this.buildCache();
+
+    },
+
+    //--------------------------------
+    // Build Cache
+    //--------------------------------
+
+    buildCache() {
+
+        this._recipes = {};
+
+        if (!$dataItems) {
+
+            return;
+
+        }
+
+        for (const item of $dataItems) {
+
+            if (!item) {
+
+                continue;
+
+            }
+
+            const recipe = this.parseRecipe(item.note);
+
+            if (recipe.length > 0) {
+
+                this._recipes[item.id] = recipe;
+
+            }
+
+        }
+
+    },
+
+    //--------------------------------
+    // Parse Recipe
+    //--------------------------------
+
+    parseRecipe(note) {
+
+        if (!note) {
+
+            return [];
+
+        }
+
+        const match = note.match(
+
+            /<Recipe>([\s\S]*?)<\/Recipe>/i
+
+        );
+
+        if (!match) {
+
+            return [];
+
+        }
+
+        const result = [];
+
+        const lines =
+
+            match[1]
+
+                .split(/\r?\n/)
+
+                .map(line => line.trim())
+
+                .filter(line => line.length > 0);
+
+        for (const line of lines) {
+
+            const parts = line.split(":");
+
+            if (parts.length !== 2) {
+
+                continue;
+
+            }
+
+            const itemId = Number(parts[0]);
+
+            const amount = Number(parts[1]);
+
+            if (
+
+                Number.isNaN(itemId) ||
+
+                Number.isNaN(amount)
+
+            ) {
+
+                continue;
+
+            }
+
+            result.push({
+
+                itemId: itemId,
+
+                amount: amount
+
+            });
+
+        }
+
+        return result;
+
+    },
+
+    //--------------------------------
+    // Has Recipe
+    //--------------------------------
+
+    hasRecipe(item) {
+
+        if (!item) {
+
+            return false;
+
+        }
+
+        return !!this._recipes[item.id];
+
+    },
+
+
+    //--------------------------------
+    // Recipe
+    //--------------------------------
+
+    recipe(item) {
+
+        if (!item) {
+
+            return [];
+
+        }
+
+        return this._recipes[item.id] || [];
+
+    },
+
+    //--------------------------------
+    // Get Recipe
+    //--------------------------------
+
+    getRecipe(item) {
+
+        return this.recipe(item);
+
+    },
+
+    //--------------------------------
+    // Ingredient Items
+    //--------------------------------
+
+    ingredientItems(item) {
+
+        return this.recipe(item).map(entry => ({
+
+            item: $dataItems[entry.itemId],
+
+            amount: entry.amount
+
+        }));
+
+    },
+
+    //--------------------------------
+    // Can Craft
+    //--------------------------------
+
+    canCraft(item) {
+
+        if (!this.hasRecipe(item)) {
+
+            return false;
+
+        }
+
+        return this.maxCraftAmount(item) > 0;
+
+    },
+
+    //--------------------------------
+    // Max Craft Amount
+    //--------------------------------
+
+    maxCraftAmount(item) {
+
+        const recipe = this.recipe(item);
+
+        if (recipe.length === 0) {
+
+            return 0;
+
+        }
+
+        let max = Infinity;
+
+        for (const ingredient of recipe) {
+
+            const material =
+
+                $dataItems[ingredient.itemId];
+
+            if (!material) {
+
+                return 0;
+
+            }
+
+            const owned =
+
+                LOGICPULSE.InventoryProvider.amount(
+
+                    material
+
+                );
+
+            const craftable = Math.floor(
+
+                owned / ingredient.amount
+
+            );
+
+            max = Math.min(
+
+                max,
+
+                craftable
+
+            );
+
+        }
+
+        return Math.max(
+
+            0,
+
+            max
+
+        );
+
+    },
+
+    //--------------------------------
+    // Missing Ingredients
+    //--------------------------------
+
+    missingIngredients(item) {
+
+        const missing = [];
+
+        for (const ingredient of this.recipe(item)) {
+
+            const material =
+
+                $dataItems[ingredient.itemId];
+
+            if (!material) {
+
+                continue;
+
+            }
+
+            const owned =
+
+                LOGICPULSE.InventoryProvider.amount(
+
+                    material
+
+                );
+
+            if (owned < ingredient.amount) {
+
+                missing.push({
+
+                    item: material,
+
+                    required: ingredient.amount,
+
+                    owned: owned
+
+                });
+
+            }
+
+        }
+
+        return missing;
+
+    }
+
+};
+
+//=============================================================================
+// Database Hook
+//=============================================================================
+
+(() => {
+
+    const alias = DataManager.isDatabaseLoaded;
+
+    DataManager.isDatabaseLoaded = function() {
+
+        if (!alias.call(this)) {
+
+            return false;
+
+        }
+
+        if (!LOGICPULSE.RecipeManager._recipes) {
+
+            LOGICPULSE.RecipeManager.initialize();
+
+        }
+
+        return true;
+
+    };
+
+})();
 
 
 //=============================================================================
@@ -1973,7 +3121,142 @@ LOGICPULSE.RecipeManager = {};
 
 window.LOGICPULSE = window.LOGICPULSE || {};
 
-LOGICPULSE.CraftManager = {};
+//=============================================================================
+// Craft Manager
+//=============================================================================
+
+LOGICPULSE.CraftManager = {
+
+    //--------------------------------
+    // Can Craft
+    //--------------------------------
+
+    canCraft(item, amount = 1) {
+
+        if (!item) {
+
+            return false;
+
+        }
+
+        if (!LOGICPULSE.RecipeManager.hasRecipe(item)) {
+
+            return false;
+
+        }
+
+        return (
+
+            LOGICPULSE.RecipeManager.maxCraftAmount(item)
+
+            >=
+
+            amount
+
+        );
+
+    },
+
+    //--------------------------------
+    // Craft
+    //--------------------------------
+
+    craft(item, amount = 1) {
+
+        if (
+
+            !this.canCraft(
+
+                item,
+
+                amount
+
+            )
+
+        ) {
+
+            return false;
+
+        }
+
+        const recipe =
+
+            LOGICPULSE.RecipeManager.recipe(
+
+                item
+
+            );
+
+        //--------------------------------
+        // Remove Materials
+        //--------------------------------
+
+        for (const ingredient of recipe) {
+
+            const material =
+
+                $dataItems[
+
+                    ingredient.itemId
+
+                    ];
+
+            LOGICPULSE.InventoryProvider.loseItem(
+
+                material,
+
+                ingredient.amount * amount
+
+            );
+
+        }
+
+        //--------------------------------
+        // Give Crafted Item
+        //--------------------------------
+
+        LOGICPULSE.InventoryProvider.gainItem(
+
+            item,
+
+            amount
+
+        );
+
+
+        return true;
+
+    },
+
+    //--------------------------------
+    // Max Craft Amount
+    //--------------------------------
+
+    maxCraftAmount(item) {
+
+        return LOGICPULSE.RecipeManager.maxCraftAmount(
+
+            item
+
+        );
+
+    },
+
+    //--------------------------------
+    // Recipe
+    //--------------------------------
+
+    recipe(item) {
+
+        return LOGICPULSE.RecipeManager.recipe(
+
+            item
+
+        );
+
+    }
+
+};
 
 
 //=============================================================================
@@ -2954,6 +4237,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         this._focused = false;
         this._locked = false;
 
+        this._craftSelected = false;
+
         this.move(
 
             options.x ?? 0,
@@ -2998,12 +4283,18 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
     createBackground() {
 
-        const image = this.getBackgroundImage();
+        const background = this.background();
+
+        if (!background) {
+
+            return;
+
+        }
 
         this._background = this.createSprite(
 
-            LOGICPULSE.Assets.Folders.Inventory,
-            image
+            background.folder,
+            background.image
 
         );
 
@@ -3023,11 +4314,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
         }
 
-        this._icon = LOGICPULSE.Assets.createItemSprite(
-
-            item
-
-        );
+        this._icon = this.createItemSprite(item);
 
         const offset =
 
@@ -3041,13 +4328,26 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     }
 
     //--------------------------------
+    // Item Sprite
+    //--------------------------------
+    createItemSprite(item) {
+
+        return LOGICPULSE.Assets.createItemSprite(
+
+            item
+
+        );
+
+    }
+
+    //--------------------------------
     // Amount
     //--------------------------------
 
 
     createAmount() {
 
-        if (this.amount() <= 1) {
+        if (this.amount() <= 0) {
 
             return;
 
@@ -3083,15 +4383,57 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
     createSelectionFrame() {
 
+        const frame = this.selectionFrameAsset();
+
         this._selectionFrame = this.createSprite(
 
-            LOGICPULSE.Assets.Folders.Inventory,
+            frame.folder,
 
-            LOGICPULSE.Assets.Images.Inventory.SelectionFrame
+            frame.image
 
         );
 
         this._selectionFrame.visible = false;
+
+    }
+
+    //--------------------------------
+    // Selection Frame Asset
+    //--------------------------------
+
+    selectionFrameAsset() {
+
+        return {
+
+            folder:
+
+            LOGICPULSE.Assets.Folders.Inventory,
+
+            image:
+
+            LOGICPULSE.Assets.Images.Inventory.SelectionFrame
+
+        };
+
+    }
+
+    //--------------------------------
+    // Background Image
+    //--------------------------------
+
+    background() {
+
+        return {
+
+            folder:
+
+            LOGICPULSE.Assets.Folders.Inventory,
+
+            image:
+
+                this.getBackgroundImage()
+
+        };
 
     }
 
@@ -3187,25 +4529,11 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
         }
 
-        if (this._locked) {
+        if (this._focused) {
 
             this._selectionFrame.visible = true;
 
             this._selectionFrame.alpha = 1.0;
-
-            LOGICPULSE.Animator.stop(
-
-                this._selectionFrame
-
-            );
-
-            return;
-
-        }
-
-        if (this._focused) {
-
-            this._selectionFrame.visible = true;
 
             LOGICPULSE.Animator.pulse(
 
@@ -3213,7 +4541,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
 
             );
 
-        } else {
+        }
+        else {
 
             this._selectionFrame.visible = false;
 
@@ -3226,6 +4555,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         }
 
     }
+
+    
 
     //--------------------------------
     // Entry
@@ -3293,11 +4624,25 @@ LOGICPULSE.UI = LOGICPULSE.UI || {};
 
 LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
-    constructor(layout) {
+    constructor(layout, options = {}) {
 
         super();
 
         this._layout = layout;
+
+        this._provider =
+
+            options.provider ||
+
+            (grid =>
+
+                    LOGICPULSE.InventoryProvider.getItems(
+
+                        grid.category()
+
+                    )
+
+            );
 
         this._category =
             LOGICPULSE.Constants.Category.Consumable;
@@ -3420,7 +4765,13 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     clearSlots() {
 
-        this._slotLayer.removeChildren();
+        const children = this._slotLayer.removeChildren();
+
+        for (const child of children) {
+
+            child.destroy();
+
+        }
 
         this._slots = [];
 
@@ -3526,11 +4877,7 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
     items() {
 
-        return LOGICPULSE.InventoryProvider.getItems(
-
-            this._category
-
-        );
+        return this._provider(this);
 
     }
 
@@ -3809,6 +5156,352 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
         }
 
     }
+
+};
+
+
+//=============================================================================
+// LPSynthesizerGridSlot.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+//=============================================================================
+// Synthesizer Grid Slot
+//=============================================================================
+
+LOGICPULSE.UI.SynthesizerGridSlot = class extends LOGICPULSE.UI.GridSlot {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor(options = {}) {
+
+        super(options);
+
+    }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        super.create();
+
+        this.createSelectedFrame();
+
+        this.refreshCraftState();
+
+    }
+
+    //--------------------------------
+    // Selected Frame (Craft Marker)
+    //--------------------------------
+
+    createSelectedFrame() {
+
+        this._selectedFrame = new Sprite(
+
+            LOGICPULSE.Assets.load(
+
+                LOGICPULSE.Assets.Folders.Synthesizer,
+
+                LOGICPULSE.Assets.Images.Synthesizer.SelectedFrame
+
+            )
+
+        );
+
+        this._selectedFrame.visible = false;
+
+        // Keep it behind the selection cursor
+        this.addChildAt(this._selectedFrame, 0);
+
+    }
+
+    //--------------------------------
+    // Craft Selected
+    //--------------------------------
+
+    setCraftSelected(selected) {
+
+        this._craftSelected = selected;
+
+        if (this._selectedFrame) {
+
+            this._selectedFrame.visible = selected;
+
+        }
+
+        this.updateSelection();
+
+    }
+
+    //--------------------------------
+    // Selection Frame Asset (Cursor)
+    //--------------------------------
+
+    selectionFrameAsset() {
+
+        return {
+
+            folder:
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+            image:
+
+            LOGICPULSE.Assets.Images.Synthesizer.SelectionFrame
+
+        };
+
+    }
+
+    //--------------------------------
+    // Refresh Craft State
+    //--------------------------------
+
+    refreshCraftState() {
+
+        const craftable =
+
+            LOGICPULSE.RecipeManager.canCraft(
+
+                this.item()
+
+            );
+
+        this.setLocked(
+
+            !craftable
+
+        );
+
+        this.applyDisabledStyle(
+
+            !craftable
+
+        );
+
+    }
+
+    //--------------------------------
+    // Disabled Style
+    //--------------------------------
+
+    applyDisabledStyle(disabled) {
+
+        const alpha =
+
+            disabled ? 0.45 : 1.0;
+
+        const tint =
+
+            disabled ? 0x808080 : 0xFFFFFF;
+
+        if (this._background) {
+
+            this._background.alpha = alpha;
+            this._background.tint = tint;
+
+        }
+
+        if (this._icon) {
+
+            this._icon.alpha = alpha;
+            this._icon.tint = tint;
+
+        }
+
+        if (this._amountText) {
+
+            this._amountText.alpha = alpha;
+
+        }
+
+    }
+
+};
+
+
+//=============================================================================
+// LPSynthesizerGrid.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+//=============================================================================
+// Synthesizer Grid
+//=============================================================================
+
+LOGICPULSE.UI.SynthesizerGrid = class extends LOGICPULSE.UI.Grid {
+
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor(layout) {
+
+        super(layout);
+
+    }
+
+
+    //--------------------------------
+    // Items
+    //--------------------------------
+
+    items() {
+
+        return LOGICPULSE.InventoryProvider.getSynthesizerItems();
+
+    }
+
+
+    //--------------------------------
+    // Build Slots
+    //--------------------------------
+
+    buildSlots() {
+
+        const items = this.items();
+
+        for (let index = 0; index < items.length; index++) {
+
+            const position = this.slotPosition(index);
+
+
+            const slot = new LOGICPULSE.UI.SynthesizerGridSlot({
+
+                x: position.x,
+
+                y: position.y,
+
+                entry: items[index]
+
+            });
+
+
+            this._slotLayer.addChild(slot);
+
+            this._slots.push(slot);
+
+        }
+
+
+    }
+
+
+    //--------------------------------
+    // Update Selection
+    //--------------------------------
+
+    updateSelection() {
+
+        if (!this._slots) {
+
+            return;
+
+        }
+
+
+        for (let i = 0; i < this._slots.length; i++) {
+
+            this._slots[i].setFocused(
+
+                i === this._selectedIndex
+
+            );
+
+        }
+
+
+        this.updateViewport();
+
+    }
+
+    //--------------------------------
+    // Set Crafting Item
+    //--------------------------------
+
+    setCraftingItem(item) {
+
+        this._craftingIndex = -1;
+
+        if (item) {
+
+            const items = this.items();
+
+            this._craftingIndex = items.findIndex(
+
+                entry => entry.item === item
+
+            );
+
+        }
+
+        this.refreshCraftingFrame();
+
+    }
+
+
+    //--------------------------------
+    // Clear Crafting Item
+    //--------------------------------
+
+    clearCraftingItem() {
+
+        this._craftingIndex = -1;
+
+        this.refreshCraftingFrame();
+
+    }
+
+    //--------------------------------
+    // Refresh Crafting Frame
+    //--------------------------------
+
+    refreshCraftingFrame() {
+
+        for (let i = 0; i < this._slots.length; i++) {
+
+            const slot = this._slots[i];
+
+            if (!slot._craftFrame) {
+
+                slot._craftFrame = new Sprite(
+
+                    LOGICPULSE.Assets.load(
+
+                        LOGICPULSE.Assets.Folders.Synthesizer,
+
+                        LOGICPULSE.Assets.Images.Synthesizer.SelectedFrame
+
+                    )
+
+                );
+
+                slot.addChild(
+
+                    slot._craftFrame
+
+                );
+
+            }
+
+            slot._craftFrame.visible =
+
+                i === this._craftingIndex;
+
+        }
+
+    }
+
 
 };
 
@@ -4202,6 +5895,30 @@ LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
         return this._selectedIndex;
 
     }
+
+
+    //--------------------------------
+    // Select Category
+    //--------------------------------
+
+    selectCategory(category) {
+
+        const index = this._definitions.findIndex(
+
+            definition =>
+
+                definition.category === category
+
+        );
+
+        if (index >= 0) {
+
+            this.select(index);
+
+        }
+
+    }
+
 
     //--------------------------------
     // Selected Category
@@ -4716,6 +6433,1250 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
 
 
 //=============================================================================
+// LPSynthesizerShowcase.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+
+//=============================================================================
+// Synthesizer Showcase
+//=============================================================================
+
+LOGICPULSE.UI.SynthesizerShowcase = class extends LOGICPULSE.UI.Element {
+
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor() {
+
+        super();
+
+        this._item = null;
+
+        this.create();
+
+    }
+
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this.createOverlay();
+
+        this.createItemSprite();
+
+        this.createItemName();
+
+        this.createDescription();
+
+        this.createTip();
+
+    }
+
+
+    //--------------------------------
+    // Overlay
+    //--------------------------------
+
+    createOverlay() {
+
+        const pos =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.Overlay;
+
+
+        this._overlay = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+            LOGICPULSE.Assets.Images.Synthesizer.Showcase
+
+        );
+
+
+        this._overlay.x = pos.x;
+
+        this._overlay.y = pos.y;
+
+    }
+
+
+
+    //--------------------------------
+    // Item Sprite
+    //--------------------------------
+
+    createItemSprite() {
+
+        this._itemSprite = new Sprite();
+
+        this.addChild(
+
+            this._itemSprite
+
+        );
+
+    }
+
+
+
+    //--------------------------------
+    // Item Name
+    //--------------------------------
+
+    createItemName() {
+
+
+        const layout =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.Name;
+
+
+        this._nameText =
+
+            new LOGICPULSE.UI.Text({
+
+
+                x: layout.x,
+
+                y: layout.y,
+
+                width: layout.width,
+
+                height: layout.height,
+
+                align: layout.align,
+
+                fontSize: layout.fontSize
+
+
+            });
+
+
+        this.addChild(
+
+            this._nameText
+
+        );
+
+
+    }
+
+
+
+    //--------------------------------
+    // Description
+    //--------------------------------
+
+    createDescription() {
+
+
+        const layout =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.Description;
+
+
+
+        this._descriptionText =
+
+            new LOGICPULSE.UI.ScrollText({
+
+
+                x: layout.x,
+
+                y: layout.y,
+
+                width: layout.width,
+
+                height: layout.height,
+
+                padding: layout.padding,
+
+                fontSize: layout.fontSize,
+
+                lineHeight: layout.lineHeight,
+
+                align: layout.align
+
+
+            });
+
+
+
+        this.addChild(
+
+            this._descriptionText
+
+        );
+
+
+    }
+
+
+
+    //--------------------------------
+    // Tip
+    //--------------------------------
+
+    createTip() {
+
+
+        const pos =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.Tip;
+
+
+
+        this._tip = this.createSprite(
+
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+
+            LOGICPULSE.Assets.Images.Synthesizer.SynthesizeTip
+
+
+        );
+
+
+        this._tip.x = pos.x;
+
+        this._tip.y = pos.y;
+
+
+    }
+
+
+
+    //--------------------------------
+    // Set Item
+    //--------------------------------
+
+    setItem(item) {
+
+
+        this._item = item;
+
+
+        if (!item) {
+
+
+            this.clear();
+
+
+            return;
+
+
+        }
+
+
+
+        this.refreshItemSprite(item);
+
+
+
+        this._nameText.setText(
+
+            item.name
+
+        );
+
+
+
+        this._descriptionText.setText(
+
+            item.description
+
+        );
+
+
+    }
+
+
+
+    //--------------------------------
+    // Refresh Item Sprite
+    //--------------------------------
+
+    refreshItemSprite(item) {
+
+
+        this._itemSprite.bitmap =
+
+
+            LOGICPULSE.Assets.createShowcaseItemSprite(
+
+                item
+
+            ).bitmap;
+
+
+
+        this.centerItemSprite();
+
+
+    }
+
+
+
+    //--------------------------------
+    // Center Item Sprite
+    //--------------------------------
+
+
+    centerItemSprite() {
+
+        const bitmap = this._itemSprite.bitmap;
+
+        if (!bitmap) {
+
+            return;
+
+        }
+
+        bitmap.addLoadListener(() => {
+
+            const frame =
+
+                LOGICPULSE.Layout.Synthesizer.Showcase.Frame;
+
+            const item =
+
+                LOGICPULSE.Layout.Synthesizer.Showcase.Item;
+
+            const scale = Math.min(
+
+                item.maxWidth / bitmap.width,
+
+                item.maxHeight / bitmap.height,
+
+                1
+
+            );
+
+            this._itemSprite.scale.set(scale);
+
+            const width = bitmap.width * scale;
+
+            const height = bitmap.height * scale;
+
+            this._itemSprite.x =
+
+                frame.x +
+
+                (frame.width - width) / 2;
+
+            this._itemSprite.y =
+
+                frame.y +
+
+                (frame.height - height) / 2;
+
+        });
+
+    }
+
+
+    //--------------------------------
+    // Clear
+    //--------------------------------
+
+    clear() {
+
+
+        this._item = null;
+
+
+        this._itemSprite.bitmap = null;
+
+
+        this._nameText.setText("");
+
+
+        this._descriptionText.setText("");
+
+
+    }
+
+
+
+    //--------------------------------
+    // Item
+    //--------------------------------
+
+    item() {
+
+        return this._item;
+
+    }
+
+
+};
+
+
+//=============================================================================
+// LPRecipePanel.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+
+//=============================================================================
+// Recipe Panel
+//=============================================================================
+
+LOGICPULSE.UI.RecipePanel = class extends LOGICPULSE.UI.Element {
+
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor() {
+
+        super();
+
+        this._recipe = [];
+
+        this._slots = [];
+
+        this.create();
+
+    }
+
+
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this.createBackground();
+
+        this.createSlots();
+
+    }
+
+
+
+    //--------------------------------
+    // Background Boxes
+    //--------------------------------
+
+    createBackground() {
+
+        const layout =
+            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes;
+
+
+        for (let i = 0; i < 4; i++) {
+
+            const sprite =
+                this.createSprite(
+
+                    LOGICPULSE.Assets.Folders.Synthesizer,
+
+                    LOGICPULSE.Assets.Images.Synthesizer.RecipeItemBoxes
+
+                );
+
+
+            sprite.x =
+                layout.firstSlot.x +
+                (i * layout.spacing);
+
+
+            sprite.y =
+                layout.firstSlot.y;
+
+
+        }
+
+    }
+
+
+
+    //--------------------------------
+    // Create Slots
+    //--------------------------------
+
+    createSlots() {
+
+        const layout =
+            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes;
+
+        for (let i = 0; i < 4; i++) {
+
+            const slot = new PIXI.Container();
+
+            slot.x =
+                layout.firstSlot.x +
+                (i * layout.spacing);
+
+            slot.y =
+                layout.firstSlot.y;
+
+            this.addChild(slot);
+
+            this._slots.push(slot);
+
+        }
+
+    }
+
+
+
+    //--------------------------------
+    // Set Recipe
+    //--------------------------------
+
+    setRecipe(recipe) {
+
+        this._recipe = recipe || [];
+
+        this.refresh();
+
+    }
+
+
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+
+        for (let i = 0; i < this._slots.length; i++) {
+
+
+            const slot =
+                this._slots[i];
+
+
+            this.clearSlot(slot);
+
+
+            const ingredient =
+                this._recipe[i];
+
+
+            if (!ingredient) {
+
+                continue;
+
+            }
+
+
+            this.drawMaterial(
+
+                slot,
+
+                ingredient
+
+            );
+
+        }
+
+    }
+
+
+
+    //--------------------------------
+    // Clear Slot
+    //--------------------------------
+
+    clearSlot(slot) {
+
+
+        while (slot.children.length > 0) {
+
+            slot.removeChildAt(0);
+
+        }
+
+    }
+
+
+
+//--------------------------------
+// Draw Material
+//--------------------------------
+
+    drawMaterial(slot, ingredient) {
+
+        const item = $dataItems[ingredient.itemId];
+
+        if (!item) {
+
+            return;
+
+        }
+
+        //--------------------------------
+        // Icon
+        //--------------------------------
+
+        const icon = LOGICPULSE.Assets.createItemSprite(item);
+
+        slot.addChild(icon);
+
+        //--------------------------------
+        // Amount
+        //--------------------------------
+
+        const amountLayout =
+            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes.Amount;
+
+        const amount = this.createText({
+
+            text: String(ingredient.amount),
+
+            x: amountLayout.x,
+            y: amountLayout.y,
+
+            width: amountLayout.width,
+            height: amountLayout.height,
+
+            align: amountLayout.align,
+
+            fontSize: amountLayout.fontSize
+
+        });
+
+        slot.addChild(amount);
+
+        //--------------------------------
+        // Name
+        //--------------------------------
+
+        const nameLayout =
+            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes.ItemName;
+
+        let name = item.name;
+
+        // Optional: shorten long names
+        if (name.length > 16) {
+
+            name = name.substring(0, 9) + "...";
+
+        }
+
+        const nameText = this.createText({
+
+            text: name,
+
+            x: nameLayout.x,
+            y: nameLayout.y,
+
+            width: nameLayout.width,
+            height: nameLayout.height,
+
+            align: nameLayout.align,
+
+            fontSize: nameLayout.fontSize
+
+        });
+
+        slot.addChild(nameText);
+
+    }
+
+
+
+    //--------------------------------
+    // Selected Item
+    //--------------------------------
+
+    setItem(item) {
+
+
+        if (!item) {
+
+            this.clear();
+
+            return;
+
+        }
+
+
+        this.setRecipe(
+
+            LOGICPULSE.RecipeManager.recipe(item)
+
+        );
+
+    }
+
+
+
+    //--------------------------------
+    // Clear
+    //--------------------------------
+
+    clear() {
+
+        this.setRecipe([]);
+
+    }
+
+
+};
+
+
+//=============================================================================
+// LPQuantityController.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+
+//=============================================================================
+// Quantity Controller
+//=============================================================================
+
+LOGICPULSE.UI.QuantityController = class extends LOGICPULSE.UI.Element {
+
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor() {
+
+        super();
+
+        this._item = null;
+
+        this._value = 1;
+
+        this._max = 1;
+
+        this._arrowTimer = 0;
+
+        this.create();
+
+    }
+
+
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        this.createBackground();
+
+        this.createArrows();
+
+        this.createNumber();
+
+        this.createMaxNumber();
+
+        this.refresh();
+
+    }
+
+
+
+    //--------------------------------
+    // Background
+    //--------------------------------
+
+    createBackground() {
+
+        const layout =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls;
+
+
+        this._background = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+            LOGICPULSE.Assets.Images.Synthesizer.ItemNumberController,
+
+            layout.x,
+
+            layout.y
+
+        );
+
+    }
+
+
+
+    //--------------------------------
+    // Arrows
+    //--------------------------------
+
+    createArrows() {
+
+        const layout =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls.Arrows;
+
+
+        this._leftArrow = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+            LOGICPULSE.Assets.Images.Synthesizer.ItemDecrease,
+
+            layout.x,
+
+            layout.y
+
+        );
+
+
+        this._rightArrow = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+            LOGICPULSE.Assets.Images.Synthesizer.ItemIncrease,
+
+            layout.x + layout.spacing,
+
+            layout.y
+
+        );
+
+
+        this._leftArrow.visible = false;
+
+        this._rightArrow.visible = false;
+
+    }
+
+
+
+    //--------------------------------
+    // Number
+    //--------------------------------
+
+    createNumber() {
+
+        const layout =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls.CurrentNumber;
+
+
+        this._numberText = this.createText({
+
+            text: "1",
+
+            x: layout.x,
+
+            y: layout.y,
+
+            width: layout.width,
+
+            height: layout.height,
+
+            align: layout.align,
+
+            fontSize: layout.fontSize
+
+        });
+
+    }
+
+    //--------------------------------
+    // Max Number
+    //--------------------------------
+
+    createMaxNumber() {
+
+        const layout =
+
+            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls.MaxNumber;
+
+        this._maxNumberText = this.createText({
+
+            text: "1",
+
+            x: layout.x,
+
+            y: layout.y,
+
+            width: layout.width,
+
+            height: layout.height,
+
+            align: layout.align,
+
+            fontSize: layout.fontSize
+
+        });
+
+    }
+
+
+    //--------------------------------
+    // Set Item
+    //--------------------------------
+
+    setItem(item) {
+
+        this._item = item;
+
+        this._value = 1;
+
+
+        if (!item) {
+
+            this._max = 1;
+
+        }
+
+        else {
+
+            this._max = LOGICPULSE.RecipeManager.maxCraftAmount(
+
+                item
+
+            );
+
+            this._value = this._max > 0 ? 1 : 0;
+
+        }
+
+
+        this.refresh();
+
+    }
+
+
+
+    //--------------------------------
+    // Increase
+    //--------------------------------
+
+    increase(amount = 1) {
+
+        const old = this._value;
+
+
+        if (this._max <= 0) {
+
+            return;
+
+        }
+
+        this._value = Math.min(
+
+            this._value + amount,
+
+            this._max
+
+        );
+
+
+        if (this._value !== old) {
+
+            this.showArrow("right");
+
+            this.refresh();
+
+        }
+
+    }
+
+
+
+    //--------------------------------
+    // Decrease
+    //--------------------------------
+
+    decrease(amount = 1) {
+
+        const old = this._value;
+
+
+        if (this._max <= 0) {
+
+            return;
+
+        }
+
+        this._value = Math.max(
+
+            this._value - amount,
+
+            1
+
+        );
+
+
+        if (this._value !== old) {
+
+            this.showArrow("left");
+
+            this.refresh();
+
+        }
+
+    }
+
+
+
+    //--------------------------------
+    // Set Value
+    //--------------------------------
+
+    setValue(value) {
+
+        if (this._max <= 0) {
+
+            this._value = 0;
+
+        }
+
+        else {
+
+            this._value = Math.max(
+
+                1,
+
+                Math.min(
+
+                    value,
+
+                    this._max
+
+                )
+
+            );
+
+        }
+
+
+        this.refresh();
+
+    }
+
+
+
+    //--------------------------------
+    // Show Arrow
+    //--------------------------------
+
+    showArrow(direction) {
+
+        this._arrowTimer = 20;
+
+
+        this._leftArrow.visible =
+
+            direction === "left";
+
+
+        this._rightArrow.visible =
+
+            direction === "right";
+
+    }
+
+
+
+    //--------------------------------
+    // Refresh
+    //--------------------------------
+
+    refresh() {
+
+        if (this._max <= 0) {
+
+            this._numberText.setText("0/0");
+
+            this._maxNumberText.setText("0");
+
+        }
+
+        else {
+
+            this._numberText.setText(
+
+                `${this._value}/${this._max}`
+
+            );
+
+            this._maxNumberText.setText(
+
+                String(this._max)
+
+            );
+
+        }
+
+    }
+
+
+    //--------------------------------
+    // Update
+    //--------------------------------
+
+    update() {
+
+        if (this._arrowTimer > 0) {
+
+            this._arrowTimer--;
+
+            if (this._arrowTimer <= 0) {
+
+                this._leftArrow.visible = false;
+
+                this._rightArrow.visible = false;
+
+            }
+
+        }
+
+    }
+
+
+
+    //--------------------------------
+    // Value
+    //--------------------------------
+
+    value() {
+
+        return this._value;
+
+    }
+
+
+
+    //--------------------------------
+    // Max
+    //--------------------------------
+
+    max() {
+
+        return this._max;
+
+    }
+
+
+};
+
+
+//=============================================================================
+// LPCraftButton.js
+//=============================================================================
+
+window.LOGICPULSE = window.LOGICPULSE || {};
+LOGICPULSE.UI = LOGICPULSE.UI || {};
+
+//=============================================================================
+// Craft Button
+//=============================================================================
+
+LOGICPULSE.UI.CraftButton = class extends LOGICPULSE.UI.Element {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    constructor() {
+
+        super();
+
+        this.create();
+
+    }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        const layout =
+            LOGICPULSE.Layout.Synthesizer.Showcase.Button;
+
+        this._sprite = this.createSprite(
+
+            LOGICPULSE.Assets.Folders.Synthesizer,
+
+            LOGICPULSE.Assets.Images.Synthesizer.SynthesizeIdle,
+
+            layout.x,
+            layout.y
+
+        );
+
+    }
+
+    //--------------------------------
+    // Idle
+    //--------------------------------
+
+    setIdle() {
+
+        this._sprite.bitmap =
+
+            LOGICPULSE.Assets.load(
+
+                LOGICPULSE.Assets.Folders.Synthesizer,
+
+                LOGICPULSE.Assets.Images.Synthesizer.SynthesizeIdle
+
+            );
+
+    }
+
+    //--------------------------------
+    // Hover
+    //--------------------------------
+
+    setHover() {
+
+        this._sprite.bitmap =
+
+            LOGICPULSE.Assets.load(
+
+                LOGICPULSE.Assets.Folders.Synthesizer,
+
+                LOGICPULSE.Assets.Images.Synthesizer.SynthesizeHover
+
+            );
+
+    }
+
+    //--------------------------------
+    // Press Animation
+    //--------------------------------
+
+    playPressAnimation() {
+
+        this.setHover();
+
+        setTimeout(() => {
+
+            this.setIdle();
+
+        }, 120);
+
+    }
+
+};
+
+
+//=============================================================================
 // LPSceneInventory.js
 //=============================================================================
 
@@ -4805,7 +7766,19 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 
         this._grid = new LOGICPULSE.UI.Grid(
 
-            LOGICPULSE.Layout.Inventory.Grid
+            LOGICPULSE.Layout.Inventory.Grid,
+
+            {
+
+                provider: grid =>
+
+                    LOGICPULSE.InventoryProvider.getItems(
+
+                        grid.category()
+
+                    )
+
+            }
 
         );
 
@@ -5005,9 +7978,339 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Scenes = LOGICPULSE.Scenes || {};
 
-LOGICPULSE.Scenes.Synthesizer = class {
+//=============================================================================
+// Synthesizer Scene
+//=============================================================================
 
-    constructor() {
+LOGICPULSE.Scenes.Synthesizer = class extends Scene_MenuBase {
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    initialize() {
+
+        super.initialize();
+
+        this._selectedItem = null;
+
+    }
+
+    //--------------------------------
+    // Create
+    //--------------------------------
+
+    create() {
+
+        super.create();
+
+        this.createBackground();
+
+        this.createSidebar();
+
+        this._sidebar.selectCategory(
+
+            "synthesizer"
+
+        );
+
+        this.createShowcase();
+
+        this.createCraftGrid();
+
+        this.createRecipePanel();
+
+        this.createQuantityController();
+
+        this.createCraftButton();
+
+        this.createController();
+
+        this.leaveCraftMode();
+
+        this._controller.onSelectionChanged();
+
+    }
+
+    //--------------------------------
+    // Background
+    //--------------------------------
+
+    createBackground() {
+
+        const background =
+
+            LOGICPULSE.Assets.createSprite(
+
+                LOGICPULSE.Assets.Folders.Synthesizer,
+
+                LOGICPULSE.Assets.Images.Synthesizer.Background
+
+            );
+
+        this.addChild(background);
+
+    }
+
+    //--------------------------------
+    // Sidebar
+    //--------------------------------
+
+    createSidebar() {
+
+        this._sidebar =
+
+            new LOGICPULSE.UI.Sidebar();
+
+        this.addChild(this._sidebar);
+
+    }
+
+    //--------------------------------
+    // Showcase
+    //--------------------------------
+
+    createShowcase() {
+
+        this._showcase =
+
+            new LOGICPULSE.UI.SynthesizerShowcase();
+
+        this.addChild(this._showcase);
+
+    }
+
+    //--------------------------------
+    // Craft Grid
+    //--------------------------------
+
+    createCraftGrid() {
+
+        this._craftGrid =
+
+            new LOGICPULSE.UI.SynthesizerGrid(
+
+                LOGICPULSE.Layout.Synthesizer.Grid
+
+            );
+
+        this.addChild(this._craftGrid);
+
+    }
+
+    //--------------------------------
+    // Recipe Panel
+    //--------------------------------
+
+    createRecipePanel() {
+
+        this._recipePanel =
+
+            new LOGICPULSE.UI.RecipePanel();
+
+        this.addChild(this._recipePanel);
+
+    }
+
+    //--------------------------------
+    // Quantity Controller
+    //--------------------------------
+
+    createQuantityController() {
+
+        this._quantityController =
+
+            new LOGICPULSE.UI.QuantityController();
+
+        this.addChild(
+
+            this._quantityController
+
+        );
+
+    }
+
+    //--------------------------------
+    // Craft Button
+    //--------------------------------
+
+    createCraftButton() {
+
+        this._craftButton =
+
+            new LOGICPULSE.UI.CraftButton();
+
+        this.addChild(
+
+            this._craftButton
+
+        );
+
+    }
+
+    //--------------------------------
+    // Controller
+    //--------------------------------
+
+    createController() {
+
+        this._controller =
+
+            new LOGICPULSE.SynthesizerController(
+
+                this
+
+            );
+
+    }
+
+
+    //--------------------------------
+    // Enter Craft Mode
+    //--------------------------------
+
+    enterCraftMode(item) {
+
+        if (!item) {
+
+            return;
+
+        }
+
+        this._selectedItem = item;
+
+
+        this._craftGrid.setCraftingItem?.(
+
+            item
+
+        );
+
+    }
+
+    //--------------------------------
+    // Leave Craft Mode
+    //--------------------------------
+
+    leaveCraftMode() {
+
+        this._selectedItem = null;
+
+        this._craftGrid.clearCraftingItem();
+
+    }
+
+    //--------------------------------
+    // Craft Current Item
+    //--------------------------------
+
+    craftCurrentItem() {
+
+        if (!this._selectedItem) {
+
+            return;
+
+        }
+
+        const amount =
+
+            this._quantityController.value();
+
+        if (amount <= 0) {
+
+            return;
+
+        }
+
+        const success =
+
+            LOGICPULSE.CraftManager.craft(
+
+                this._selectedItem,
+
+                amount
+
+            );
+
+        if (!success) {
+
+            SoundManager.playBuzzer();
+
+            return;
+
+        }
+
+        SoundManager.playOk();
+
+        this._craftButton.playPressAnimation();
+
+        //--------------------------------
+        // Refresh UI
+        //--------------------------------
+
+        const index = this._craftGrid.selectedIndex();
+
+        this._craftGrid.buildGrid();
+
+        this._craftGrid.setSelectedIndex(index);
+
+        this._craftGrid.setCraftingItem(this._selectedItem);
+
+        this._controller.onSelectionChanged();
+
+        this._selectedItem =
+            this._craftGrid.selectedEntry()?.item ?? null;
+
+        // If the recipe can no longer be crafted,
+        // automatically return to selection mode.
+        if (
+            !this._selectedItem ||
+            !LOGICPULSE.RecipeManager.canCraft(this._selectedItem)
+        ) {
+            this._controller.leaveCraftMode();
+        }
+
+
+
+    }
+
+
+    //--------------------------------
+    // Cancel
+    //--------------------------------
+
+    onCancel() {
+
+        SceneManager.pop();
+
+    }
+
+
+//--------------------------------
+// Update
+//--------------------------------
+
+    update() {
+
+        super.update();
+
+        if (this._controller) {
+
+            this._controller.update();
+
+        }
+
+        if (this._craftGrid) {
+
+            this._craftGrid.update();
+
+        }
+
+        if (this._sidebar) {
+
+            this._sidebar.update();
+
+        }
 
     }
 
