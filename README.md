@@ -79,8 +79,8 @@ This means the item requires **2 of item ID 10** and **1 of item ID 15** to craf
 
 ## 📦 Installation
 
-1. Download the latest release `.js` file.
-2. Place it in your project’s `js/plugins/` folder.
+1. Download the latest release `.zip` file.
+2. Place it in your project’s `Main` folder.
 3. In RPG Maker MZ, open the **Plugin Manager** and add the plugin.
 4. Use the plugin command `OpenInventory` to launch the inventory scene (e.g., from a menu or event).
 
