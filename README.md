@@ -29,36 +29,55 @@ For support or feature requests, please open an issue on GitHub.
 
 ----------------------------------------------------------------------------------------
 
-How To Work With this Plugin 
+# How To Work With This Plugin
 
-### Changing Rarity
+## Changing Rarity
 
 Add the following note to any item in the RPG Maker database:
+
+```text
 <rarity:1> // Uses Common Background Box
 <rarity:2> // Uses Rare Background Box
 <rarity:3> // Uses Legendary Background Box
+```
 
-### Adding a New Recipe
+---
+
+## Adding a New Recipe
 
 Add the following note to any item in the RPG Maker database:
-<Recipe> itemId:amount itemId:amount ... </Recipe> ```
-e.g.
 
+```text
+<Recipe>
+itemId:amount
+itemId:amount
+...
+</Recipe>
+```
+
+Example:
+
+```text
 <Recipe>
 10:2
 15:1
 </Recipe>
+```
 
-This means the item requires 2 of item ID 10 and 1 of item ID 15 to craft.
+This means the item requires **2 of item ID 10** and **1 of item ID 15** to craft.
 
-Example of a Legendery Crafteble Item:
+---
 
+## Example of a Legendary Craftable Item
+
+```text
 <rarity:3>
+
 <Recipe>
 10:2
 15:1
 </Recipe>
-
+```
 ------------------------------------------------------------------
 
 ## 📦 Installation
