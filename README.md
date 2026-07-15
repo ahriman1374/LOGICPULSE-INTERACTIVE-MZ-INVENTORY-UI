@@ -4,6 +4,8 @@ LOGICPULSE INTERACTIVE
 
 A modern, fully interactive inventory and synthesis system for **RPG Maker MZ**.
 
+![Screenshot](docs/screenshot.png)
+
 --------------------------------------------------------------------------------------
 
 This plugin is open‑source and available under the MIT License.
