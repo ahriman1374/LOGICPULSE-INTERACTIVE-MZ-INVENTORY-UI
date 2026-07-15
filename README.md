@@ -73,9 +73,13 @@ If you want to modify the plugin, the source code is organised in the `src/` fol
 
 ### File Structure
 src/
+
 ├── Version.js – Plugin name and version.
+
 ├── Constants.js – Item categories.
+
 ├── managers/
+
 │ ├── LPAssets.js – Image loading and caching.
 │ ├── LPLayout.js – UI layout coordinates (positions, sizes).
 │ ├── LPInput.js – Keyboard input wrapper.
