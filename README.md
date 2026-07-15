@@ -75,7 +75,6 @@ If you want to modify the plugin, the source code is organised in the `src/` fol
 src/
 
 ├── Version.js – Plugin name and version.
-
 ├── Constants.js – Item categories.
 
 ├── managers/
