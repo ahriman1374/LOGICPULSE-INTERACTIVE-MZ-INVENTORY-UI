@@ -89,9 +89,10 @@ LOGICPULSE.Assets = {
 
             RecipeItemBoxes: "Empty Item boxes",
 
-            ItemNumberController: "Item Number Controller",
-            ItemDecrease: "Item Decrease Arrow Active",
-            ItemIncrease: "Item Increase Arrow Active",
+            ItemDecreaseInactive: "Item Decrease Arrow Inactive",
+            ItemDecreaseActive: "Item Decrease Arrow Active",
+            ItemIncreaseInactive: "Item Increase Arrow Inactive",
+            ItemIncreaseActive: "Item Increase Arrow Active",
 
             SynthesizeHover: "Synthesize Button Hover",
             SynthesizeIdle: "Synthesize Button Idle",

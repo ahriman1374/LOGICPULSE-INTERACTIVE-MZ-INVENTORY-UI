@@ -1,9 +1,9 @@
-"use strict";
-
 window.LOGICPULSE = window.LOGICPULSE || {};
 
 LOGICPULSE.Assets.initialize();
 
+// Initialize mouse system (already called in LPMouse.js)
+// LOGICPULSE.Mouse.initialize(); // This is auto-called
 
 (() => {
 

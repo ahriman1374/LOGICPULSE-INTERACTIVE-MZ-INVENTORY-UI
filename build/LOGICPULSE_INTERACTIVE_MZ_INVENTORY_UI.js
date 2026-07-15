@@ -16,7 +16,7 @@
  *
  * Edit the files inside /src instead.
  *
- * Build Date: 2026-07-15T01:11:44.227Z
+ * Build Date: 2026-07-15T14:17:15.243Z
  * ============================================================================
  */
 
@@ -70,28 +70,6 @@ LOGICPULSE.Constants = Object.freeze({
     })
 
 });
-
-
-//=============================================================================
-// Core.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-
-LOGICPULSE.Core = {};
-
-
-//=============================================================================
-// Debug.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-
-LOGICPULSE.Debug = {
-
-    enabled: false
-
-};
 
 
 //=============================================================================
@@ -187,9 +165,10 @@ LOGICPULSE.Assets = {
 
             RecipeItemBoxes: "Empty Item boxes",
 
-            ItemNumberController: "Item Number Controller",
-            ItemDecrease: "Item Decrease Arrow Active",
-            ItemIncrease: "Item Increase Arrow Active",
+            ItemDecreaseInactive: "Item Decrease Arrow Inactive",
+            ItemDecreaseActive: "Item Decrease Arrow Active",
+            ItemIncreaseInactive: "Item Increase Arrow Inactive",
+            ItemIncreaseActive: "Item Increase Arrow Active",
 
             SynthesizeHover: "Synthesize Button Hover",
             SynthesizeIdle: "Synthesize Button Idle",
@@ -525,10 +504,13 @@ LOGICPULSE.Layout = Object.freeze({
 
             tabs: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 4,
+                y: 130,
 
-                spacing: 0
+                spacing: 52,
+
+                width: 44,
+                height: 44,
 
             })
 
@@ -593,12 +575,15 @@ LOGICPULSE.Layout = Object.freeze({
 
             Button: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 912,
+                y: 640,
 
                 scale: 1.0,
 
-                hoverScale: 1.05
+                hoverScale: 1.05,
+
+                width: 288,
+                height: 48,
 
             })
 
@@ -671,21 +656,6 @@ LOGICPULSE.Layout = Object.freeze({
 
         }),
 
-        Sidebar: Object.freeze({
-
-            x: 0,
-            y: 0,
-
-            tabs: Object.freeze({
-
-                x: 0,
-                y: 0,
-
-                spacing: 0
-
-            })
-
-        }),
 
         Showcase: Object.freeze({
 
@@ -749,63 +719,70 @@ LOGICPULSE.Layout = Object.freeze({
 
             Tip: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 1032,
+                y: 145,
 
             }),
 
-            NumberControls: Object.freeze({
+            ItemDecrease: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 768,
+                y: 600,
 
-                Arrows: Object.freeze({
+                width: 27,
+                height: 27,
 
-                    x: 0,
-                    y: 0,
+            }),
 
-                    spacing: 0
+            ItemIncrease: Object.freeze({
 
-                }),
+                x: 930,
+                y: 600,
 
-                CurrentNumber: Object.freeze({
+                width: 27,
+                height: 27,
 
-                    x: 822,
-                    y: 598,
+            }),
 
-                    width: 80,
-                    height: 32,
+            CurrentNumber: Object.freeze({
 
-                    align: "center",
+                x: 822,
+                y: 598,
 
-                    fontSize: 28
+                width: 80,
+                height: 32,
 
-                }),
+                align: "center",
 
-                MaxNumber: Object.freeze({
+                fontSize: 28
 
-                    x: 686,
-                    y: 194,
+            }),
 
-                    width: 80,
-                    height: 32,
+            MaxNumber: Object.freeze({
 
-                    align: "center",
+                x: 686,
+                y: 194,
 
-                    fontSize: 20
-                }),
+                width: 80,
+                height: 32,
 
+                align: "center",
+
+                fontSize: 20
             }),
 
 
             Button: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 790,
+                y: 650,
 
                 scale: 1.0,
 
-                hoverScale: 1.05
+                hoverScale: 1.05,
+
+                width: 160,
+                height: 30,
 
             })
 
@@ -826,7 +803,7 @@ LOGICPULSE.Layout = Object.freeze({
             Amount: Object.freeze({
 
                 x: 52,
-                y: 58,
+                y: 70,
 
                 width: 36,
                 height: 20,
@@ -1071,16 +1048,407 @@ LOGICPULSE.Bindings = Object.freeze({
 
 
 //=============================================================================
-// LPUIState.js
+// LPMouse.js
+//=============================================================================
+
+//=============================================================================
+// LPMouse.js
 //=============================================================================
 
 window.LOGICPULSE = window.LOGICPULSE || {};
 
-LOGICPULSE.UIState = {
+//=============================================================================
+// Mouse Manager - Uses RPG Maker's TouchInput for coordinates
+//=============================================================================
 
-    startCategory: LOGICPULSE.Constants.Category.Consumable
+LOGICPULSE.Mouse = {
 
+    //--------------------------------
+    // State
+    //--------------------------------
+
+    _x: 0,
+    _y: 0,
+    _hoveredElement: null,
+    _pressedElement: null,
+    _draggedElement: null,
+    _dragOffsetX: 0,
+    _dragOffsetY: 0,
+    _mouseDownX: 0,
+    _mouseDownY: 0,
+    _clickThreshold: 5,
+    _isDragging: false,
+    _initialized: false,
+    _wheelDelta: 0,
+    _pendingUse: false,
+
+    //--------------------------------
+    // Initialize
+    //--------------------------------
+
+    initialize: function() {
+        if (this._initialized) return;
+        this._initialized = true;
+        console.log('[LOGICPULSE.Mouse] Initialized');
+
+        this._patchTouchInput();
+        document.addEventListener('wheel', this._onWheel.bind(this), { passive: true });
+        document.addEventListener('mousedown', this._onMouseDown.bind(this));
+        document.addEventListener('mouseup', this._onMouseUp.bind(this));
+    },
+
+    //--------------------------------
+    // Patch TouchInput
+    //--------------------------------
+
+    _patchTouchInput: function() {
+        var originalUpdate = TouchInput.update;
+        var self = this;
+
+        TouchInput.update = function() {
+            originalUpdate.call(this);
+            self._updateFromTouchInput();
+        };
+    },
+
+    //--------------------------------
+    // Update from TouchInput
+    //--------------------------------
+
+    _updateFromTouchInput: function() {
+        this._x = TouchInput.x;
+        this._y = TouchInput.y;
+        this._processHover();
+    },
+
+    //--------------------------------
+    // Wheel Event
+    //--------------------------------
+
+    _onWheel: function(e) {
+        this._wheelDelta = e.deltaY > 0 ? 1 : -1;
+        this._processScroll();
+    },
+
+    //--------------------------------
+    // Mouse Down/Up
+    //--------------------------------
+
+    _onMouseDown: function(e) {
+        var buttonMap = { 0: 'left', 1: 'middle', 2: 'right' };
+        var button = buttonMap[e.button];
+        if (!button) return;
+
+        this._mouseDownX = this._x;
+        this._mouseDownY = this._y;
+        this._isDragging = false;
+
+        this._processClickDown(button);
+    },
+
+    _onMouseUp: function(e) {
+        var buttonMap = { 0: 'left', 1: 'middle', 2: 'right' };
+        var button = buttonMap[e.button];
+        if (!button) return;
+
+        this._processClickUp(button);
+
+        if (this._isDragging && this._draggedElement) {
+            this._endDrag();
+        }
+        this._isDragging = false;
+        this._draggedElement = null;
+        this._pendingUse = false;
+    },
+
+    //--------------------------------
+    // Process Hover (visual only, no selection change)
+    //--------------------------------
+
+    _processHover: function() {
+        if (!SceneManager || !SceneManager._scene) return;
+        var scene = SceneManager._scene;
+
+        var grid = scene._grid || scene._craftGrid;
+        if (!grid) return;
+
+        if (typeof grid.getSlotAt !== 'function') return;
+
+        var slot = grid.getSlotAt(this._x, this._y);
+
+        if (slot !== this._hoveredElement) {
+            if (this._hoveredElement && this._hoveredElement._onMouseExit) {
+                this._hoveredElement._onMouseExit();
+            }
+            this._hoveredElement = slot;
+            if (this._hoveredElement && this._hoveredElement._onMouseEnter) {
+                this._hoveredElement._onMouseEnter();
+            }
+        }
+    },
+
+    //--------------------------------
+    // Process Click Down
+    //--------------------------------
+
+    _processClickDown: function(button) {
+        if (!SceneManager || !SceneManager._scene) return;
+        var scene = SceneManager._scene;
+
+        var grid = scene._grid || scene._craftGrid;
+        if (!grid) return;
+
+        var slot = this._hoveredElement;
+        if (!slot) return;
+
+        this._pressedElement = slot;
+
+        var index = grid._slots.indexOf(slot);
+        if (index < 0) return;
+
+        var currentSelected = grid.selectedIndex();
+
+        if (button === 'left') {
+            if (currentSelected === index) {
+                this._pendingUse = true;
+            } else {
+                this._pendingUse = false;
+                grid.setSelectedIndex(index);
+                if (scene._controller && scene._controller.onSelectionChanged) {
+                    scene._controller.onSelectionChanged();
+                }
+                this._draggedElement = slot;
+                this._dragOffsetX = this._x - slot.x;
+                this._dragOffsetY = this._y - slot.y;
+                this._isDragging = false;
+            }
+        } else if (button === 'right') {
+            this._pendingUse = false;
+            grid.setSelectedIndex(index);
+            if (scene._controller && scene._controller.onSelectionChanged) {
+                scene._controller.onSelectionChanged();
+            }
+        } else {
+            this._pendingUse = false;
+            grid.setSelectedIndex(index);
+            if (scene._controller && scene._controller.onSelectionChanged) {
+                scene._controller.onSelectionChanged();
+            }
+        }
+
+        if (slot._onMouseDown) {
+            slot._onMouseDown(button, this._x, this._y);
+        }
+    },
+
+    //--------------------------------
+    // Process Click Up
+    //--------------------------------
+
+    _processClickUp: function(button) {
+        if (!SceneManager || !SceneManager._scene) return;
+        var scene = SceneManager._scene;
+
+        var grid = scene._grid || scene._craftGrid;
+        if (!grid) return;
+
+        var slot = this._hoveredElement;
+
+        var dx = this._x - this._mouseDownX;
+        var dy = this._y - this._mouseDownY;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < this._clickThreshold && slot && slot === this._pressedElement) {
+            if (button === 'left' && this._pendingUse) {
+                this._handleUseItem(slot, grid);
+                this._pendingUse = false;
+            } else if (button === 'left') {
+                if (scene._controller && scene._controller.onSelectionChanged) {
+                    scene._controller.onSelectionChanged();
+                }
+            } else if (button === 'right') {
+                if (scene._controller && scene._controller.onSelectionChanged) {
+                    scene._controller.onSelectionChanged();
+                }
+            }
+        }
+
+        this._pressedElement = null;
+        if (button === 'left' && this._pendingUse) {
+            this._pendingUse = false;
+        }
+    },
+
+    //--------------------------------
+    // Handle Use Item
+    //--------------------------------
+
+    _handleUseItem: function(slot, grid) {
+        var scene = SceneManager._scene;
+        if (scene && scene._controller && scene._controller.onConfirm) {
+            scene._controller.onConfirm();
+        }
+    },
+
+    //--------------------------------
+    // Drag
+    //--------------------------------
+
+    _processDrag: function() {
+        var dx = this._x - this._mouseDownX;
+        var dy = this._y - this._mouseDownY;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > this._clickThreshold && !this._isDragging) {
+            this._isDragging = true;
+            this._onDragStart();
+        }
+
+        if (this._isDragging && this._draggedElement) {
+            this._onDragMove();
+        }
+    },
+
+    _onDragStart: function() {
+        if (this._draggedElement && this._draggedElement._onDragStart) {
+            this._draggedElement._onDragStart(this._x, this._y);
+        }
+    },
+
+    _onDragMove: function() {
+        if (this._draggedElement && this._draggedElement._onDragMove) {
+            this._draggedElement._onDragMove(this._x, this._y);
+        }
+    },
+
+    _endDrag: function() {
+        if (this._draggedElement && this._draggedElement._onDragEnd) {
+            this._draggedElement._onDragEnd(this._x, this._y);
+        }
+    },
+
+    //--------------------------------
+    // Process Scroll (with description text priority)
+    //--------------------------------
+
+    _processScroll: function() {
+        if (!SceneManager || !SceneManager._scene) return;
+        var scene = SceneManager._scene;
+
+        // Check if mouse is over the description text
+        var descriptionText = this._getDescriptionText(scene);
+        if (descriptionText && this._isOverDescription(descriptionText)) {
+            // Scroll the description text
+            var scrolled = this._scrollDescription(descriptionText, this._wheelDelta);
+            if (scrolled) {
+                this._wheelDelta = 0;
+                return; // Description text handled the scroll
+            }
+            // If description can't scroll further, fall through to grid
+        }
+
+        // Scroll the grid
+        var grid = scene._grid || scene._craftGrid;
+        if (!grid || !grid._layout) return;
+
+        var columns = grid._layout.columns;
+        if (this._wheelDelta > 0) {
+            for (var i = 0; i < columns; i++) {
+                grid.moveDown();
+            }
+        } else if (this._wheelDelta < 0) {
+            for (var j = 0; j < columns; j++) {
+                grid.moveUp();
+            }
+        }
+
+        if (scene._controller && scene._controller.onSelectionChanged) {
+            scene._controller.onSelectionChanged();
+        }
+
+        this._wheelDelta = 0;
+    },
+
+    //--------------------------------
+    // Helper: Get description text from scene
+    //--------------------------------
+
+    _getDescriptionText: function(scene) {
+        // Try inventory showcase
+        if (scene._showcase && scene._showcase._descriptionText) {
+            return scene._showcase._descriptionText;
+        }
+        // Try synthesizer showcase
+        if (scene._showcase && scene._showcase._descriptionText) {
+            return scene._showcase._descriptionText;
+        }
+        return null;
+    },
+
+    //--------------------------------
+    // Helper: Check if mouse is over description
+    //--------------------------------
+
+    _isOverDescription: function(descriptionText) {
+        if (!descriptionText) return false;
+
+        // Get the description text's world position
+        var worldX = descriptionText.x;
+        var worldY = descriptionText.y;
+        var parent = descriptionText.parent;
+
+        while (parent && parent !== SceneManager._scene) {
+            worldX += parent.x || 0;
+            worldY += parent.y || 0;
+            parent = parent.parent;
+        }
+
+        var width = descriptionText._width || 288;
+        var height = descriptionText._height || 160;
+
+        return this._x >= worldX && this._x <= worldX + width &&
+            this._y >= worldY && this._y <= worldY + height;
+    },
+
+    //--------------------------------
+    // Helper: Scroll description text
+    //--------------------------------
+
+    _scrollDescription: function(descriptionText, delta) {
+        if (!descriptionText || typeof descriptionText.scroll !== 'function') {
+            return false;
+        }
+
+        var scrollAmount = delta * 20; // Scroll 20px per wheel tick
+        descriptionText.scroll(scrollAmount);
+
+        // Return true if the text can scroll (has content to scroll)
+        return descriptionText.canScroll ? descriptionText.canScroll() : true;
+    },
+
+    //--------------------------------
+    // Public API
+    //--------------------------------
+
+    x: function() { return this._x; },
+    y: function() { return this._y; },
+    position: function() { return { x: this._x, y: this._y }; },
+    getHoveredElement: function() { return this._hoveredElement; },
+
+    isTriggered: function(button) { return TouchInput.isTriggered(); },
+    isPressed: function(button) { return TouchInput.isPressed(); },
+    isReleased: function(button) { return TouchInput.isReleased(); },
+    isRepeated: function(button) { return TouchInput.isRepeated(); },
+
+    update: function() {
+        if (this._isDragging && this._draggedElement) {
+            this._processDrag();
+        }
+    }
 };
+
+// Auto-initialize
+LOGICPULSE.Mouse.initialize();
 
 
 //=============================================================================
@@ -1754,127 +2122,6 @@ LOGICPULSE.InventoryProvider = {
 
 
 //=============================================================================
-// LPInventoryState.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-
-//=============================================================================
-// Inventory State
-//=============================================================================
-
-LOGICPULSE.InventoryState = class {
-
-    constructor() {
-
-        this.reset();
-
-    }
-
-    //--------------------------------
-    // Reset
-    //--------------------------------
-
-    reset() {
-
-        this._category =
-
-            LOGICPULSE.Constants.Category.Consumable;
-
-        this._selectedIndex = 0;
-
-        this._scrollRow = 0;
-
-        this._mode = "inventory";
-
-        this._craftAmount = 1;
-
-    }
-
-    //--------------------------------
-    // Category
-    //--------------------------------
-
-    category() {
-
-        return this._category;
-
-    }
-
-    setCategory(category) {
-
-        this._category = category;
-
-    }
-
-    //--------------------------------
-    // Selected Index
-    //--------------------------------
-
-    selectedIndex() {
-
-        return this._selectedIndex;
-
-    }
-
-    setSelectedIndex(index) {
-
-        this._selectedIndex = Math.max(0, index);
-
-    }
-
-    //--------------------------------
-    // Scroll Row
-    //--------------------------------
-
-    scrollRow() {
-
-        return this._scrollRow;
-
-    }
-
-    setScrollRow(row) {
-
-        this._scrollRow = Math.max(0, row);
-
-    }
-
-    //--------------------------------
-    // Mode
-    //--------------------------------
-
-    mode() {
-
-        return this._mode;
-
-    }
-
-    setMode(mode) {
-
-        this._mode = mode;
-
-    }
-
-    //--------------------------------
-    // Craft Amount
-    //--------------------------------
-
-    craftAmount() {
-
-        return this._craftAmount;
-
-    }
-
-    setCraftAmount(amount) {
-
-        this._craftAmount = Math.max(1, amount);
-
-    }
-
-};
-
-
-//=============================================================================
 // LPInventoryController.js
 //=============================================================================
 
@@ -2245,11 +2492,9 @@ LOGICPULSE.SynthesizerController = class {
     //--------------------------------
 
     constructor(scene) {
-
         this._scene = scene;
-
         this._state = "select";
-
+        this._craftingItem = null;
     }
 
     //--------------------------------
@@ -2257,131 +2502,66 @@ LOGICPULSE.SynthesizerController = class {
     //--------------------------------
 
     update() {
-
         if (this._state === "select") {
-
             this.updateGridInput();
-
-        }
-
-        else {
-
+        } else {
             this.updateQuantityInput();
-
         }
-
 
         this.updateConfirmInput();
-
         this.updateCancelInput();
-
         this.updateCategoryInput();
-
     }
 
     //--------------------------------
-    // Grid Input
+    // Grid Input (keyboard)
     //--------------------------------
 
     updateGridInput() {
-
         const grid = this.grid();
-
-        if (!grid) {
-
-            return;
-
-        }
+        if (!grid) return;
 
         const B = LOGICPULSE.Bindings;
-
         let moved = false;
 
         if (LOGICPULSE.Input.isRepeated(B.MoveLeft)) {
-
             grid.moveLeft();
-
             moved = true;
-
-        }
-
-        else if (LOGICPULSE.Input.isRepeated(B.MoveRight)) {
-
+        } else if (LOGICPULSE.Input.isRepeated(B.MoveRight)) {
             grid.moveRight();
-
             moved = true;
-
-        }
-
-        else if (LOGICPULSE.Input.isRepeated(B.MoveUp)) {
-
+        } else if (LOGICPULSE.Input.isRepeated(B.MoveUp)) {
             grid.moveUp();
-
             moved = true;
-
-        }
-
-        else if (LOGICPULSE.Input.isRepeated(B.MoveDown)) {
-
+        } else if (LOGICPULSE.Input.isRepeated(B.MoveDown)) {
             grid.moveDown();
-
             moved = true;
-
         }
 
         if (moved) {
-
             this.onSelectionChanged();
-
         }
-
     }
 
     //--------------------------------
-    // Quantity Input
+    // Quantity Input (keyboard)
     //--------------------------------
 
     updateQuantityInput() {
-
         const controller = this.quantityController();
-
-        if (!controller) {
-
-            return;
-
-        }
+        if (!controller) return;
 
         let step = 1;
-
-
-        if (Input.isPressed("skip")) {
-
-            step = 10;
-
-        }
-
-        if (Input.isPressed("shift")) {
-
-            step = controller.max();
-
-        }
-
+        if (Input.isPressed("skip")) step = 10;
+        if (Input.isPressed("shift")) step = controller.max();
 
         const B = LOGICPULSE.Bindings;
 
-
         if (LOGICPULSE.Input.isRepeated(B.MoveLeft)) {
-
             controller.decrease(step);
-
-        }
-
-        else if (LOGICPULSE.Input.isRepeated(B.MoveRight)) {
-
+        } else if (LOGICPULSE.Input.isRepeated(B.MoveRight)) {
             controller.increase(step);
-
         }
-
     }
 
     //--------------------------------
@@ -2389,86 +2569,53 @@ LOGICPULSE.SynthesizerController = class {
     //--------------------------------
 
     updateCategoryInput() {
-
         const B = LOGICPULSE.Bindings;
-
         if (
             LOGICPULSE.Input.isTriggered(B.NextCategory) ||
             LOGICPULSE.Input.isTriggered(B.PreviousCategory)
         ) {
-
-            SceneManager.goto(
-
-                LOGICPULSE.Scenes.Inventory
-
-            );
-
+            SceneManager.goto(LOGICPULSE.Scenes.Inventory);
         }
-
     }
 
     //--------------------------------
-    // Confirm
+    // Confirm Input (Enter key + mouse double-click)
     //--------------------------------
 
     updateConfirmInput() {
-
-        if (
-
-            LOGICPULSE.Input.isTriggered(
-
-                LOGICPULSE.Bindings.Confirm
-
-            )
-
-        ) {
-
-            if (this._state === "select") {
-
-                this.enterCraftMode();
-
-            }
-
-            else {
-
-                this.craft();
-
-            }
-
+        if (LOGICPULSE.Input.isTriggered(LOGICPULSE.Bindings.Confirm)) {
+            this.onConfirm();
         }
-
     }
 
     //--------------------------------
-    // Cancel
+    // Cancel Input
     //--------------------------------
 
     updateCancelInput() {
-
-        if (
-
-            LOGICPULSE.Input.isTriggered(
-
-                LOGICPULSE.Bindings.Cancel
-
-            )
-
-        ) {
-
+        if (LOGICPULSE.Input.isTriggered(LOGICPULSE.Bindings.Cancel)) {
             if (this._state === "craft") {
-
                 this.leaveCraftMode();
-
-            }
-
-            else {
-
+            } else {
                 this.onCancel();
-
             }
-
         }
+    }
 
+    //=========================================================================
+    // CONFIRM / CRAFT LOGIC
+    //=========================================================================
+
+    //--------------------------------
+    // Confirm (Enter key or double-click)
+    //--------------------------------
+
+    onConfirm() {
+        if (this._state === "select") {
+            this.enterCraftMode();
+        } else if (this._state === "craft") {
+            this.craft(); // Enter key crafts when in craft mode
+        }
     }
 
     //--------------------------------
@@ -2476,44 +2623,17 @@ LOGICPULSE.SynthesizerController = class {
     //--------------------------------
 
     enterCraftMode() {
-
         const entry = this.grid().selectedEntry();
+        if (!entry) return;
 
-        if (!entry) {
-
+        if (!LOGICPULSE.RecipeManager.canCraft(entry.item)) {
             return;
-
-        }
-
-
-        if (
-
-            !LOGICPULSE.RecipeManager.canCraft(
-
-                entry.item
-
-            )
-
-        ) {
-
-            return;
-
         }
 
         this._state = "craft";
-
-        this.scene()._quantityController?.setItem(
-
-            entry.item
-
-        );
-
-        this.scene().enterCraftMode?.(
-
-            entry.item
-
-        );
-
+        this._craftingItem = entry.item;
+        this.scene()._quantityController?.setItem(entry.item);
+        this.scene().enterCraftMode?.(entry.item);
     }
 
     //--------------------------------
@@ -2521,213 +2641,78 @@ LOGICPULSE.SynthesizerController = class {
     //--------------------------------
 
     leaveCraftMode() {
-
         this._state = "select";
-
+        this._craftingItem = null;
         this.scene().leaveCraftMode?.();
-
+        this.scene()._quantityController?.setItem(null);
     }
 
     //--------------------------------
-    // Craft
+    // Craft (called by Enter key or craft button)
     //--------------------------------
 
     craft() {
-
+        if (this._state !== "craft") return;
         this.scene().craftCurrentItem?.();
 
+        // After crafting, refresh the quantity controller
+        const entry = this.grid().selectedEntry();
+        if (entry) {
+            this.scene()._quantityController?.setItem(entry.item);
+        }
+        this.onSelectionChanged();
     }
 
-    //--------------------------------
-    // Change Category
-    //--------------------------------
-
-    changeCategory(direction) {
-
-        SceneManager.goto(
-
-            LOGICPULSE.Scenes.Inventory
-
-        );
-
-    }
-
-    //--------------------------------
-    // Selection Changed
-    //--------------------------------
+    //=========================================================================
+    // SELECTION CHANGED
+    //=========================================================================
 
     onSelectionChanged() {
-
         const entry = this.grid().selectedEntry();
 
-        if (!entry) {
-
-            this.scene()._recipePanel?.clear();
-
-            this.scene()._showcase?.setItem?.(null);
-
-            this.scene()._quantityController?.setItem?.(null);
-
-            this.scene()._craftButton?.setItem?.(null);
-
-            this.scene().onSelectionChanged?.();
-
+        if (this._state === "craft" && entry) {
+            if (entry.item !== this._craftingItem) {
+                this.leaveCraftMode();
+                this._updateUI(entry);
+                return;
+            }
             return;
-
         }
 
-        const recipe =
-
-            LOGICPULSE.RecipeManager.recipe(
-
-                entry.item
-
-            );
-
-        this.scene()._recipePanel?.setRecipe(
-
-            recipe
-
-        );
-
-        this.scene()._showcase?.setItem?.(
-
-            entry.item
-
-        );
-
-        this.scene()._quantityController?.setItem?.(
-
-            entry.item
-
-        );
-
-        this.scene()._craftButton?.setItem?.(
-
-            entry.item
-
-        );
-
-        this.scene().onSelectionChanged?.();
-
+        this._updateUI(entry);
     }
 
-    //--------------------------------
-    // Cancel
-    //--------------------------------
+    _updateUI(entry) {
+        if (!entry) {
+            this.scene()._recipePanel?.clear();
+            this.scene()._showcase?.setItem?.(null);
+            this.scene()._quantityController?.setItem?.(null);
+            this.scene()._craftButton?.setItem?.(null);
+            this.scene().onSelectionChanged?.();
+            return;
+        }
+
+        const recipe = LOGICPULSE.RecipeManager.recipe(entry.item);
+
+        this.scene()._recipePanel?.setRecipe(recipe);
+        this.scene()._showcase?.setItem?.(entry.item);
+        this.scene()._quantityController?.setItem?.(entry.item);
+        this.scene()._craftButton?.setItem?.(entry.item);
+        this.scene().onSelectionChanged?.();
+    }
+
+    //=========================================================================
+    // HELPERS
+    //=========================================================================
 
     onCancel() {
-
         this.scene().onCancel?.();
-
     }
 
-    //--------------------------------
-    // Scene
-    //--------------------------------
-
-    scene() {
-
-        return this._scene;
-
-    }
-
-    //--------------------------------
-    // Grid
-    //--------------------------------
-
-    grid() {
-
-        return this.scene()._craftGrid;
-
-    }
-
-    //--------------------------------
-    // Sidebar
-    //--------------------------------
-
-    sidebar() {
-
-        return this.scene()._sidebar;
-
-    }
-
-    //--------------------------------
-    // Quantity Controller
-    //--------------------------------
-
-    quantityController() {
-
-        return this.scene()._quantityController;
-
-    }
-
-};
-
-
-//=============================================================================
-// LPSidebarController.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-
-//=============================================================================
-// Sidebar Controller
-//=============================================================================
-
-LOGICPULSE.SidebarController = class {
-
-    //--------------------------------
-    // Initialize
-    //--------------------------------
-
-    constructor(sidebar) {
-
-        this._sidebar = sidebar;
-
-        this._frameTimer = 0;
-        this._keyboardTimer = 0;
-
-    }
-
-    //--------------------------------
-    // Update
-    //--------------------------------
-
-    update() {
-
-        this.updateKeyboardHint();
-
-    }
-
-    //--------------------------------
-    // Keyboard Hint Animation
-    //--------------------------------
-
-    updateKeyboardHint() {
-
-        this._keyboardTimer++;
-
-        if (this._keyboardTimer >= 30) {
-
-            this._keyboardTimer = 0;
-
-            this._sidebar.toggleKeyboardHint();
-
-        }
-
-    }
-
-    //--------------------------------
-    // Refresh Active Tab
-    //--------------------------------
-
-    refresh() {
-
-        this._sidebar.refresh();
-
-    }
-
+    scene() { return this._scene; }
+    grid() { return this.scene()._craftGrid; }
+    sidebar() { return this.scene()._sidebar; }
+    quantityController() { return this.scene()._quantityController; }
 };
 
 
@@ -3695,38 +3680,6 @@ LOGICPULSE.UI.Element = class extends PIXI.Container {
 
 
 //=============================================================================
-// LPButton.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-LOGICPULSE.UI = LOGICPULSE.UI || {};
-
-LOGICPULSE.UI.Button = class {
-
-    constructor() {
-
-    }
-
-};
-
-
-//=============================================================================
-// LPCursor.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-LOGICPULSE.UI = LOGICPULSE.UI || {};
-
-LOGICPULSE.UI.Cursor = class {
-
-    constructor() {
-
-    }
-
-};
-
-
-//=============================================================================
 // LPText.js
 //=============================================================================
 
@@ -4233,17 +4186,32 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         super();
 
         this._entry = options.entry || null;
-
         this._focused = false;
         this._locked = false;
-
         this._craftSelected = false;
+        this._isDestroyed = false; // custom flag
+
+        // Mouse state
+        this._isHovered = false;
+        this._isMouseDown = false;
+        this._isDragging = false;
+        this._dragGhost = null;
+        this._dragOriginalX = 0;
+        this._dragOriginalY = 0;
+        this._mouseDownX = 0;
+        this._mouseDownY = 0;
+
+        // Mouse event handlers
+        this._clickHandlers = [];
+        this._hoverEnterHandlers = [];
+        this._hoverExitHandlers = [];
+        this._dragStartHandlers = [];
+        this._dragMoveHandlers = [];
+        this._dragEndHandlers = [];
 
         this.move(
-
             options.x ?? 0,
             options.y ?? 0
-
         );
 
         this.create();
@@ -4260,6 +4228,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         this.createIcon();
         this.createAmount();
         this.createSelectionFrame();
+        this.createHoverOverlay();
 
         this.updateSelection();
 
@@ -4272,7 +4241,14 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     refresh() {
 
         this.removeChildren();
-
+        this._dragGhost = null;
+        this._isDragging = false;
+        this._isMouseDown = false;
+        // Destroy old hover overlay if exists
+        if (this._hoverOverlay) {
+            this._hoverOverlay.destroy();
+            this._hoverOverlay = null;
+        }
         this.create();
 
     }
@@ -4286,17 +4262,33 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         const background = this.background();
 
         if (!background) {
-
             return;
-
         }
 
         this._background = this.createSprite(
-
             background.folder,
             background.image
-
         );
+
+        // Store original alpha for hover effects
+        this._backgroundAlpha = 1.0;
+        this._backgroundTint = 0xFFFFFF;
+
+    }
+
+    //--------------------------------
+    // Hover Overlay
+    //--------------------------------
+
+    createHoverOverlay() {
+
+        // Create a semi-transparent overlay for hover effect
+        this._hoverOverlay = new PIXI.Graphics();
+        this._hoverOverlay.beginFill(0xFFFFFF, 0);
+        this._hoverOverlay.drawRect(0, 0, 92, 92);
+        this._hoverOverlay.endFill();
+        this._hoverOverlay.visible = false;
+        this.addChild(this._hoverOverlay);
 
     }
 
@@ -4309,15 +4301,12 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         const item = this.item();
 
         if (!item) {
-
             return;
-
         }
 
         this._icon = this.createItemSprite(item);
 
         const offset =
-
             LOGICPULSE.Layout.Inventory.Grid.Icon.offset;
 
         this._icon.x = offset.x;
@@ -4333,9 +4322,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     createItemSprite(item) {
 
         return LOGICPULSE.Assets.createItemSprite(
-
             item
-
         );
 
     }
@@ -4344,15 +4331,11 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     // Amount
     //--------------------------------
 
-
     createAmount() {
 
         if (this.amount() <= 0) {
-
             return;
-
         }
-
 
         const layout =
             LOGICPULSE.Layout.Inventory.Amount;
@@ -4362,11 +4345,9 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
             text: this.amount(),
 
             x: layout.x,
-
             y: layout.y,
 
             width: layout.width,
-
             height: layout.height,
 
             align: layout.align,
@@ -4386,11 +4367,8 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         const frame = this.selectionFrameAsset();
 
         this._selectionFrame = this.createSprite(
-
             frame.folder,
-
             frame.image
-
         );
 
         this._selectionFrame.visible = false;
@@ -4406,11 +4384,9 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         return {
 
             folder:
-
             LOGICPULSE.Assets.Folders.Inventory,
 
             image:
-
             LOGICPULSE.Assets.Images.Inventory.SelectionFrame
 
         };
@@ -4426,11 +4402,9 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         return {
 
             folder:
-
             LOGICPULSE.Assets.Folders.Inventory,
 
             image:
-
                 this.getBackgroundImage()
 
         };
@@ -4446,15 +4420,12 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
         switch (this.rarity()) {
 
             case 3:
-
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxLegendary;
 
             case 2:
-
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxRare;
 
             default:
-
                 return LOGICPULSE.Assets.Images.Inventory.ItemBoxCommon;
 
         }
@@ -4468,12 +4439,15 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     setFocused(value) {
 
         if (this._focused === value) {
-
             return;
-
         }
 
         this._focused = value;
+
+        // If focused by keyboard, clear mouse hover state
+        if (value) {
+            this._isHovered = false;
+        }
 
         this.updateSelection();
 
@@ -4486,9 +4460,7 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     setLocked(value) {
 
         if (this._locked === value) {
-
             return;
-
         }
 
         this._locked = value;
@@ -4524,88 +4496,480 @@ LOGICPULSE.UI.GridSlot = class extends LOGICPULSE.UI.Element {
     updateSelection() {
 
         if (!this._selectionFrame) {
-
             return;
-
         }
 
         if (this._focused) {
-
             this._selectionFrame.visible = true;
-
             this._selectionFrame.alpha = 1.0;
-
             LOGICPULSE.Animator.pulse(
-
                 this._selectionFrame
-
             );
-
         }
         else {
-
             this._selectionFrame.visible = false;
-
             LOGICPULSE.Animator.stop(
-
                 this._selectionFrame
-
             );
-
         }
 
     }
 
-    
+    //=========================================================================
+    // MOUSE EVENT HANDLERS
+    //=========================================================================
+
+    //--------------------------------
+    // Mouse Enter
+    //--------------------------------
+
+    _onMouseEnter() {
+        if (this._focused) return;
+        if (this._isDestroyed || this.destroyed) return;
+
+        this._isHovered = true;
+        this._showHoverEffect();
+
+        for (const handler of this._hoverEnterHandlers) {
+            handler(this);
+        }
+    }
+
+    //--------------------------------
+    // Mouse Exit
+    //--------------------------------
+
+    _onMouseExit() {
+        if (this._isDestroyed || this.destroyed) return;
+        this._isHovered = false;
+        this._hideHoverEffect();
+
+        for (const handler of this._hoverExitHandlers) {
+            handler(this);
+        }
+    }
+
+    //--------------------------------
+    // Mouse Down
+    //--------------------------------
+
+    _onMouseDown(button, x, y) {
+        if (this._locked || this._isDestroyed || this.destroyed) return;
+
+        this._isMouseDown = true;
+        this._mouseDownX = x;
+        this._mouseDownY = y;
+
+        if (this._background) {
+            this._background.alpha = 0.7;
+        }
+
+        this._dragStartX = x;
+        this._dragStartY = y;
+        this._dragOffsetX = x - this.x;
+        this._dragOffsetY = y - this.y;
+
+        this._triggerEvent('clickDown', [button, x, y]);
+    }
+
+    //--------------------------------
+    // Mouse Up
+    //--------------------------------
+
+    _onMouseUp(button, x, y) {
+        if (this._isDestroyed || this.destroyed) return;
+        if (!this._isMouseDown) return;
+
+        this._isMouseDown = false;
+
+        if (this._background) {
+            this._background.alpha = 1.0;
+        }
+
+        if (this._isDragging) {
+            this._onDragEnd(x, y);
+            this._isDragging = false;
+            return;
+        }
+
+        const dx = x - this._mouseDownX;
+        const dy = y - this._mouseDownY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 5) {
+            this._triggerEvent('click', [button, x, y]);
+        }
+    }
+
+    //--------------------------------
+    // Drag Start
+    //--------------------------------
+
+    _onDragStart(x, y) {
+        if (this._locked || !this._entry || this._isDestroyed || this.destroyed) return;
+
+        this._isDragging = true;
+        this._dragOriginalX = this.x;
+        this._dragOriginalY = this.y;
+
+        this._createDragGhost();
+
+        if (this._background) {
+            this._background.alpha = 0.5;
+        }
+
+        this._triggerEvent('dragStart', [x, y]);
+    }
+
+    //--------------------------------
+    // Drag Move
+    //--------------------------------
+
+    _onDragMove(x, y) {
+        if (!this._isDragging || !this._dragGhost || this._isDestroyed || this.destroyed) return;
+
+        this._dragGhost.x = x - this._dragOffsetX;
+        this._dragGhost.y = y - this._dragOffsetY;
+
+        const targetSlot = this._findTargetSlot(x, y);
+        this._highlightDropTarget(targetSlot);
+
+        this._triggerEvent('dragMove', [x, y]);
+    }
+
+    //--------------------------------
+    // Drag End
+    //--------------------------------
+
+    _onDragEnd(x, y) {
+        if (!this._isDragging || this._isDestroyed || this.destroyed) return;
+
+        this._isDragging = false;
+
+        const targetSlot = this._findTargetSlot(x, y);
+        if (targetSlot && targetSlot !== this) {
+            this._swapItems(targetSlot);
+        }
+
+        this._removeDragGhost();
+
+        if (this._background) {
+            this._background.alpha = 1.0;
+        }
+
+        this._clearDropHighlight();
+
+        this._triggerEvent('dragEnd', [x, y]);
+    }
+
+    //--------------------------------
+    // Drag Ghost
+    //--------------------------------
+
+    _createDragGhost() {
+        if (this._dragGhost || this._isDestroyed || this.destroyed) return;
+
+        this._dragGhost = new PIXI.Container();
+
+        if (this._background && this._background.texture) {
+            const ghostBg = new Sprite(this._background.texture);
+            ghostBg.alpha = 0.85;
+            ghostBg.x = 0;
+            ghostBg.y = 0;
+            this._dragGhost.addChild(ghostBg);
+        }
+
+        if (this._icon && this._icon.texture) {
+            const ghostIcon = new Sprite(this._icon.texture);
+            ghostIcon.x = this._icon.x || 0;
+            ghostIcon.y = this._icon.y || 0;
+            this._dragGhost.addChild(ghostIcon);
+        }
+
+        if (this._amountText) {
+            const layout = LOGICPULSE.Layout.Inventory.Amount;
+            const ghostAmount = new LOGICPULSE.UI.Text({
+                text: this.amount(),
+                x: layout.x,
+                y: layout.y,
+                width: layout.width,
+                height: layout.height,
+                align: layout.align,
+                fontSize: layout.fontSize
+            });
+            this._dragGhost.addChild(ghostAmount);
+        }
+
+        this._dragGhost.x = this.x;
+        this._dragGhost.y = this.y;
+        this._dragGhost.scale.set(1.1);
+
+        const scene = SceneManager._scene;
+        if (scene) {
+            scene.addChild(this._dragGhost);
+        }
+    }
+
+    _removeDragGhost() {
+        if (this._dragGhost) {
+            if (this._dragGhost.parent) {
+                this._dragGhost.parent.removeChild(this._dragGhost);
+            }
+            this._dragGhost.destroy({ children: true });
+            this._dragGhost = null;
+        }
+    }
+
+    //--------------------------------
+    // Find Target Slot
+    //--------------------------------
+
+    _findTargetSlot(x, y) {
+        const scene = SceneManager._scene;
+        if (!scene) return null;
+
+        const grid = scene._grid || scene._craftGrid;
+        if (!grid || !grid._slots) return null;
+
+        for (const slot of grid._slots) {
+            if (slot === this || !slot.visible || slot._locked) continue;
+
+            const bounds = this._getWorldBounds(slot);
+            if (x >= bounds.x && x <= bounds.x + bounds.width &&
+                y >= bounds.y && y <= bounds.y + bounds.height) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    _getWorldBounds(slot) {
+        let worldX = slot.x;
+        let worldY = slot.y;
+        let parent = slot.parent;
+
+        while (parent && parent !== SceneManager._scene) {
+            worldX += parent.x || 0;
+            worldY += parent.y || 0;
+            parent = parent.parent;
+        }
+
+        return {
+            x: worldX,
+            y: worldY,
+            width: 92,
+            height: 92
+        };
+    }
+
+    //--------------------------------
+    // Highlight Drop Target
+    //--------------------------------
+
+    _highlightDropTarget(targetSlot) {
+        this._clearDropHighlight();
+
+        if (targetSlot && targetSlot !== this) {
+            targetSlot._showDropHighlight();
+            this._dropTarget = targetSlot;
+        }
+    }
+
+    _showDropHighlight() {
+        if (this._dropHighlight) return;
+
+        this._dropHighlight = new PIXI.Graphics();
+        this._dropHighlight.lineStyle(3, 0x00FF00, 0.8);
+        this._dropHighlight.drawRect(0, 0, 92, 92);
+        this._dropHighlight.alpha = 0.6;
+        this.addChild(this._dropHighlight);
+    }
+
+    _clearDropHighlight() {
+        if (this._dropTarget) {
+            this._dropTarget._removeDropHighlight();
+            this._dropTarget = null;
+        }
+        this._removeDropHighlight();
+    }
+
+    _removeDropHighlight() {
+        if (this._dropHighlight) {
+            this.removeChild(this._dropHighlight);
+            this._dropHighlight.destroy();
+            this._dropHighlight = null;
+        }
+    }
+
+    //--------------------------------
+    // Swap Items
+    //--------------------------------
+
+    _swapItems(targetSlot) {
+        if (!this._entry || !targetSlot._entry) return;
+
+        const myEntry = this._entry;
+        const targetEntry = targetSlot._entry;
+
+        const tempItem = myEntry.item;
+        const tempAmount = myEntry.amount;
+        const tempRarity = myEntry.rarity;
+
+        myEntry.item = targetEntry.item;
+        myEntry.amount = targetEntry.amount;
+        myEntry.rarity = targetEntry.rarity;
+
+        targetEntry.item = tempItem;
+        targetEntry.amount = tempAmount;
+        targetEntry.rarity = tempRarity;
+
+        this.refresh();
+        targetSlot.refresh();
+
+        SoundManager.playOk();
+
+        this._triggerEvent('swap', [targetSlot]);
+        targetSlot._triggerEvent('swap', [this]);
+    }
+
+    //--------------------------------
+    // Hover Effects (FIXED with extra null safety)
+    //--------------------------------
+
+    _showHoverEffect() {
+        // Safety: if object is destroyed or missing scale, skip
+        if (this._isDestroyed || this.destroyed) return;
+        if (!this.scale) return; // crucial check
+
+        // Recreate overlay if missing
+        if (!this._hoverOverlay || this._hoverOverlay.destroyed) {
+            this.createHoverOverlay();
+        }
+
+        if (this._hoverOverlay && typeof this._hoverOverlay.clear === 'function') {
+            this._hoverOverlay.visible = true;
+            this._hoverOverlay.clear();
+            this._hoverOverlay.beginFill(0xFFFFFF, 0.15);
+            this._hoverOverlay.drawRect(0, 0, 92, 92);
+            this._hoverOverlay.endFill();
+        }
+
+        // Scale safely
+        if (this.scale && typeof this.scale.set === 'function') {
+            this.scale.set(1.02);
+        }
+    }
+
+    _hideHoverEffect() {
+        // Safety: if object is destroyed or missing scale, skip
+        if (this._isDestroyed || this.destroyed) return;
+        if (!this.scale) return; // crucial check
+
+        if (this._hoverOverlay && typeof this._hoverOverlay.clear === 'function') {
+            this._hoverOverlay.visible = false;
+            this._hoverOverlay.clear();
+        }
+
+        // Scale safely
+        if (this.scale && typeof this.scale.set === 'function') {
+            this.scale.set(1.0);
+        }
+    }
+
+    //--------------------------------
+    // Event Handlers
+    //--------------------------------
+
+    addClickHandler(handler) {
+        this._clickHandlers.push(handler);
+    }
+
+    addHoverEnterHandler(handler) {
+        this._hoverEnterHandlers.push(handler);
+    }
+
+    addHoverExitHandler(handler) {
+        this._hoverExitHandlers.push(handler);
+    }
+
+    addDragStartHandler(handler) {
+        this._dragStartHandlers.push(handler);
+    }
+
+    addDragMoveHandler(handler) {
+        this._dragMoveHandlers.push(handler);
+    }
+
+    addDragEndHandler(handler) {
+        this._dragEndHandlers.push(handler);
+    }
+
+    _triggerEvent(type, args) {
+        const handlers = {
+            click: this._clickHandlers,
+            clickDown: this._clickDownHandlers || [],
+            hoverEnter: this._hoverEnterHandlers,
+            hoverExit: this._hoverExitHandlers,
+            dragStart: this._dragStartHandlers,
+            dragMove: this._dragMoveHandlers,
+            dragEnd: this._dragEndHandlers,
+            swap: this._swapHandlers || []
+        };
+
+        const handlerList = handlers[type] || [];
+        for (const handler of handlerList) {
+            handler(...args);
+        }
+    }
 
     //--------------------------------
     // Entry
     //--------------------------------
 
     entry() {
-
         return this._entry;
-
     }
-
-    //--------------------------------
-    // Item
-    //--------------------------------
 
     item() {
-
         return this._entry?.item ?? null;
-
     }
-
-    //--------------------------------
-    // Amount
-    //--------------------------------
 
     amount() {
-
         return this._entry?.amount ?? 0;
-
     }
-
-    //--------------------------------
-    // Rarity
-    //--------------------------------
 
     rarity() {
-
         return this._entry?.rarity ?? 1;
+    }
 
+    category() {
+        return this._entry?.category ?? null;
     }
 
     //--------------------------------
-    // Category
+    // Destroy
     //--------------------------------
 
-    category() {
+    destroy(options = { children: true }) {
+        this._isDestroyed = true;
 
-        return this._entry?.category ?? null;
+        this._removeDragGhost();
+        this._clearDropHighlight();
 
+        if (this._hoverOverlay) {
+            this._hoverOverlay.destroy();
+            this._hoverOverlay = null;
+        }
+
+        this._clickHandlers = [];
+        this._hoverEnterHandlers = [];
+        this._hoverExitHandlers = [];
+        this._dragStartHandlers = [];
+        this._dragMoveHandlers = [];
+        this._dragEndHandlers = [];
+        this._swapHandlers = [];
+
+        super.destroy(options);
     }
 
 };
@@ -4832,17 +5196,12 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
     }
 
     //--------------------------------
-    // Set Category
+    // Set Category (MODIFIED: removed early return)
     //--------------------------------
 
     setCategory(category) {
 
-        if (this._category === category) {
-
-            return;
-
-        }
-
+        // Always rebuild – removed `if (this._category === category) return;`
         this._category = category;
 
         this._selectedIndex = 0;
@@ -5155,6 +5514,39 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         }
 
+    }
+
+    //=========================================================================
+    // MOUSE SUPPORT METHODS
+    //=========================================================================
+
+    getSlotAt(worldX, worldY) {
+        const viewportX = this.x;
+        const viewportY = this.y + this._viewport.y;
+
+        for (let i = 0; i < this._slots.length; i++) {
+            const slot = this._slots[i];
+            if (!slot || !slot.visible) continue;
+
+            const slotWorldX = viewportX + slot.x;
+            const slotWorldY = viewportY + slot.y;
+
+            const size = this._layout.itemSize || 92;
+
+            if (worldX >= slotWorldX && worldX <= slotWorldX + size &&
+                worldY >= slotWorldY && worldY <= slotWorldY + size) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    setSelectedSlot(slot) {
+        if (!slot) return;
+        const index = this._slots.indexOf(slot);
+        if (index >= 0) {
+            this.setSelectedIndex(index);
+        }
     }
 
 };
@@ -5513,614 +5905,246 @@ LOGICPULSE.UI.SynthesizerGrid = class extends LOGICPULSE.UI.Grid {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.UI = LOGICPULSE.UI || {};
 
-//=============================================================================
-// Sidebar
-//=============================================================================
-
 LOGICPULSE.UI.Sidebar = class extends LOGICPULSE.UI.Element {
 
-    //--------------------------------
-    // Initialize
-    //--------------------------------
-
     constructor() {
-
         super();
 
         this._selectedIndex = 0;
-
-        this._tabs = [];
+        this._hoveredIndex = -1;
+        this._onTabSelectedCallback = null;
 
         this._definitions = [
-
             {
-
-                category:
-                LOGICPULSE.Constants.Category.Consumable,
-
-                idle:
-                LOGICPULSE.Assets.Images.Sidebar.ConsumableIdle,
-
-                hover:
-                LOGICPULSE.Assets.Images.Sidebar.ConsumableHover,
-
-                header:
-                LOGICPULSE.Assets.Images.Sidebar.ConsumableHeader
-
+                category: LOGICPULSE.Constants.Category.Consumable,
+                idle: LOGICPULSE.Assets.Images.Sidebar.ConsumableIdle,
+                hover: LOGICPULSE.Assets.Images.Sidebar.ConsumableHover,
+                header: LOGICPULSE.Assets.Images.Sidebar.ConsumableHeader
             },
-
             {
-
-                category:
-                LOGICPULSE.Constants.Category.Material,
-
-                idle:
-                LOGICPULSE.Assets.Images.Sidebar.MaterialIdle,
-
-                hover:
-                LOGICPULSE.Assets.Images.Sidebar.MaterialHover,
-
-                header:
-                LOGICPULSE.Assets.Images.Sidebar.MaterialHeader
-
+                category: LOGICPULSE.Constants.Category.Material,
+                idle: LOGICPULSE.Assets.Images.Sidebar.MaterialIdle,
+                hover: LOGICPULSE.Assets.Images.Sidebar.MaterialHover,
+                header: LOGICPULSE.Assets.Images.Sidebar.MaterialHeader
             },
-
             {
-
-                category:
-                LOGICPULSE.Constants.Category.Key,
-
-                idle:
-                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialIdle,
-
-                hover:
-                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover,
-
-                header:
-                LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHeader
-
+                category: LOGICPULSE.Constants.Category.Key,
+                idle: LOGICPULSE.Assets.Images.Sidebar.KeyMaterialIdle,
+                hover: LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHover,
+                header: LOGICPULSE.Assets.Images.Sidebar.KeyMaterialHeader
             },
-
             {
-
                 category: "synthesizer",
-
-                idle:
-                LOGICPULSE.Assets.Images.Sidebar.SynthesizerIdle,
-
-                hover:
-                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover,
-
-                header:
-                LOGICPULSE.Assets.Images.Sidebar.SynthesizerHeader
-
+                idle: LOGICPULSE.Assets.Images.Sidebar.SynthesizerIdle,
+                hover: LOGICPULSE.Assets.Images.Sidebar.SynthesizerHover,
+                header: LOGICPULSE.Assets.Images.Sidebar.SynthesizerHeader
             }
-
         ];
 
+        this._tabs = [];
         this.create();
-
     }
-
-    //--------------------------------
-    // Create
-    //--------------------------------
 
     create() {
-
         this.createBackground();
-
         this.createHeaderFrame();
-
         this.createKeyboardHint();
-
         this.createTabs();
-
         this.refresh();
-
     }
-
-    //--------------------------------
-    // Background
-    //--------------------------------
 
     createBackground() {
-
         this._background = this.createSprite(
-
             LOGICPULSE.Assets.Folders.Sidebar,
-
             LOGICPULSE.Assets.Images.Sidebar.Box
-
         );
-
     }
-
-    //--------------------------------
-    // Header Frame
-    //--------------------------------
 
     createHeaderFrame() {
-
         this._headerFrame = this.createSprite(
-
             LOGICPULSE.Assets.Folders.Sidebar,
-
             this._definitions[0].header
-
         );
-
         this.addChild(this._headerFrame);
-
     }
-
-    //--------------------------------
-    // Keyboard Hint
-    //--------------------------------
 
     createKeyboardHint() {
-
         this._keyboardHint = this.createSprite(
-
             LOGICPULSE.Assets.Folders.Sidebar,
-
             LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyIdle
-
         );
-
         this.addChild(this._keyboardHint);
-
         LOGICPULSE.Animator.bitmapSwap(
-
             this._keyboardHint,
-
             LOGICPULSE.Assets.Folders.Sidebar,
-
             [
-
                 LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyIdle,
-
                 LOGICPULSE.Assets.Images.Sidebar.KeyboardTABKeyHover
-
             ],
-
-            {
-
-                interval: 40
-
-            }
-
+            { interval: 40 }
         );
-
     }
-
-    //--------------------------------
-    // Tabs
-    //--------------------------------
 
     createTabs() {
+        const layout = LOGICPULSE.Layout.Inventory.Sidebar;
 
-        const layout =
-
-            LOGICPULSE.Layout.Inventory.Sidebar;
-
-        for (
-
-            let i = 0;
-
-            i < this._definitions.length;
-
-            i++
-
-        ) {
-
-            const def =
-
-                this._definitions[i];
-
+        for (let i = 0; i < this._definitions.length; i++) {
+            const def = this._definitions[i];
             const sprite = this.createSprite(
-
                 LOGICPULSE.Assets.Folders.Sidebar,
-
                 def.idle
-
             );
+            sprite.x = layout.tabs.x;
+            sprite.y = layout.tabs.y + i * layout.tabs.spacing;
 
-            sprite.x =
+            sprite._rect = {
+                x: sprite.x,
+                y: sprite.y,
+                width: layout.tabs.width || 44,
+                height: layout.tabs.height || 44
+            };
 
-                layout.tabs.x;
-
-            sprite.y =
-
-                layout.tabs.y +
-
-                i * layout.tabs.spacing;
+            sprite._baseScale = 1.0;
+            sprite._hoverScale = 1.1;
+            sprite.scale.set(1.0);
 
             this.addChild(sprite);
-
             this._tabs.push(sprite);
-
         }
-
     }
 
-    //--------------------------------
-    // Refresh
-    //--------------------------------
-
-    refresh() {
-
-        for (
-
-            let i = 0;
-
-            i < this._tabs.length;
-
-            i++
-
-        ) {
-
-            const sprite =
-
-                this._tabs[i];
-
-            const def =
-
-                this._definitions[i];
-
-            const image =
-
-                i === this._selectedIndex
-
-                    ? def.hover
-                    : def.idle;
-
-            sprite.bitmap =
-
-                LOGICPULSE.Assets.load(
-
-                    LOGICPULSE.Assets.Folders.Sidebar,
-
-                    image
-
-                );
-
-        }
-
-        this._headerFrame.bitmap =
-
-            LOGICPULSE.Assets.load(
-
-                LOGICPULSE.Assets.Folders.Sidebar,
-
-                this._definitions[
-
-                    this._selectedIndex
-
-                    ].header
-
-            );
-
+    setOnTabSelected(callback) {
+        this._onTabSelectedCallback = callback;
     }
 
+    //=========================================================================
+    // MOUSE INTERACTION – DOES NOT AUTO-SELECT; CALLBACK HANDLES IT
+    //=========================================================================
 
+    processMouseInput(mouseX, mouseY) {
+        if (!this._tabs || !this._definitions || this._tabs.length === 0) return;
 
+        let hoveredIndex = -1;
 
-    //--------------------------------
-    // Select Index
-    //--------------------------------
+        for (let i = 0; i < this._tabs.length; i++) {
+            const rect = this._tabs[i]._rect;
+            if (mouseX >= rect.x && mouseX <= rect.x + rect.width &&
+                mouseY >= rect.y && mouseY <= rect.y + rect.height) {
+                hoveredIndex = i;
+                break;
+            }
+        }
+
+        const isValidIndex = (idx) => {
+            return idx >= 0 && idx < this._tabs.length && idx < this._definitions.length && this._definitions[idx] !== undefined;
+        };
+
+        // Update hover state (visual only)
+        if (hoveredIndex !== this._hoveredIndex) {
+            // Reset old hover (if not selected)
+            if (isValidIndex(this._hoveredIndex) && this._hoveredIndex !== this._selectedIndex) {
+                const oldSprite = this._tabs[this._hoveredIndex];
+                if (oldSprite) {
+                    oldSprite.bitmap = LOGICPULSE.Assets.load(
+                        LOGICPULSE.Assets.Folders.Sidebar,
+                        this._definitions[this._hoveredIndex].idle
+                    );
+                    oldSprite.scale.set(1.0);
+                }
+            }
+
+            this._hoveredIndex = hoveredIndex;
+
+            // Apply new hover (if not selected)
+            if (isValidIndex(this._hoveredIndex) && this._hoveredIndex !== this._selectedIndex) {
+                const newSprite = this._tabs[this._hoveredIndex];
+                if (newSprite) {
+                    newSprite.bitmap = LOGICPULSE.Assets.load(
+                        LOGICPULSE.Assets.Folders.Sidebar,
+                        this._definitions[this._hoveredIndex].hover
+                    );
+                    newSprite.scale.set(1.1);
+                }
+            }
+        }
+
+        // Handle click – do NOT select here; let the callback handle it.
+        if (isValidIndex(this._hoveredIndex) && this._hoveredIndex !== this._selectedIndex) {
+            if (TouchInput.isTriggered()) {
+                if (this._onTabSelectedCallback) {
+                    const def = this._definitions[this._hoveredIndex];
+                    if (def) {
+                        this._onTabSelectedCallback(this._hoveredIndex, def.category);
+                    }
+                }
+            }
+        }
+    }
+
+    //=========================================================================
+    // EXISTING METHODS (unchanged)
+    //=========================================================================
 
     select(index) {
-
-        index = Math.max(
-
-            0,
-
-            Math.min(
-
-                index,
-
-                this._definitions.length - 1
-
-            )
-
-        );
-
-        if (
-
-            index === this._selectedIndex
-
-        ) {
-
-            return;
-
-        }
+        index = Math.max(0, Math.min(index, this._definitions.length - 1));
+        if (index === this._selectedIndex) return;
 
         this._selectedIndex = index;
-
+        this._hoveredIndex = -1;
         this.refresh();
-
     }
-
-    //--------------------------------
-    // Next
-    //--------------------------------
-
-    next() {
-
-        this.select(
-
-            (this._selectedIndex + 1)
-
-            %
-
-            this._definitions.length
-
-        );
-
-    }
-
-    //--------------------------------
-    // Previous
-    //--------------------------------
-
-    previous() {
-
-        this.select(
-
-            (
-
-                this._selectedIndex -
-
-                1 +
-
-                this._definitions.length
-
-            )
-
-            %
-
-            this._definitions.length
-
-        );
-
-    }
-
-    //--------------------------------
-    // Selected Index
-    //--------------------------------
-
-    selectedIndex() {
-
-        return this._selectedIndex;
-
-    }
-
-
-    //--------------------------------
-    // Select Category
-    //--------------------------------
-
-    selectCategory(category) {
-
-        const index = this._definitions.findIndex(
-
-            definition =>
-
-                definition.category === category
-
-        );
-
-        if (index >= 0) {
-
-            this.select(index);
-
-        }
-
-    }
-
-
-    //--------------------------------
-    // Selected Category
-    //--------------------------------
-
-    selectedCategory() {
-
-        return this._definitions[
-
-            this._selectedIndex
-
-            ].category;
-
-    }
-
-    //--------------------------------
-    // Category Count
-    //--------------------------------
-
-    categoryCount() {
-
-        return this._definitions.length;
-
-    }
-
-    //--------------------------------
-    // Definition
-    //--------------------------------
-
-    definition(index) {
-
-        return this._definitions[index];
-
-    }
-
-};
-
-
-//=============================================================================
-// LPSidebarTab.js
-//=============================================================================
-
-window.LOGICPULSE = window.LOGICPULSE || {};
-LOGICPULSE.UI = LOGICPULSE.UI || {};
-
-//=============================================================================
-// Sidebar Tab
-//=============================================================================
-
-LOGICPULSE.UI.SidebarTab = class extends LOGICPULSE.UI.Element {
-
-    //--------------------------------
-    // Initialize
-    //--------------------------------
-
-    constructor(options = {}) {
-
-        super();
-
-        this._category = options.category;
-
-        this._idleImage =
-            options.idleImage;
-
-        this._hoverImage =
-            options.hoverImage;
-
-        this._enabled = true;
-
-        this._selected = false;
-
-        this.move(
-
-            options.x ?? 0,
-            options.y ?? 0
-
-        );
-
-        this.create();
-
-    }
-
-    //--------------------------------
-    // Create
-    //--------------------------------
-
-    create() {
-
-        this._sprite = this.createSprite(
-
-            LOGICPULSE.Assets.Folders.Sidebar,
-
-            this._idleImage
-
-        );
-
-    }
-
-    //--------------------------------
-    // Category
-    //--------------------------------
-
-    category() {
-
-        return this._category;
-
-    }
-
-    //--------------------------------
-    // Enabled
-    //--------------------------------
-
-    enabled() {
-
-        return this._enabled;
-
-    }
-
-    //--------------------------------
-    // Selected
-    //--------------------------------
-
-    selected() {
-
-        return this._selected;
-
-    }
-
-    //--------------------------------
-    // Set Enabled
-    //--------------------------------
-
-    setEnabled(value) {
-
-        if (this._enabled === value) {
-
-            return;
-
-        }
-
-        this._enabled = value;
-
-        this.refresh();
-
-    }
-
-    //--------------------------------
-    // Set Selected
-    //--------------------------------
-
-    setSelected(value) {
-
-        if (this._selected === value) {
-
-            return;
-
-        }
-
-        this._selected = value;
-
-        this.refresh();
-
-    }
-
-    //--------------------------------
-    // Refresh
-    //--------------------------------
 
     refresh() {
-
-        if (this._selected) {
-
-            this._sprite.bitmap =
-
-                LOGICPULSE.Assets.load(
-
-                    LOGICPULSE.Assets.Folders.Sidebar,
-
-                    this._hoverImage
-
-                );
-
+        for (let i = 0; i < this._tabs.length; i++) {
+            const sprite = this._tabs[i];
+            const def = this._definitions[i];
+            const image = (i === this._selectedIndex) ? def.hover : def.idle;
+            sprite.bitmap = LOGICPULSE.Assets.load(
+                LOGICPULSE.Assets.Folders.Sidebar,
+                image
+            );
+            sprite.scale.set(1.0);
         }
 
-        else {
-
-            this._sprite.bitmap =
-
-                LOGICPULSE.Assets.load(
-
-                    LOGICPULSE.Assets.Folders.Sidebar,
-
-                    this._idleImage
-
-                );
-
-        }
-
-        this.alpha = this._enabled ? 1.0 : 0.35;
-
+        this._headerFrame.bitmap = LOGICPULSE.Assets.load(
+            LOGICPULSE.Assets.Folders.Sidebar,
+            this._definitions[this._selectedIndex].header
+        );
     }
 
+    next() {
+        this.select((this._selectedIndex + 1) % this._definitions.length);
+    }
+
+    previous() {
+        this.select((this._selectedIndex - 1 + this._definitions.length) % this._definitions.length);
+    }
+
+    selectedIndex() {
+        return this._selectedIndex;
+    }
+
+    selectCategory(category) {
+        const index = this._definitions.findIndex(def => def.category === category);
+        if (index >= 0) this.select(index);
+    }
+
+    selectedCategory() {
+        return this._definitions[this._selectedIndex].category;
+    }
+
+    categoryCount() {
+        return this._definitions.length;
+    }
+
+    definition(index) {
+        return this._definitions[index];
+    }
+
+    destroy(options = { children: true }) {
+        this._onTabSelectedCallback = null;
+        super.destroy(options);
+    }
 };
 
 
@@ -6142,11 +6166,10 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     constructor() {
-
         super();
-
+        this._isButtonHovered = false;
+        this._isButtonPressed = false;
         this.create();
-
     }
 
     //--------------------------------
@@ -6154,13 +6177,11 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     create() {
-
         this.createOverlay();
         this.createItemSprite();
         this.createItemName();
         this.createDescription();
         this.createUseButton();
-
     }
 
     //--------------------------------
@@ -6168,20 +6189,13 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     createOverlay() {
-
-        const pos =
-            LOGICPULSE.Layout.Inventory.Showcase.Overlay;
-
+        const pos = LOGICPULSE.Layout.Inventory.Showcase.Overlay;
         this._overlay = this.createSprite(
-
             LOGICPULSE.Assets.Folders.Inventory,
             LOGICPULSE.Assets.Images.Inventory.Showcase,
-
             pos.x,
             pos.y
-
         );
-
     }
 
     //--------------------------------
@@ -6189,11 +6203,8 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     createItemSprite() {
-
         this._itemSprite = new Sprite();
-
         this.addChild(this._itemSprite);
-
     }
 
     //--------------------------------
@@ -6201,31 +6212,16 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     createItemName() {
-
-        const layout =
-            LOGICPULSE.Layout.Inventory.Showcase.Name;
-
-        this._nameText =
-            new LOGICPULSE.UI.Text({
-
-                x: layout.x,
-                y: layout.y,
-
-                width: layout.width,
-                height: layout.height,
-
-                align: layout.align,
-
-                fontSize: layout.fontSize
-
-            });
-
-        this.addChild(
-
-            this._nameText
-
-        );
-
+        const layout = LOGICPULSE.Layout.Inventory.Showcase.Name;
+        this._nameText = new LOGICPULSE.UI.Text({
+            x: layout.x,
+            y: layout.y,
+            width: layout.width,
+            height: layout.height,
+            align: layout.align,
+            fontSize: layout.fontSize
+        });
+        this.addChild(this._nameText);
     }
 
     //--------------------------------
@@ -6233,33 +6229,17 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     createDescription() {
-
-        const layout =
-            LOGICPULSE.Layout.Inventory.Showcase.Description;
-
-        this._descriptionText =
-            new LOGICPULSE.UI.ScrollText({
-
-                x: layout.x,
-                y: layout.y,
-
-                width: layout.width,
-                height: layout.height,
-
-                padding: layout.padding,
-
-                fontSize: layout.fontSize,
-
-                lineHeight: layout.lineHeight
-
-            });
-
-        this.addChild(
-
-            this._descriptionText
-
-        );
-
+        const layout = LOGICPULSE.Layout.Inventory.Showcase.Description;
+        this._descriptionText = new LOGICPULSE.UI.ScrollText({
+            x: layout.x,
+            y: layout.y,
+            width: layout.width,
+            height: layout.height,
+            padding: layout.padding,
+            fontSize: layout.fontSize,
+            lineHeight: layout.lineHeight
+        });
+        this.addChild(this._descriptionText);
     }
 
     //--------------------------------
@@ -6267,22 +6247,153 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     createUseButton() {
+        const pos = LOGICPULSE.Layout.Inventory.Showcase.Button;
+        this._useButton = this.createSprite(
+            LOGICPULSE.Assets.Folders.Inventory,
+            LOGICPULSE.Assets.Images.Inventory.UseButtonIdle,
+            pos.x,
+            pos.y
+        );
 
-        const pos =
-            LOGICPULSE.Layout.Inventory.Showcase.Button;
+        // Store button position for hit testing
+        this._useButtonRect = {
+            x: pos.x,
+            y: pos.y,
+            width: pos.width || 288,
+            height: pos.height || 48
+        };
 
-        this._useButton =
-            this.createSprite(
+        // Button state
+        this._isButtonHovered = false;
+        this._isButtonPressed = false;
+        this._useButtonScale = 1.0;
+        this._useButtonHoverScale = 1.002;
 
-                LOGICPULSE.Assets.Folders.Inventory,
+        // Make the button interactive via mouse manager
+        // This is checked in the scene's mouse processing
+    }
 
-                LOGICPULSE.Assets.Images.Inventory.UseButtonIdle,
+    //--------------------------------
+    // Button hit test (called from mouse manager)
+    //--------------------------------
 
-                pos.x,
-                pos.y
+    isButtonHovered(mouseX, mouseY) {
+        if (!this._useButton || !this._useButton.visible) return false;
+        const rect = this._useButtonRect;
+        return mouseX >= rect.x && mouseX <= rect.x + rect.width &&
+            mouseY >= rect.y && mouseY <= rect.y + rect.height;
+    }
 
-            );
+    //--------------------------------
+    // Button hover handlers (called from mouse manager)
+    //--------------------------------
 
+    _onButtonMouseEnter() {
+        if (this._isButtonHovered) return;
+        this._isButtonHovered = true;
+        if (this._useButton) {
+            this._useButton.scale.set(this._useButtonHoverScale);
+        }
+    }
+
+    _onButtonMouseExit() {
+        if (!this._isButtonHovered) return;
+        this._isButtonHovered = false;
+        if (this._useButton) {
+            this._useButton.scale.set(this._useButtonScale);
+        }
+    }
+
+    _onButtonMouseDown() {
+        if (!this._useButton || !this._useButton.visible) return;
+        this._isButtonPressed = true;
+        // Visual feedback: slightly darker or different image
+        // Could use a pressed state image if available
+        if (this._useButton) {
+            this._useButton.alpha = 0.8;
+        }
+    }
+
+    _onButtonMouseUp() {
+        if (!this._useButton || !this._useButton.visible) return;
+        this._isButtonPressed = false;
+        if (this._useButton) {
+            this._useButton.alpha = 1.0;
+        }
+        // If mouse is still over the button, it's a click
+        if (this._isButtonHovered) {
+            this._onButtonClick();
+        }
+    }
+
+    _onButtonClick() {
+        // Use the currently selected item
+        this._useItem();
+        // Play button animation
+        this.playUseAnimation();
+    }
+
+    //--------------------------------
+    // Use item logic
+    //--------------------------------
+
+    _useItem() {
+        const scene = SceneManager._scene;
+        if (!scene) return;
+
+        const grid = scene._grid || scene._craftGrid;
+        if (!grid) return;
+
+        const entry = grid.selectedEntry();
+        if (!entry) return;
+
+        if (!LOGICPULSE.InventoryProvider.canUse(entry.item)) {
+            return;
+        }
+
+        // Use the item via controller's onConfirm
+        if (scene._controller && scene._controller.onConfirm) {
+            scene._controller.onConfirm();
+        }
+    }
+
+    //--------------------------------
+    // Process mouse input (called from scene)
+    //--------------------------------
+
+    processMouseInput() {
+        const mouse = LOGICPULSE.Mouse;
+        if (!mouse) return;
+
+        const mouseX = mouse.x();
+        const mouseY = mouse.y();
+
+        const isOverButton = this.isButtonHovered(mouseX, mouseY);
+
+        // Handle hover state
+        if (isOverButton && !this._isButtonHovered) {
+            this._onButtonMouseEnter();
+        } else if (!isOverButton && this._isButtonHovered) {
+            this._onButtonMouseExit();
+        }
+
+        // Handle click (mouse down + up)
+        if (isOverButton) {
+            if (mouse.isTriggered('left')) {
+                this._onButtonMouseDown();
+            }
+            if (mouse.isReleased('left') && this._isButtonPressed) {
+                this._onButtonMouseUp();
+            }
+        } else {
+            // Reset pressed state if mouse leaves button
+            if (this._isButtonPressed) {
+                this._isButtonPressed = false;
+                if (this._useButton) {
+                    this._useButton.alpha = 1.0;
+                }
+            }
+        }
     }
 
     //--------------------------------
@@ -6290,39 +6401,28 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     setItem(entry) {
+        if (this._destroyed) return;
 
         if (!entry) {
-
             this.clear();
-
             return;
-
         }
-
         const item = entry.item;
-
         this.refreshItemSprite(item);
-
-        this._nameText.setText(
-
-            item.name
-
-        );
-
-        this._descriptionText.setText(
-
-            item.description
-
-    );
-
-        this._useButton.visible =
-
-            LOGICPULSE.InventoryProvider.showUseButton(
-
-                item
-
-            );
-
+        if (this._nameText) this._nameText.setText(item.name);
+        if (this._descriptionText) this._descriptionText.setText(item.description);
+        if (this._useButton) {
+            // Show button only if item is usable
+            const show = LOGICPULSE.InventoryProvider.showUseButton(item);
+            this._useButton.visible = show;
+            if (show) {
+                this._useButton.scale.set(this._useButtonScale);
+                this._useButton.alpha = 1.0;
+            }
+        }
+        // Reset button state
+        this._isButtonHovered = false;
+        this._isButtonPressed = false;
     }
 
     //--------------------------------
@@ -6330,19 +6430,11 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     refreshItemSprite(item) {
-
-        this._itemSprite.bitmap =
-
-            LOGICPULSE.Assets.load(
-
-                LOGICPULSE.Assets.Folders.Showcase,
-
-                `Item_${item.iconIndex}`
-
-            );
-
+        this._itemSprite.bitmap = LOGICPULSE.Assets.load(
+            LOGICPULSE.Assets.Folders.Showcase,
+            `Item_${item.iconIndex}`
+        );
         this.centerItemSprite();
-
     }
 
     //--------------------------------
@@ -6350,35 +6442,13 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     centerItemSprite() {
-
-        const bitmap =
-            this._itemSprite.bitmap;
-
-        if (!bitmap) {
-
-            return;
-
-        }
-
+        const bitmap = this._itemSprite.bitmap;
+        if (!bitmap) return;
         bitmap.addLoadListener(() => {
-
-            const frame =
-                LOGICPULSE.Layout.Inventory.Showcase.Frame;
-
-            this._itemSprite.x =
-
-                frame.x +
-
-                (frame.width - bitmap.width) / 2;
-
-            this._itemSprite.y =
-
-                frame.y +
-
-                (frame.height - bitmap.height) / 2;
-
+            const frame = LOGICPULSE.Layout.Inventory.Showcase.Frame;
+            this._itemSprite.x = frame.x + (frame.width - bitmap.width) / 2;
+            this._itemSprite.y = frame.y + (frame.height - bitmap.height) / 2;
         });
-
     }
 
     //--------------------------------
@@ -6386,31 +6456,23 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     playUseAnimation() {
-
-        this._useButton.bitmap =
-
-            LOGICPULSE.Assets.load(
-
-                LOGICPULSE.Assets.Folders.Inventory,
-
-                LOGICPULSE.Assets.Images.Inventory.UseButtonHover
-
-            );
-
+        if (!this._useButton) return;
+        this._useButton.bitmap = LOGICPULSE.Assets.load(
+            LOGICPULSE.Assets.Folders.Inventory,
+            LOGICPULSE.Assets.Images.Inventory.UseButtonHover
+        );
         setTimeout(() => {
-
-            this._useButton.bitmap =
-
-                LOGICPULSE.Assets.load(
-
+            if (this._useButton && !this._destroyed) {
+                this._useButton.bitmap = LOGICPULSE.Assets.load(
                     LOGICPULSE.Assets.Folders.Inventory,
-
                     LOGICPULSE.Assets.Images.Inventory.UseButtonIdle
-
                 );
-
+                // Reset scale after animation
+                if (this._useButton) {
+                    this._useButton.scale.set(this._useButtonScale);
+                }
+            }
         }, 120);
-
     }
 
     //--------------------------------
@@ -6418,17 +6480,32 @@ LOGICPULSE.UI.Showcase = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     clear() {
-
-        this._itemSprite.bitmap = null;
-
-        this._nameText.setText("");
-
-        this._descriptionText.setText("");
-
-        this._useButton.visible = false;
-
+        if (this._itemSprite) {
+            this._itemSprite.bitmap = null;
+        }
+        if (this._nameText) {
+            this._nameText.setText("");
+        }
+        if (this._descriptionText) {
+            this._descriptionText.setText("");
+        }
+        if (this._useButton) {
+            this._useButton.visible = false;
+            this._useButton.scale.set(this._useButtonScale);
+            this._useButton.alpha = 1.0;
+        }
+        this._isButtonHovered = false;
+        this._isButtonPressed = false;
     }
 
+    //--------------------------------
+    // Destroy
+    //--------------------------------
+
+    destroy(options) {
+        this._destroyed = true;
+        super.destroy(options);
+    }
 };
 
 
@@ -7140,157 +7217,119 @@ LOGICPULSE.UI.RecipePanel = class extends LOGICPULSE.UI.Element {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.UI = LOGICPULSE.UI || {};
 
-
 //=============================================================================
 // Quantity Controller
 //=============================================================================
 
 LOGICPULSE.UI.QuantityController = class extends LOGICPULSE.UI.Element {
 
-
     //--------------------------------
     // Initialize
     //--------------------------------
 
     constructor() {
-
         super();
-
         this._item = null;
-
         this._value = 1;
-
         this._max = 1;
-
         this._arrowTimer = 0;
 
+        // Mouse state for arrows
+        this._isIncreaseHovered = false;
+        this._isDecreaseHovered = false;
+        this._isIncreasePressed = false;
+        this._isDecreasePressed = false;
+
         this.create();
-
     }
-
-
 
     //--------------------------------
     // Create
     //--------------------------------
 
     create() {
-
-        this.createBackground();
-
-        this.createArrows();
-
+        this.createItemIncreaseArrow();
+        this.createItemDecreaseArrow();
         this.createNumber();
-
         this.createMaxNumber();
-
         this.refresh();
-
     }
 
-
-
     //--------------------------------
-    // Background
+    // Create Increase Arrow
     //--------------------------------
 
-    createBackground() {
+    createItemIncreaseArrow() {
+        const layout = LOGICPULSE.Layout.Synthesizer.Showcase.ItemIncrease;
 
-        const layout =
-
-            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls;
-
-
-        this._background = this.createSprite(
-
+        this._increaseBg = this.createSprite(
             LOGICPULSE.Assets.Folders.Synthesizer,
-
-            LOGICPULSE.Assets.Images.Synthesizer.ItemNumberController,
-
+            LOGICPULSE.Assets.Images.Synthesizer.ItemIncreaseInactive,
             layout.x,
-
             layout.y
-
         );
-
-    }
-
-
-
-    //--------------------------------
-    // Arrows
-    //--------------------------------
-
-    createArrows() {
-
-        const layout =
-
-            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls.Arrows;
-
-
-        this._leftArrow = this.createSprite(
-
-            LOGICPULSE.Assets.Folders.Synthesizer,
-
-            LOGICPULSE.Assets.Images.Synthesizer.ItemDecrease,
-
-            layout.x,
-
-            layout.y
-
-        );
-
 
         this._rightArrow = this.createSprite(
-
             LOGICPULSE.Assets.Folders.Synthesizer,
-
-            LOGICPULSE.Assets.Images.Synthesizer.ItemIncrease,
-
-            layout.x + layout.spacing,
-
+            LOGICPULSE.Assets.Images.Synthesizer.ItemIncreaseActive,
+            layout.x,
             layout.y
-
         );
-
-
-        this._leftArrow.visible = false;
-
         this._rightArrow.visible = false;
 
+        this._increaseRect = {
+            x: layout.x,
+            y: layout.y,
+            width: layout.width || 27,
+            height: layout.height || 27
+        };
     }
 
+    //--------------------------------
+    // Create Decrease Arrow
+    //--------------------------------
 
+    createItemDecreaseArrow() {
+        const layout = LOGICPULSE.Layout.Synthesizer.Showcase.ItemDecrease;
+
+        this._decreaseBg = this.createSprite(
+            LOGICPULSE.Assets.Folders.Synthesizer,
+            LOGICPULSE.Assets.Images.Synthesizer.ItemDecreaseInactive,
+            layout.x,
+            layout.y
+        );
+
+        this._leftArrow = this.createSprite(
+            LOGICPULSE.Assets.Folders.Synthesizer,
+            LOGICPULSE.Assets.Images.Synthesizer.ItemDecreaseActive,
+            layout.x,
+            layout.y
+        );
+        this._leftArrow.visible = false;
+
+        this._decreaseRect = {
+            x: layout.x,
+            y: layout.y,
+            width: layout.width || 27,
+            height: layout.height || 27
+        };
+    }
 
     //--------------------------------
     // Number
     //--------------------------------
 
     createNumber() {
-
-        const layout =
-
-            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls.CurrentNumber;
-
-
+        const layout = LOGICPULSE.Layout.Synthesizer.Showcase.CurrentNumber;
         this._numberText = this.createText({
-
             text: "1",
-
             x: layout.x,
-
             y: layout.y,
-
             width: layout.width,
-
             height: layout.height,
-
             align: layout.align,
-
             fontSize: layout.fontSize
-
         });
-
     }
 
     //--------------------------------
@@ -7298,279 +7337,206 @@ LOGICPULSE.UI.QuantityController = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     createMaxNumber() {
-
-        const layout =
-
-            LOGICPULSE.Layout.Synthesizer.Showcase.NumberControls.MaxNumber;
-
+        const layout = LOGICPULSE.Layout.Synthesizer.Showcase.MaxNumber;
         this._maxNumberText = this.createText({
-
             text: "1",
-
             x: layout.x,
-
             y: layout.y,
-
             width: layout.width,
-
             height: layout.height,
-
             align: layout.align,
-
             fontSize: layout.fontSize
-
         });
-
     }
 
+    //=========================================================================
+    // MOUSE INTERACTION
+    //=========================================================================
 
-    //--------------------------------
-    // Set Item
-    //--------------------------------
+    processMouseInput(mouseX, mouseY) {
+        // ONLY process if item is set AND max > 0 AND in craft mode
+        if (!this._item || this._max <= 0) {
+            this._setIncreaseHover(false);
+            this._setDecreaseHover(false);
+            return;
+        }
+
+        // Check if scene is in craft mode
+        const scene = SceneManager._scene;
+        if (!scene || !scene._controller || scene._controller._state !== "craft") {
+            this._setIncreaseHover(false);
+            this._setDecreaseHover(false);
+            return;
+        }
+
+        const isOverIncrease = this._isPointInRect(mouseX, mouseY, this._increaseRect);
+        const isOverDecrease = this._isPointInRect(mouseX, mouseY, this._decreaseRect);
+
+        this._setIncreaseHover(isOverIncrease);
+        this._setDecreaseHover(isOverDecrease);
+
+        if (isOverIncrease) {
+            if (TouchInput.isTriggered()) {
+                this._onIncreasePress();
+            }
+            if (TouchInput.isReleased() && this._isIncreasePressed) {
+                this._onIncreaseRelease();
+            }
+        } else {
+            if (this._isIncreasePressed) {
+                this._isIncreasePressed = false;
+                this._rightArrow.visible = false;
+            }
+        }
+
+        if (isOverDecrease) {
+            if (TouchInput.isTriggered()) {
+                this._onDecreasePress();
+            }
+            if (TouchInput.isReleased() && this._isDecreasePressed) {
+                this._onDecreaseRelease();
+            }
+        } else {
+            if (this._isDecreasePressed) {
+                this._isDecreasePressed = false;
+                this._leftArrow.visible = false;
+            }
+        }
+    }
+
+    _isPointInRect(x, y, rect) {
+        return x >= rect.x && x <= rect.x + rect.width &&
+            y >= rect.y && y <= rect.y + rect.height;
+    }
+
+    _setIncreaseHover(hovered) {
+        if (this._isIncreaseHovered === hovered) return;
+        this._isIncreaseHovered = hovered;
+        if (this._increaseBg) {
+            this._increaseBg.scale.set(hovered ? 1.1 : 1.0);
+        }
+    }
+
+    _setDecreaseHover(hovered) {
+        if (this._isDecreaseHovered === hovered) return;
+        this._isDecreaseHovered = hovered;
+        if (this._decreaseBg) {
+            this._decreaseBg.scale.set(hovered ? 1.1 : 1.0);
+        }
+    }
+
+    _onIncreasePress() {
+        if (this._max <= 0) return;
+        this._isIncreasePressed = true;
+        this._rightArrow.visible = true;
+        this.increase(1);
+    }
+
+    _onIncreaseRelease() {
+        if (!this._isIncreasePressed) return;
+        this._isIncreasePressed = false;
+        setTimeout(() => {
+            if (!this._isIncreaseHovered) {
+                this._rightArrow.visible = false;
+            }
+        }, 150);
+    }
+
+    _onDecreasePress() {
+        if (this._max <= 0) return;
+        this._isDecreasePressed = true;
+        this._leftArrow.visible = true;
+        this.decrease(1);
+    }
+
+    _onDecreaseRelease() {
+        if (!this._isDecreasePressed) return;
+        this._isDecreasePressed = false;
+        setTimeout(() => {
+            if (!this._isDecreaseHovered) {
+                this._leftArrow.visible = false;
+            }
+        }, 150);
+    }
+
+    //=========================================================================
+    // EXISTING METHODS
+    //=========================================================================
 
     setItem(item) {
-
         this._item = item;
-
         this._value = 1;
 
-
         if (!item) {
-
             this._max = 1;
-
-        }
-
-        else {
-
-            this._max = LOGICPULSE.RecipeManager.maxCraftAmount(
-
-                item
-
-            );
-
+        } else {
+            this._max = LOGICPULSE.RecipeManager.maxCraftAmount(item);
             this._value = this._max > 0 ? 1 : 0;
-
         }
-
 
         this.refresh();
-
     }
 
-
-
-    //--------------------------------
-    // Increase
-    //--------------------------------
-
-    increase(amount = 1) {
-
+    increase(amount) {
+        amount = amount || 1;
         const old = this._value;
-
-
-        if (this._max <= 0) {
-
-            return;
-
-        }
-
-        this._value = Math.min(
-
-            this._value + amount,
-
-            this._max
-
-        );
-
-
+        if (this._max <= 0) return;
+        this._value = Math.min(this._value + amount, this._max);
         if (this._value !== old) {
-
             this.showArrow("right");
-
             this.refresh();
-
         }
-
     }
 
-
-
-    //--------------------------------
-    // Decrease
-    //--------------------------------
-
-    decrease(amount = 1) {
-
+    decrease(amount) {
+        amount = amount || 1;
         const old = this._value;
-
-
-        if (this._max <= 0) {
-
-            return;
-
-        }
-
-        this._value = Math.max(
-
-            this._value - amount,
-
-            1
-
-        );
-
-
+        if (this._max <= 0) return;
+        this._value = Math.max(this._value - amount, 1);
         if (this._value !== old) {
-
             this.showArrow("left");
-
             this.refresh();
-
         }
-
     }
-
-
-
-    //--------------------------------
-    // Set Value
-    //--------------------------------
 
     setValue(value) {
-
         if (this._max <= 0) {
-
             this._value = 0;
-
+        } else {
+            this._value = Math.max(1, Math.min(value, this._max));
         }
-
-        else {
-
-            this._value = Math.max(
-
-                1,
-
-                Math.min(
-
-                    value,
-
-                    this._max
-
-                )
-
-            );
-
-        }
-
-
         this.refresh();
-
     }
-
-
-
-    //--------------------------------
-    // Show Arrow
-    //--------------------------------
 
     showArrow(direction) {
-
         this._arrowTimer = 20;
-
-
-        this._leftArrow.visible =
-
-            direction === "left";
-
-
-        this._rightArrow.visible =
-
-            direction === "right";
-
+        this._leftArrow.visible = direction === "left";
+        this._rightArrow.visible = direction === "right";
     }
-
-
-
-    //--------------------------------
-    // Refresh
-    //--------------------------------
 
     refresh() {
-
+        if (!this._numberText || !this._maxNumberText) return;
         if (this._max <= 0) {
-
             this._numberText.setText("0/0");
-
             this._maxNumberText.setText("0");
-
+        } else {
+            this._numberText.setText(`${this._value}/${this._max}`);
+            this._maxNumberText.setText(String(this._max));
         }
-
-        else {
-
-            this._numberText.setText(
-
-                `${this._value}/${this._max}`
-
-            );
-
-            this._maxNumberText.setText(
-
-                String(this._max)
-
-            );
-
-        }
-
     }
-
-
-    //--------------------------------
-    // Update
-    //--------------------------------
 
     update() {
-
         if (this._arrowTimer > 0) {
-
             this._arrowTimer--;
-
             if (this._arrowTimer <= 0) {
-
                 this._leftArrow.visible = false;
-
                 this._rightArrow.visible = false;
-
             }
-
         }
-
     }
 
-
-
-    //--------------------------------
-    // Value
-    //--------------------------------
-
-    value() {
-
-        return this._value;
-
-    }
-
-
-
-    //--------------------------------
-    // Max
-    //--------------------------------
-
-    max() {
-
-        return this._max;
-
-    }
-
-
+    value() { return this._value; }
+    max() { return this._max; }
 };
 
 
@@ -7592,11 +7558,12 @@ LOGICPULSE.UI.CraftButton = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     constructor() {
-
         super();
-
+        this._isHovered = false;
+        this._isPressed = false;
+        this._enabled = false;
+        this._item = null;
         this.create();
-
     }
 
     //--------------------------------
@@ -7604,75 +7571,155 @@ LOGICPULSE.UI.CraftButton = class extends LOGICPULSE.UI.Element {
     //--------------------------------
 
     create() {
-
-        const layout =
-            LOGICPULSE.Layout.Synthesizer.Showcase.Button;
+        const layout = LOGICPULSE.Layout.Synthesizer.Showcase.Button;
 
         this._sprite = this.createSprite(
-
             LOGICPULSE.Assets.Folders.Synthesizer,
-
             LOGICPULSE.Assets.Images.Synthesizer.SynthesizeIdle,
-
             layout.x,
             layout.y
-
         );
 
+        this._rect = {
+            x: layout.x,
+            y: layout.y,
+            width: layout.width || 160,
+            height: layout.height || 30
+        };
+
+        this._baseScale = layout.scale || 1.0;
+        this._hoverScale = layout.hoverScale || 1.05;
+        this._sprite.scale.set(this._baseScale);
     }
 
     //--------------------------------
-    // Idle
+    // Set item
+    //--------------------------------
+
+    setItem(item) {
+        this._item = item;
+        if (item && LOGICPULSE.RecipeManager.canCraft(item)) {
+            this._enabled = true;
+            this._sprite.alpha = 1.0;
+            this.setIdle();
+        } else {
+            this._enabled = false;
+            this._sprite.alpha = 0.4;
+            this._sprite.scale.set(this._baseScale);
+            this._isHovered = false;
+        }
+    }
+
+    //--------------------------------
+    // Process mouse input
+    //--------------------------------
+
+    processMouseInput(mouseX, mouseY) {
+        // Only process if enabled and in craft mode
+        if (!this._enabled) {
+            if (this._isHovered) {
+                this._setHover(false);
+            }
+            return;
+        }
+
+        // Check if scene is in craft mode
+        const scene = SceneManager._scene;
+        if (!scene || !scene._controller || scene._controller._state !== "craft") {
+            if (this._isHovered) {
+                this._setHover(false);
+            }
+            return;
+        }
+
+        const isOver = this._isPointInRect(mouseX, mouseY, this._rect);
+
+        this._setHover(isOver);
+
+        if (isOver) {
+            if (TouchInput.isTriggered()) {
+                this._onPress();
+            }
+            if (TouchInput.isReleased() && this._isPressed) {
+                this._onRelease();
+            }
+        } else {
+            if (this._isPressed) {
+                this._isPressed = false;
+                this.setIdle();
+            }
+        }
+    }
+
+    _isPointInRect(x, y, rect) {
+        return x >= rect.x && x <= rect.x + rect.width &&
+            y >= rect.y && y <= rect.y + rect.height;
+    }
+
+    _setHover(hovered) {
+        if (this._isHovered === hovered) return;
+        this._isHovered = hovered;
+        if (this._sprite) {
+            this._sprite.scale.set(hovered ? this._hoverScale : this._baseScale);
+        }
+    }
+
+    _onPress() {
+        if (!this._enabled) return;
+        this._isPressed = true;
+        this.setHover();
+    }
+
+    _onRelease() {
+        if (!this._isPressed) return;
+        this._isPressed = false;
+        this._onClick();
+        this.setIdle();
+    }
+
+    _onClick() {
+        const scene = SceneManager._scene;
+        if (scene && scene._controller && typeof scene._controller.craft === 'function') {
+            scene._controller.craft();
+        } else if (scene && scene.craftCurrentItem) {
+            scene.craftCurrentItem();
+        }
+    }
+
+    //--------------------------------
+    // Public API
     //--------------------------------
 
     setIdle() {
-
-        this._sprite.bitmap =
-
-            LOGICPULSE.Assets.load(
-
-                LOGICPULSE.Assets.Folders.Synthesizer,
-
-                LOGICPULSE.Assets.Images.Synthesizer.SynthesizeIdle
-
-            );
-
+        if (!this._sprite) return;
+        this._sprite.bitmap = LOGICPULSE.Assets.load(
+            LOGICPULSE.Assets.Folders.Synthesizer,
+            LOGICPULSE.Assets.Images.Synthesizer.SynthesizeIdle
+        );
     }
-
-    //--------------------------------
-    // Hover
-    //--------------------------------
 
     setHover() {
-
-        this._sprite.bitmap =
-
-            LOGICPULSE.Assets.load(
-
-                LOGICPULSE.Assets.Folders.Synthesizer,
-
-                LOGICPULSE.Assets.Images.Synthesizer.SynthesizeHover
-
-            );
-
+        if (!this._sprite) return;
+        this._sprite.bitmap = LOGICPULSE.Assets.load(
+            LOGICPULSE.Assets.Folders.Synthesizer,
+            LOGICPULSE.Assets.Images.Synthesizer.SynthesizeHover
+        );
     }
-
-    //--------------------------------
-    // Press Animation
-    //--------------------------------
 
     playPressAnimation() {
-
+        if (!this._sprite) return;
         this.setHover();
-
         setTimeout(() => {
-
-            this.setIdle();
-
+            if (this._sprite) {
+                this.setIdle();
+            }
         }, 120);
-
     }
 
+    destroy(options) {
+        this._sprite = null;
+        super.destroy(options);
+    }
 };
 
 
@@ -7683,28 +7730,14 @@ LOGICPULSE.UI.CraftButton = class extends LOGICPULSE.UI.Element {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Scenes = LOGICPULSE.Scenes || {};
 
-//=============================================================================
-// Inventory Scene
-//=============================================================================
-
 LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 
-    //--------------------------------
-    // Initialize
-    //--------------------------------
-
     initialize() {
-
         super.initialize();
-
+        this._lastSelectedIndex = -1;
     }
 
-    //--------------------------------
-    // Create
-    //--------------------------------
-
     create() {
-
         super.create();
 
         this.createBackground();
@@ -7713,261 +7746,140 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
         this.createGrid();
         this.createController();
 
+        // Apply pending category from synthesizer
+        if (LOGICPULSE._pendingInventoryCategory) {
+            const category = LOGICPULSE._pendingInventoryCategory;
+            LOGICPULSE._pendingInventoryCategory = null;
+            if (this._grid && this._sidebar) {
+                // Force refresh provider and grid
+                LOGICPULSE.InventoryProvider.refresh();
+                this._grid.setCategory(category);
+                this._sidebar.selectCategory(category);
+                this._grid.setSelectedIndex(0);
+                this._grid.buildGrid();
+                this.onSelectionChanged();
+            }
+        }
+
         this.onSelectionChanged();
-
+        this._lastSelectedIndex = this._grid ? this._grid.selectedIndex() : -1;
     }
-
-    //--------------------------------
-    // Background
-    //--------------------------------
 
     createBackground() {
-
         const background = LOGICPULSE.Assets.createSprite(
-
             LOGICPULSE.Assets.Folders.Inventory,
             "Background"
-
         );
-
         this.addChild(background);
-
     }
-
-    //--------------------------------
-    // Sidebar
-    //--------------------------------
 
     createSidebar() {
-
         this._sidebar = new LOGICPULSE.UI.Sidebar();
-
+        this._sidebar.setOnTabSelected(this._onSidebarTabSelected.bind(this));
         this.addChild(this._sidebar);
-
     }
 
-    //--------------------------------
-    // Showcase
-    //--------------------------------
+    _onSidebarTabSelected(index, category) {
+        if (index < 0) return;
+        console.log('Sidebar mouse clicked:', category, 'index:', index);
+
+        if (category === "synthesizer") {
+            SceneManager.goto(LOGICPULSE.Scenes.Synthesizer);
+            return;
+        }
+
+        // Directly update the grid and sidebar
+        if (this._grid && this._sidebar) {
+            // Force refresh inventory provider to get latest items
+            LOGICPULSE.InventoryProvider.refresh();
+
+            // Set category and rebuild grid
+            this._grid.setCategory(category);
+            this._grid.setSelectedIndex(0);
+            this._grid.buildGrid(); // force rebuild
+
+            // Select the tab visually
+            this._sidebar.select(index);
+
+            // Update showcase
+            this.onSelectionChanged();
+            this._lastSelectedIndex = this._grid.selectedIndex();
+        }
+    }
 
     createShowcase() {
-
         this._showcase = new LOGICPULSE.UI.Showcase();
-
         this.addChild(this._showcase);
-
     }
-
-    //--------------------------------
-    // Grid
-    //--------------------------------
 
     createGrid() {
-
         this._grid = new LOGICPULSE.UI.Grid(
-
             LOGICPULSE.Layout.Inventory.Grid,
-
             {
-
-                provider: grid =>
-
-                    LOGICPULSE.InventoryProvider.getItems(
-
-                        grid.category()
-
-                    )
-
+                provider: grid => LOGICPULSE.InventoryProvider.getItems(grid.category())
             }
-
         );
-
         this.addChild(this._grid);
-
     }
-
-    //--------------------------------
-    // Controller
-    //--------------------------------
 
     createController() {
-
-        this._controller = new LOGICPULSE.InventoryController(
-
-            this
-
-        );
-
+        this._controller = new LOGICPULSE.InventoryController(this);
     }
-
-    //--------------------------------
-    // Update
-    //--------------------------------
-
-    //--------------------------------
-    // Update
-    //--------------------------------
 
     update() {
-
         super.update();
 
-        if (this._controller) {
+        LOGICPULSE.Mouse.update();
 
-            this._controller.update();
-
+        // Process sidebar mouse input
+        if (this._sidebar && typeof this._sidebar.processMouseInput === 'function') {
+            this._sidebar.processMouseInput(LOGICPULSE.Mouse.x(), LOGICPULSE.Mouse.y());
         }
 
-        if (this._grid) {
-
-            this._grid.update();
-
+        // Process showcase button
+        if (this._showcase && this._showcase.processMouseInput) {
+            this._showcase.processMouseInput();
         }
 
-        if (this._sidebar) {
-
-            this._sidebar.update();
-
-        }
-
+        if (this._controller) this._controller.update();
+        if (this._grid) this._grid.update();
+        if (this._sidebar) this._sidebar.update();
     }
-
-    //--------------------------------
-    // Selection Changed
-    //--------------------------------
 
     onSelectionChanged() {
-
-        if (!this._grid) {
-
-            return;
-
-        }
-
+        if (!this._grid) return;
         const entry = this._grid.selectedEntry();
-
-        this._showcase.setItem(
-
-            entry
-
-        );
-
+        if (this._showcase) this._showcase.setItem(entry);
     }
-
-    //--------------------------------
-    // Confirm
-    //--------------------------------
 
     onConfirm() {
-
         const entry = this._grid.selectedEntry();
+        if (!entry) return;
+        if (!LOGICPULSE.InventoryProvider.canUse(entry.item)) return;
 
-        if (!entry) {
+        const success = LOGICPULSE.InventoryProvider.useItem(entry.item);
+        if (!success) return;
 
-            return;
-
-        }
-
-        if (
-
-            !LOGICPULSE.InventoryProvider.canUse(
-
-                entry.item
-
-            )
-
-        ) {
-
-            return;
-
-        }
-
-        const success =
-
-            LOGICPULSE.InventoryProvider.useItem(
-
-                entry.item
-
-            );
-
-        if (!success) {
-
-            return;
-
-        }
-
-        if (
-
-            this._showcase.playUseAnimation
-
-        ) {
-
+        if (this._showcase && this._showcase.playUseAnimation) {
             this._showcase.playUseAnimation();
-
         }
 
-        AudioManager.playSe({
-
-            name: "Decision2",
-
-            volume: 90,
-
-            pitch: 100,
-
-            pan: 0
-
-        });
-
+        AudioManager.playSe({ name: "Decision2", volume: 90, pitch: 100, pan: 0 });
         this.refreshInventory();
-
     }
-
-    //--------------------------------
-    // Cancel
-    //--------------------------------
 
     onCancel() {
-
         SceneManager.pop();
-
     }
-
-    //--------------------------------
-    // Refresh Inventory
-    //--------------------------------
 
     refreshInventory() {
-
-        const previousIndex =
-
-            this._grid.selectedIndex();
-
+        const prev = this._grid.selectedIndex();
         this._grid.buildGrid();
-
-        const max =
-
-            this._grid.items().length - 1;
-
-        if (max >= 0) {
-
-            this._grid.setSelectedIndex(
-
-                Math.min(
-
-                    previousIndex,
-
-                    max
-
-                )
-
-            );
-
-        }
-
+        const max = this._grid.items().length - 1;
+        if (max >= 0) this._grid.setSelectedIndex(Math.min(prev, max));
+        this._lastSelectedIndex = this._grid.selectedIndex();
         this.onSelectionChanged();
-
     }
-
 };
 
 
@@ -7978,342 +7890,160 @@ LOGICPULSE.Scenes.Inventory = class extends Scene_MenuBase {
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Scenes = LOGICPULSE.Scenes || {};
 
-//=============================================================================
-// Synthesizer Scene
-//=============================================================================
-
 LOGICPULSE.Scenes.Synthesizer = class extends Scene_MenuBase {
 
-    //--------------------------------
-    // Initialize
-    //--------------------------------
-
     initialize() {
-
         super.initialize();
-
         this._selectedItem = null;
-
+        this._lastSelectedIndex = -1;
     }
 
-    //--------------------------------
-    // Create
-    //--------------------------------
-
     create() {
-
         super.create();
 
         this.createBackground();
-
         this.createSidebar();
-
-        this._sidebar.selectCategory(
-
-            "synthesizer"
-
-        );
+        this._sidebar.selectCategory("synthesizer");
 
         this.createShowcase();
-
         this.createCraftGrid();
-
         this.createRecipePanel();
-
         this.createQuantityController();
-
         this.createCraftButton();
-
         this.createController();
 
         this.leaveCraftMode();
-
         this._controller.onSelectionChanged();
 
+        if (this._craftGrid) {
+            this._lastSelectedIndex = this._craftGrid.selectedIndex();
+        }
     }
-
-    //--------------------------------
-    // Background
-    //--------------------------------
 
     createBackground() {
-
-        const background =
-
-            LOGICPULSE.Assets.createSprite(
-
-                LOGICPULSE.Assets.Folders.Synthesizer,
-
-                LOGICPULSE.Assets.Images.Synthesizer.Background
-
-            );
-
-        this.addChild(background);
-
+        const bg = LOGICPULSE.Assets.createSprite(
+            LOGICPULSE.Assets.Folders.Synthesizer,
+            LOGICPULSE.Assets.Images.Synthesizer.Background
+        );
+        this.addChild(bg);
     }
-
-    //--------------------------------
-    // Sidebar
-    //--------------------------------
 
     createSidebar() {
-
-        this._sidebar =
-
-            new LOGICPULSE.UI.Sidebar();
-
+        this._sidebar = new LOGICPULSE.UI.Sidebar();
+        this._sidebar.setOnTabSelected(this._onSidebarTabSelected.bind(this));
         this.addChild(this._sidebar);
-
     }
 
-    //--------------------------------
-    // Showcase
-    //--------------------------------
+    _onSidebarTabSelected(index, category) {
+        if (category === "synthesizer") return;
+        LOGICPULSE._pendingInventoryCategory = category;
+        SceneManager.goto(LOGICPULSE.Scenes.Inventory);
+    }
 
     createShowcase() {
-
-        this._showcase =
-
-            new LOGICPULSE.UI.SynthesizerShowcase();
-
+        this._showcase = new LOGICPULSE.UI.SynthesizerShowcase();
         this.addChild(this._showcase);
-
     }
-
-    //--------------------------------
-    // Craft Grid
-    //--------------------------------
 
     createCraftGrid() {
-
-        this._craftGrid =
-
-            new LOGICPULSE.UI.SynthesizerGrid(
-
-                LOGICPULSE.Layout.Synthesizer.Grid
-
-            );
-
+        this._craftGrid = new LOGICPULSE.UI.SynthesizerGrid(
+            LOGICPULSE.Layout.Synthesizer.Grid
+        );
         this.addChild(this._craftGrid);
-
     }
-
-    //--------------------------------
-    // Recipe Panel
-    //--------------------------------
 
     createRecipePanel() {
-
-        this._recipePanel =
-
-            new LOGICPULSE.UI.RecipePanel();
-
+        this._recipePanel = new LOGICPULSE.UI.RecipePanel();
         this.addChild(this._recipePanel);
-
     }
-
-    //--------------------------------
-    // Quantity Controller
-    //--------------------------------
 
     createQuantityController() {
-
-        this._quantityController =
-
-            new LOGICPULSE.UI.QuantityController();
-
-        this.addChild(
-
-            this._quantityController
-
-        );
-
+        this._quantityController = new LOGICPULSE.UI.QuantityController();
+        this.addChild(this._quantityController);
     }
-
-    //--------------------------------
-    // Craft Button
-    //--------------------------------
 
     createCraftButton() {
-
-        this._craftButton =
-
-            new LOGICPULSE.UI.CraftButton();
-
-        this.addChild(
-
-            this._craftButton
-
-        );
-
+        this._craftButton = new LOGICPULSE.UI.CraftButton();
+        this.addChild(this._craftButton);
     }
-
-    //--------------------------------
-    // Controller
-    //--------------------------------
 
     createController() {
-
-        this._controller =
-
-            new LOGICPULSE.SynthesizerController(
-
-                this
-
-            );
-
+        this._controller = new LOGICPULSE.SynthesizerController(this);
     }
-
-
-    //--------------------------------
-    // Enter Craft Mode
-    //--------------------------------
 
     enterCraftMode(item) {
-
-        if (!item) {
-
-            return;
-
-        }
-
+        if (!item) return;
         this._selectedItem = item;
-
-
-        this._craftGrid.setCraftingItem?.(
-
-            item
-
-        );
-
+        if (this._craftGrid && this._craftGrid.setCraftingItem) {
+            this._craftGrid.setCraftingItem(item);
+        }
     }
-
-    //--------------------------------
-    // Leave Craft Mode
-    //--------------------------------
 
     leaveCraftMode() {
-
         this._selectedItem = null;
-
-        this._craftGrid.clearCraftingItem();
-
+        if (this._craftGrid && this._craftGrid.clearCraftingItem) {
+            this._craftGrid.clearCraftingItem();
+        }
     }
 
-    //--------------------------------
-    // Craft Current Item
-    //--------------------------------
-
     craftCurrentItem() {
+        if (!this._selectedItem) return;
 
-        if (!this._selectedItem) {
+        const amount = this._quantityController.value();
+        if (amount <= 0) return;
 
-            return;
-
-        }
-
-        const amount =
-
-            this._quantityController.value();
-
-        if (amount <= 0) {
-
-            return;
-
-        }
-
-        const success =
-
-            LOGICPULSE.CraftManager.craft(
-
-                this._selectedItem,
-
-                amount
-
-            );
-
+        const success = LOGICPULSE.CraftManager.craft(this._selectedItem, amount);
         if (!success) {
-
             SoundManager.playBuzzer();
-
             return;
-
         }
 
         SoundManager.playOk();
-
         this._craftButton.playPressAnimation();
 
-        //--------------------------------
-        // Refresh UI
-        //--------------------------------
-
         const index = this._craftGrid.selectedIndex();
-
         this._craftGrid.buildGrid();
-
         this._craftGrid.setSelectedIndex(index);
-
         this._craftGrid.setCraftingItem(this._selectedItem);
-
         this._controller.onSelectionChanged();
 
-        this._selectedItem =
-            this._craftGrid.selectedEntry()?.item ?? null;
+        this._selectedItem = this._craftGrid.selectedEntry()?.item ?? null;
 
-        // If the recipe can no longer be crafted,
-        // automatically return to selection mode.
-        if (
-            !this._selectedItem ||
-            !LOGICPULSE.RecipeManager.canCraft(this._selectedItem)
-        ) {
+        if (!this._selectedItem || !LOGICPULSE.RecipeManager.canCraft(this._selectedItem)) {
             this._controller.leaveCraftMode();
         }
 
-
-
+        if (this._craftGrid) {
+            this._lastSelectedIndex = this._craftGrid.selectedIndex();
+        }
     }
-
-
-    //--------------------------------
-    // Cancel
-    //--------------------------------
 
     onCancel() {
-
         SceneManager.pop();
-
     }
-
-
-//--------------------------------
-// Update
-//--------------------------------
 
     update() {
-
         super.update();
 
-        if (this._controller) {
+        LOGICPULSE.Mouse.update();
 
-            this._controller.update();
-
+        if (this._sidebar && typeof this._sidebar.processMouseInput === 'function') {
+            this._sidebar.processMouseInput(LOGICPULSE.Mouse.x(), LOGICPULSE.Mouse.y());
         }
 
-        if (this._craftGrid) {
-
-            this._craftGrid.update();
-
+        if (this._quantityController && typeof this._quantityController.processMouseInput === 'function') {
+            this._quantityController.processMouseInput(LOGICPULSE.Mouse.x(), LOGICPULSE.Mouse.y());
         }
 
-        if (this._sidebar) {
-
-            this._sidebar.update();
-
+        if (this._craftButton && typeof this._craftButton.processMouseInput === 'function') {
+            this._craftButton.processMouseInput(LOGICPULSE.Mouse.x(), LOGICPULSE.Mouse.y());
         }
 
+        if (this._controller) this._controller.update();
+        if (this._craftGrid) this._craftGrid.update();
+        if (this._sidebar) this._sidebar.update();
+        if (this._quantityController) this._quantityController.update();
     }
-
 };
 
 
@@ -8325,6 +8055,8 @@ window.LOGICPULSE = window.LOGICPULSE || {};
 
 LOGICPULSE.Assets.initialize();
 
+// Initialize mouse system (already called in LPMouse.js)
+// LOGICPULSE.Mouse.initialize(); // This is auto-called
 
 (() => {
 

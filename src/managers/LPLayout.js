@@ -79,10 +79,13 @@ LOGICPULSE.Layout = Object.freeze({
 
             tabs: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 4,
+                y: 130,
 
-                spacing: 0
+                spacing: 52,
+
+                width: 44,
+                height: 44,
 
             })
 
@@ -147,12 +150,15 @@ LOGICPULSE.Layout = Object.freeze({
 
             Button: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 912,
+                y: 640,
 
                 scale: 1.0,
 
-                hoverScale: 1.05
+                hoverScale: 1.05,
+
+                width: 288,
+                height: 48,
 
             })
 
@@ -225,21 +231,6 @@ LOGICPULSE.Layout = Object.freeze({
 
         }),
 
-        Sidebar: Object.freeze({
-
-            x: 0,
-            y: 0,
-
-            tabs: Object.freeze({
-
-                x: 0,
-                y: 0,
-
-                spacing: 0
-
-            })
-
-        }),
 
         Showcase: Object.freeze({
 
@@ -303,63 +294,70 @@ LOGICPULSE.Layout = Object.freeze({
 
             Tip: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 1032,
+                y: 145,
 
             }),
 
-            NumberControls: Object.freeze({
+            ItemDecrease: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 768,
+                y: 600,
 
-                Arrows: Object.freeze({
+                width: 27,
+                height: 27,
 
-                    x: 0,
-                    y: 0,
+            }),
 
-                    spacing: 0
+            ItemIncrease: Object.freeze({
 
-                }),
+                x: 930,
+                y: 600,
 
-                CurrentNumber: Object.freeze({
+                width: 27,
+                height: 27,
 
-                    x: 822,
-                    y: 598,
+            }),
 
-                    width: 80,
-                    height: 32,
+            CurrentNumber: Object.freeze({
 
-                    align: "center",
+                x: 822,
+                y: 598,
 
-                    fontSize: 28
+                width: 80,
+                height: 32,
 
-                }),
+                align: "center",
 
-                MaxNumber: Object.freeze({
+                fontSize: 28
 
-                    x: 686,
-                    y: 194,
+            }),
 
-                    width: 80,
-                    height: 32,
+            MaxNumber: Object.freeze({
 
-                    align: "center",
+                x: 686,
+                y: 194,
 
-                    fontSize: 20
-                }),
+                width: 80,
+                height: 32,
 
+                align: "center",
+
+                fontSize: 20
             }),
 
 
             Button: Object.freeze({
 
-                x: 0,
-                y: 0,
+                x: 790,
+                y: 650,
 
                 scale: 1.0,
 
-                hoverScale: 1.05
+                hoverScale: 1.05,
+
+                width: 160,
+                height: 30,
 
             })
 
@@ -380,7 +378,7 @@ LOGICPULSE.Layout = Object.freeze({
             Amount: Object.freeze({
 
                 x: 52,
-                y: 58,
+                y: 70,
 
                 width: 36,
                 height: 20,

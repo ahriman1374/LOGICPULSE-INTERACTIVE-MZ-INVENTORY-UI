@@ -217,17 +217,12 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
     }
 
     //--------------------------------
-    // Set Category
+    // Set Category (MODIFIED: removed early return)
     //--------------------------------
 
     setCategory(category) {
 
-        if (this._category === category) {
-
-            return;
-
-        }
-
+        // Always rebuild – removed `if (this._category === category) return;`
         this._category = category;
 
         this._selectedIndex = 0;
@@ -540,6 +535,39 @@ LOGICPULSE.UI.Grid = class extends LOGICPULSE.UI.Element {
 
         }
 
+    }
+
+    //=========================================================================
+    // MOUSE SUPPORT METHODS
+    //=========================================================================
+
+    getSlotAt(worldX, worldY) {
+        const viewportX = this.x;
+        const viewportY = this.y + this._viewport.y;
+
+        for (let i = 0; i < this._slots.length; i++) {
+            const slot = this._slots[i];
+            if (!slot || !slot.visible) continue;
+
+            const slotWorldX = viewportX + slot.x;
+            const slotWorldY = viewportY + slot.y;
+
+            const size = this._layout.itemSize || 92;
+
+            if (worldX >= slotWorldX && worldX <= slotWorldX + size &&
+                worldY >= slotWorldY && worldY <= slotWorldY + size) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    setSelectedSlot(slot) {
+        if (!slot) return;
+        const index = this._slots.indexOf(slot);
+        if (index >= 0) {
+            this.setSelectedIndex(index);
+        }
     }
 
 };
