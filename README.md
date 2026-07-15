@@ -4,7 +4,8 @@ LOGICPULSE INTERACTIVE
 
 A modern, fully interactive inventory and synthesis system for **RPG Maker MZ**.
 
-![Screenshot](docs/screenshot.png)
+![Screenshot](docs/Inventory-screenshot.png)
+![Screenshot](docs/Crafting-screenshot.png)
 
 --------------------------------------------------------------------------------------
 
