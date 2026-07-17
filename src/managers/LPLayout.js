@@ -331,7 +331,7 @@ LOGICPULSE.Layout = {
                 fontSize: 28
 
             },
-            //position of MAx Crafting Number Available for Synthesizer
+            //position of MAx Crafting Number 3. for Synthesizer
             MaxNumber: {
 
                 x: 686,

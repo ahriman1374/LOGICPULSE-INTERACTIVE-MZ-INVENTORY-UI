@@ -25,6 +25,13 @@ LOGICPULSE.Scenes.Synthesizer = class extends Scene_MenuBase {
         this.createCraftButton();
         this.createController();
 
+
+        // Rebuild recipe panel if layout changed (e.g., parameters)
+        if (LOGICPULSE._layoutChanged) {
+            this._recipePanel.rebuild();
+            LOGICPULSE._layoutChanged = false;
+        }
+
         this.leaveCraftMode();
         this._controller.onSelectionChanged();
 
@@ -69,6 +76,7 @@ LOGICPULSE.Scenes.Synthesizer = class extends Scene_MenuBase {
         this._recipePanel = new LOGICPULSE.UI.RecipePanel();
         this.addChild(this._recipePanel);
     }
+
 
     createQuantityController() {
         this._quantityController = new LOGICPULSE.UI.QuantityController();

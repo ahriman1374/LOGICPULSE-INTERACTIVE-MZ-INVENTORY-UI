@@ -442,9 +442,7 @@
  * @default 96
  *
 
- * ============================================================================
- * HELP
- * ============================================================================
+
  * @help
  * ============================================================================
  * LOGICPULSE Interactive MZ Inventory UI v1.0.0
@@ -521,7 +519,7 @@
  *                 | Tab               - Switch to Inventory
  * Craft Quantity  | Left/Right arrows - Adjust quantity
  *                 | Shift+Left/Right  - Set to max/min
- *                 | Skip+Left/Right   - +10/-10
+ *                 | Ctrl+Left/Right   - +10/-10
  *
  * ---------------------------------------------------------------------------
  * MOUSE CONTROLS
@@ -572,7 +570,7 @@
  * TERMS OF USE
  * ---------------------------------------------------------------------------
  * MIT License – free for personal and commercial use.
- * Credit is appreciated but not required.
+ * Credit is required.
  *
  * ============================================================================
  */

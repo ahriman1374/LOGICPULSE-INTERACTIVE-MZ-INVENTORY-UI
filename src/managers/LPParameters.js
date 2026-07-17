@@ -7,10 +7,10 @@ window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.Parameters = {
 
     //--------------------------------
-    // Plugin Name
+    // Plugin Name (from Version.js)
     //--------------------------------
 
-    _pluginName: "LOGICPULSE_INTERACTIVE_MZ_INVENTORY_UI",
+    _pluginName: LOGICPULSE.Version.plugin,
 
     //--------------------------------
     // Internal storage
@@ -27,8 +27,10 @@ LOGICPULSE.Parameters = {
             console.warn('[LOGICPULSE] Layout not loaded yet.');
             return;
         }
+        console.log('[LOGICPULSE] Reading parameters for plugin:', this._pluginName);
         this._readParams();
         this._applyParamsToLayout();
+        console.log('[LOGICPULSE] Parameters applied.');
     },
 
     //--------------------------------
@@ -47,6 +49,9 @@ LOGICPULSE.Parameters = {
             }
             return defaultVal;
         };
+
+        // Log the raw params to see what's being received
+        console.log('[LOGICPULSE] Raw parameters:', params);
 
         //========= INVENTORY GRID =========
         p.invGridX = getNumber('InventoryGridX', L.Inventory.Grid.rect.x);
@@ -185,10 +190,6 @@ LOGICPULSE.Parameters = {
         L.Inventory.Showcase.Description.width = p.invShowWidth;
         L.Inventory.Showcase.Description.fontSize = p.invDescFontSize;
 
-        // Update Description height based on available space
-        // (Button is below description, so we keep the existing height)
-        // Actually, we keep the user's default, so we don't override height.
-
         //========= INVENTORY USE BUTTON =========
         L.Inventory.Showcase.Button.x = p.invUseX;
         L.Inventory.Showcase.Button.y = p.invUseY;
@@ -279,6 +280,15 @@ LOGICPULSE.Parameters = {
         //========= GLOBAL HOVER SCALES =========
         L.HoverScale = p.hoverScale;
         L.UseButtonHoverScale = p.useHoverScale;
+
+        //========= SIGNAL THAT LAYOUT HAS CHANGED =========
+        // This allows scenes to rebuild dynamic elements (like recipe panel)
+        LOGICPULSE._layoutChanged = true;
+
+        // Log a sample value to confirm changes
+        console.log('[LOGICPULSE] Inventory Grid columns set to:', L.Inventory.Grid.columns);
+        console.log('[LOGICPULSE] Showcase X set to:', L.Inventory.Showcase.Frame.x);
+        console.log('[LOGICPULSE] Recipe firstSlot X set to:', L.Synthesizer.RecipeItemBoxes.firstSlot.x);
     },
 
     //--------------------------------

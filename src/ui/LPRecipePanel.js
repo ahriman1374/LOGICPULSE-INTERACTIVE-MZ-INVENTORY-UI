@@ -3,306 +3,225 @@
 window.LOGICPULSE = window.LOGICPULSE || {};
 LOGICPULSE.UI = LOGICPULSE.UI || {};
 
-
 //=============================================================================
 // Recipe Panel
 //=============================================================================
 
 LOGICPULSE.UI.RecipePanel = class extends LOGICPULSE.UI.Element {
 
-
     //--------------------------------
     // Initialize
     //--------------------------------
 
     constructor() {
-
         super();
-
         this._recipe = [];
-
         this._slots = [];
-
+        this._backgrounds = [];
+        this._currentRecipe = [];
         this.create();
-
     }
-
-
 
     //--------------------------------
     // Create
     //--------------------------------
 
     create() {
+        // Clear any existing children
+        this.removeChildren();
+        this._slots = [];
+        this._backgrounds = [];
 
         this.createBackground();
-
         this.createSlots();
 
+        // If we have a recipe stored, reapply it
+        if (this._currentRecipe && this._currentRecipe.length > 0) {
+            this.setRecipe(this._currentRecipe);
+        }
+
+        console.log('[RecipePanel] Created. Position:', this.x, this.y);
     }
 
+    //--------------------------------
+    // Rebuild (force recreate)
+    //--------------------------------
 
+    rebuild() {
+        console.log('[RecipePanel] Rebuilding...');
+        this.create();
+    }
 
     //--------------------------------
     // Background Boxes
     //--------------------------------
 
     createBackground() {
+        const layout = LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes;
+        // Safe fallbacks
+        const firstX = typeof layout.firstSlot?.x === 'number' && !isNaN(layout.firstSlot.x) ? layout.firstSlot.x : 672;
+        const spacing = typeof layout.spacing === 'number' && !isNaN(layout.spacing) ? layout.spacing : 96;
+        const firstY = typeof layout.firstSlot?.y === 'number' && !isNaN(layout.firstSlot.y) ? layout.firstSlot.y : 480;
 
-        const layout =
-            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes;
-
+        console.log('[RecipePanel] Background layout:', layout);
+        console.log('[RecipePanel] Using firstX:', firstX, 'firstY:', firstY, 'spacing:', spacing);
 
         for (let i = 0; i < 4; i++) {
+            const sprite = this.createSprite(
+                LOGICPULSE.Assets.Folders.Synthesizer,
+                LOGICPULSE.Assets.Images.Synthesizer.RecipeItemBoxes
+            );
 
-            const sprite =
-                this.createSprite(
+            sprite.x = firstX + (i * spacing);
+            sprite.y = firstY;
 
-                    LOGICPULSE.Assets.Folders.Synthesizer,
+            console.log(`[RecipePanel] Background ${i} at:`, sprite.x, sprite.y);
 
-                    LOGICPULSE.Assets.Images.Synthesizer.RecipeItemBoxes
-
-                );
-
-
-            sprite.x =
-                layout.firstSlot.x +
-                (i * layout.spacing);
-
-
-            sprite.y =
-                layout.firstSlot.y;
-
-
+            this._backgrounds.push(sprite);
         }
-
     }
-
-
 
     //--------------------------------
     // Create Slots
     //--------------------------------
 
     createSlots() {
-
-        const layout =
-            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes;
+        const layout = LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes;
+        const firstX = typeof layout.firstSlot?.x === 'number' && !isNaN(layout.firstSlot.x) ? layout.firstSlot.x : 672;
+        const spacing = typeof layout.spacing === 'number' && !isNaN(layout.spacing) ? layout.spacing : 96;
+        const firstY = typeof layout.firstSlot?.y === 'number' && !isNaN(layout.firstSlot.y) ? layout.firstSlot.y : 480;
 
         for (let i = 0; i < 4; i++) {
-
             const slot = new PIXI.Container();
+            slot.x = firstX + (i * spacing);
+            slot.y = firstY;
 
-            slot.x =
-                layout.firstSlot.x +
-                (i * layout.spacing);
-
-            slot.y =
-                layout.firstSlot.y;
+            console.log(`[RecipePanel] Slot ${i} at:`, slot.x, slot.y);
 
             this.addChild(slot);
-
             this._slots.push(slot);
-
         }
 
+        // If we have a recipe, refresh to populate slots
+        if (this._currentRecipe && this._currentRecipe.length > 0) {
+            this.refresh();
+        }
     }
-
-
 
     //--------------------------------
     // Set Recipe
     //--------------------------------
 
     setRecipe(recipe) {
-
-        this._recipe = recipe || [];
-
+        this._currentRecipe = recipe || [];
+        this._recipe = this._currentRecipe;
         this.refresh();
-
     }
-
-
 
     //--------------------------------
     // Refresh
     //--------------------------------
 
     refresh() {
-
-
+        // Clear all slots
         for (let i = 0; i < this._slots.length; i++) {
-
-
-            const slot =
-                this._slots[i];
-
-
-            this.clearSlot(slot);
-
-
-            const ingredient =
-                this._recipe[i];
-
-
-            if (!ingredient) {
-
-                continue;
-
+            const slot = this._slots[i];
+            if (slot) {
+                this.clearSlot(slot);
             }
-
-
-            this.drawMaterial(
-
-                slot,
-
-                ingredient
-
-            );
-
         }
 
+        // Draw materials
+        for (let i = 0; i < this._slots.length; i++) {
+            const slot = this._slots[i];
+            if (!slot) continue;
+
+            const ingredient = this._recipe[i];
+            if (!ingredient) continue;
+
+            this.drawMaterial(slot, ingredient);
+        }
     }
-
-
 
     //--------------------------------
     // Clear Slot
     //--------------------------------
 
     clearSlot(slot) {
-
-
         while (slot.children.length > 0) {
-
             slot.removeChildAt(0);
-
         }
-
     }
 
-
-
-//--------------------------------
-// Draw Material
-//--------------------------------
+    //--------------------------------
+    // Draw Material
+    //--------------------------------
 
     drawMaterial(slot, ingredient) {
-
         const item = $dataItems[ingredient.itemId];
-
-        if (!item) {
-
-            return;
-
-        }
+        if (!item) return;
 
         //--------------------------------
         // Icon
         //--------------------------------
 
         const icon = LOGICPULSE.Assets.createItemSprite(item);
-
         slot.addChild(icon);
 
         //--------------------------------
         // Amount
         //--------------------------------
 
-        const amountLayout =
-            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes.Amount;
-
+        const amountLayout = LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes.Amount;
         const amount = this.createText({
-
             text: String(ingredient.amount),
-
             x: amountLayout.x,
             y: amountLayout.y,
-
             width: amountLayout.width,
             height: amountLayout.height,
-
             align: amountLayout.align,
-
             fontSize: amountLayout.fontSize
-
         });
-
         slot.addChild(amount);
 
         //--------------------------------
         // Name
         //--------------------------------
 
-        const nameLayout =
-            LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes.ItemName;
-
+        const nameLayout = LOGICPULSE.Layout.Synthesizer.RecipeItemBoxes.ItemName;
         let name = item.name;
-
-        // Optional: shorten long names
         if (name.length > 16) {
-
             name = name.substring(0, 9) + "...";
-
         }
-
         const nameText = this.createText({
-
             text: name,
-
             x: nameLayout.x,
             y: nameLayout.y,
-
             width: nameLayout.width,
             height: nameLayout.height,
-
             align: nameLayout.align,
-
             fontSize: nameLayout.fontSize
-
         });
-
         slot.addChild(nameText);
-
     }
-
-
 
     //--------------------------------
     // Selected Item
     //--------------------------------
 
     setItem(item) {
-
-
         if (!item) {
-
             this.clear();
-
             return;
-
         }
-
-
-        this.setRecipe(
-
-            LOGICPULSE.RecipeManager.recipe(item)
-
-        );
-
+        this.setRecipe(LOGICPULSE.RecipeManager.recipe(item));
     }
-
-
 
     //--------------------------------
     // Clear
     //--------------------------------
 
     clear() {
-
         this.setRecipe([]);
-
     }
-
-
 };

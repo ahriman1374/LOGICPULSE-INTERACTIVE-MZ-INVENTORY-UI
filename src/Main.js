@@ -1,24 +1,34 @@
+//=============================================================================
+// Main.js
+//=============================================================================
+
 window.LOGICPULSE = window.LOGICPULSE || {};
 
+// Initialize assets
 LOGICPULSE.Assets.initialize();
 
-// Initialize mouse system (already called in LPMouse.js)
-// LOGICPULSE.Mouse.initialize(); // This is auto-called
+// Initialize parameters (after Layout is loaded)
+if (LOGICPULSE.Parameters && typeof LOGICPULSE.Parameters.initialize === 'function') {
+    LOGICPULSE.Parameters.initialize();
+}
 
-(() => {
-
-    const pluginName = LOGICPULSE.Version.plugin;
+// Register plugin commands
+(function() {
+    var pluginName = LOGICPULSE.Version.plugin;
 
     PluginManager.registerCommand(
-
         pluginName,
         "OpenInventory",
-        () => {
-
+        function() {
             SceneManager.push(LOGICPULSE.Scenes.Inventory);
-
         }
-
     );
 
+    PluginManager.registerCommand(
+        pluginName,
+        "OpenSynthesizer",
+        function() {
+            SceneManager.push(LOGICPULSE.Scenes.Synthesizer);
+        }
+    );
 })();
